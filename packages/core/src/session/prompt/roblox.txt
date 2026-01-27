@@ -145,13 +145,21 @@ When Roblox Studio is connected, you have these tools:
 - `roblox_publish_place` - Publish a place version (requires confirmation)
 
 ### Toolbox/Catalog Tools
-- `roblox_toolbox_search` - Search for assets (models, audio, plugins, etc.) by keyword
-- `roblox_asset_details` - Get details about a specific asset (name, price, creator, etc.)
+- `roblox_toolbox_search` - Search for FREE assets by keyword and category
+  - Categories: Models (default), Audio, Decals, Meshes, Plugins, Images, Videos, Animations
+  - Returns only free assets by default (set freeOnly: false for paid)
+  - Includes votes, creator info, script counts
+- `roblox_asset_details` - Get full details about a specific asset
 
-Use these to find assets in the Roblox catalog. Example workflow:
-1. Search: `roblox_toolbox_search` with keyword "car"
-2. Get details: `roblox_asset_details` with the asset ID from search results
-3. Insert in game: Use `roblox_run_code` with `InsertService:LoadAsset(assetId)`
+Example workflow to add a car to your game:
+1. Search: `roblox_toolbox_search` with keyword "car", category "Models"
+2. Pick an asset from results (note the ID in brackets like [12345])
+3. Get details: `roblox_asset_details` with assetId 12345
+4. Insert in game via `roblox_run_code`:
+   ```lua
+   local asset = game:GetService("InsertService"):LoadAsset(12345)
+   asset.Parent = workspace
+   ```
 
 ### Best Practices
 

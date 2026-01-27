@@ -1,109 +1,95 @@
 import z from "zod"
 import { Tool } from "../tool"
 
-const CATALOG_API = "https://catalog.roblox.com"
-const ECONOMY_API = "https://economy.roblox.com"
+const TOOLBOX_API = "https://apis.roblox.com/toolbox-service/v1"
 const TIMEOUT_MS = 15000
 
-// Asset type mappings for Roblox catalog
-export const AssetTypes = {
-  Image: 1,
-  TShirt: 2,
+// Asset category IDs for Roblox toolbox
+export const AssetCategories = {
+  Models: 10,
   Audio: 3,
-  Mesh: 4,
-  Lua: 5,
-  Hat: 8,
-  Place: 9,
-  Model: 10,
-  Shirt: 11,
-  Pants: 12,
-  Decal: 13,
-  Head: 17,
-  Face: 18,
-  Gear: 19,
-  Badge: 21,
-  Animation: 24,
-  Torso: 27,
-  RightArm: 28,
-  LeftArm: 29,
-  LeftLeg: 30,
-  RightLeg: 31,
-  Package: 32,
-  GamePass: 34,
-  Plugin: 38,
-  MeshPart: 40,
-  HairAccessory: 41,
-  FaceAccessory: 42,
-  NeckAccessory: 43,
-  ShoulderAccessory: 44,
-  FrontAccessory: 45,
-  BackAccessory: 46,
-  WaistAccessory: 47,
-  ClimbAnimation: 48,
-  DeathAnimation: 49,
-  FallAnimation: 50,
-  IdleAnimation: 51,
-  JumpAnimation: 52,
-  RunAnimation: 53,
-  SwimAnimation: 54,
-  WalkAnimation: 55,
-  PoseAnimation: 56,
-  Video: 62,
-  TShirtAccessory: 64,
-  ShirtAccessory: 65,
-  PantsAccessory: 66,
-  JacketAccessory: 67,
-  SweaterAccessory: 68,
-  ShortsAccessory: 69,
-  LeftShoeAccessory: 70,
-  RightShoeAccessory: 71,
-  DressSkirtAccessory: 72,
-  FontFamily: 73,
-  EyebrowAccessory: 76,
-  EyelashAccessory: 77,
-  MoodAnimation: 78,
-  DynamicHead: 79,
+  Decals: 13,
+  Meshes: 4,
+  Plugins: 38,
+  Images: 1,
+  Videos: 62,
+  Animations: 24,
 } as const
 
-export type AssetTypeName = keyof typeof AssetTypes
+export type AssetCategoryName = keyof typeof AssetCategories
 
-interface CatalogSearchResult {
-  keyword: string | null
-  previousPageCursor: string | null
+// Asset type ID to name mapping
+const AssetTypeNames: Record<number, string> = {
+  1: "Image",
+  2: "TShirt",
+  3: "Audio",
+  4: "Mesh",
+  5: "Lua",
+  8: "Hat",
+  9: "Place",
+  10: "Model",
+  11: "Shirt",
+  12: "Pants",
+  13: "Decal",
+  17: "Head",
+  18: "Face",
+  19: "Gear",
+  21: "Badge",
+  24: "Animation",
+  32: "Package",
+  34: "GamePass",
+  38: "Plugin",
+  40: "MeshPart",
+  62: "Video",
+}
+
+export function getAssetTypeName(id: number): string {
+  return AssetTypeNames[id] || `Type(${id})`
+}
+
+interface ToolboxSearchResponse {
+  totalResults: number
+  filteredKeyword: string
   nextPageCursor: string | null
   data: Array<{
     id: number
-    itemType: "Asset" | "Bundle"
+    searchResultSource: string
   }>
 }
 
-interface AssetDetails {
-  TargetId: number
-  ProductType: string
-  AssetId: number
-  ProductId: number
-  Name: string
-  Description: string
-  AssetTypeId: number
-  Creator: {
-    Id: number
-    Name: string
-    CreatorType: string
-    CreatorTargetId: number
-    HasVerifiedBadge: boolean
+interface ToolboxAssetDetails {
+  asset: {
+    id: number
+    name: string
+    typeId: number
+    description: string
+    hasScripts: boolean
+    scriptCount: number
+    createdUtc: string
+    updatedUtc: string
+    isEndorsed: boolean
+    categoryPath: string
   }
-  IconImageAssetId: number
-  Created: string
-  Updated: string
-  PriceInRobux: number | null
-  Sales: number
-  IsNew: boolean
-  IsForSale: boolean
-  IsPublicDomain: boolean
-  IsLimited: boolean
-  IsLimitedUnique: boolean
-  Remaining: number
-  MinimumMembershipLevel: number
+  creator: {
+    id: number
+    name: string
+    type: number
+    isVerifiedCreator: boolean
+  }
+  voting: {
+    upVotes: number
+    downVotes: number
+    voteCount: number
+    upVotePercent: number
+  }
+  fiatProduct: {
+    isFree: boolean
+    purchasable: boolean
+  }
+}
+
+interface ToolboxDetailsResponse {
+  data: ToolboxAssetDetails[]
 }
 
 async function fetchWithTimeout<T>(url: string): Promise<{ success: boolean; data?: T; error?: string }> {
@@ -127,100 +113,123 @@ async function fetchWithTimeout<T>(url: string): Promise<{ success: boolean; dat
   }
 }
 
-export function getAssetTypeName(id: number): string {
-  for (const [name, typeId] of Object.entries(AssetTypes)) {
-    if (typeId === id) return name
-  }
-  return `Unknown(${id})`
-}
-
 export const RobloxToolboxSearchTool = Tool.define<
   z.ZodObject<{
     keyword: z.ZodString
+    category: z.ZodOptional<z.ZodString>
+    freeOnly: z.ZodOptional<z.ZodBoolean>
     limit: z.ZodOptional<z.ZodNumber>
-    cursor: z.ZodOptional<z.ZodString>
   }>,
-  { keyword: string; resultCount: number }
+  { keyword: string; category: string; resultCount: number }
 >("roblox_toolbox_search", {
-  description: `Search the Roblox catalog/toolbox for assets.
+  description: `Search the Roblox toolbox for free assets.
 
-Searches for models, audio, images, plugins, and other assets by keyword.
-Returns asset IDs that can be used with roblox_asset_details to get more info,
-or with InsertService in Roblox to insert the asset into your game.
+Searches for models, audio, decals, meshes, plugins, and other assets by keyword.
+By default, only returns FREE assets that can be inserted into your game.
 
-Examples:
-- Search "car" to find car models
-- Search "sword" to find weapon models
-- Search "background music" to find audio
+Categories:
+- Models (default): 3D models, tools, NPCs, vehicles, etc.
+- Audio: Sound effects and music
+- Decals: 2D images for surfaces
+- Meshes: 3D mesh parts
+- Plugins: Studio plugins
+- Images: Textures and images
+- Videos: Video assets
+- Animations: Character animations
 
-Note: This searches the public catalog. Results may include both free and paid assets.`,
+Returns asset IDs that can be inserted using InsertService:LoadAsset(id).
+
+Example: Search "car" in Models category to find free car models.`,
   parameters: z.object({
     keyword: z.string().describe("Search keyword (e.g., 'car', 'sword', 'tree')"),
-    limit: z.number().min(10).max(30).optional().describe("Maximum results: 10, 28, or 30 (default 10)"),
-    cursor: z.string().optional().describe("Pagination cursor from previous search"),
+    category: z
+      .string()
+      .optional()
+      .describe("Asset category: Models, Audio, Decals, Meshes, Plugins, Images, Videos, Animations (default: Models)"),
+    freeOnly: z.boolean().optional().describe("Only return free assets (default: true)"),
+    limit: z.number().min(1).max(30).optional().describe("Maximum results (1-30, default: 10)"),
   }),
   async execute(params) {
-    // API only allows 10, 28, 30, 50, 60, 100, 120 - map to closest allowed value
-    const allowedLimits = [10, 28, 30]
-    const requestedLimit = params.limit || 10
-    const limit = allowedLimits.reduce((prev, curr) =>
-      Math.abs(curr - requestedLimit) < Math.abs(prev - requestedLimit) ? curr : prev,
-    )
+    const category = (params.category as AssetCategoryName) || "Models"
+    const categoryId = AssetCategories[category] || AssetCategories.Models
+    const freeOnly = params.freeOnly !== false // default true
+    const limit = params.limit || 10
 
-    const url = new URL(`${CATALOG_API}/v1/search/items`)
-    url.searchParams.set("keyword", params.keyword)
-    url.searchParams.set("limit", limit.toString())
-    if (params.cursor) {
-      url.searchParams.set("cursor", params.cursor)
-    }
+    // Step 1: Search for assets
+    const searchUrl = `${TOOLBOX_API}/marketplace/${categoryId}?keyword=${encodeURIComponent(params.keyword)}&pageNumber=1&pageSize=${limit}`
+    const searchResult = await fetchWithTimeout<ToolboxSearchResponse>(searchUrl)
 
-    const result = await fetchWithTimeout<CatalogSearchResult>(url.toString())
-    if (!result.success) {
+    if (!searchResult.success) {
       return {
         title: `Search: ${params.keyword}`,
-        output: `Error searching catalog: ${result.error}`,
-        metadata: { keyword: params.keyword, resultCount: 0 },
+        output: `Error searching toolbox: ${searchResult.error}`,
+        metadata: { keyword: params.keyword, category, resultCount: 0 },
       }
     }
 
-    const items = result.data!.data
-    if (items.length === 0) {
+    const assetIds = searchResult.data!.data.slice(0, limit).map((item) => item.id)
+    if (assetIds.length === 0) {
       return {
         title: `Search: ${params.keyword}`,
-        output: `No results found for "${params.keyword}".`,
-        metadata: { keyword: params.keyword, resultCount: 0 },
+        output: `No ${category.toLowerCase()} found for "${params.keyword}".`,
+        metadata: { keyword: params.keyword, category, resultCount: 0 },
       }
     }
 
-    // Fetch details for each asset
-    const details: string[] = []
-    for (const item of items) {
-      const detailUrl = `${ECONOMY_API}/v2/assets/${item.id}/details`
-      const detailResult = await fetchWithTimeout<AssetDetails>(detailUrl)
-      if (detailResult.success && detailResult.data) {
-        const d = detailResult.data
-        const price = d.IsPublicDomain ? "Free" : d.PriceInRobux ? `${d.PriceInRobux} R$` : "Not for sale"
-        details.push(
-          `[${item.id}] ${d.Name}\n` +
-            `  Type: ${getAssetTypeName(d.AssetTypeId)} | ${price}\n` +
-            `  By: ${d.Creator.Name} | Sales: ${d.Sales}`,
-        )
-      } else {
-        details.push(`[${item.id}] (${item.itemType}) - Details unavailable`)
+    // Step 2: Batch fetch details for all assets (single request!)
+    const detailsUrl = `${TOOLBOX_API}/items/details?assetIds=${assetIds.join(",")}`
+    const detailsResult = await fetchWithTimeout<ToolboxDetailsResponse>(detailsUrl)
+
+    if (!detailsResult.success) {
+      // Fallback: return just IDs if details fail
+      const output = assetIds.map((id) => `[${id}] (details unavailable)`).join("\n")
+      return {
+        title: `Search: ${params.keyword}`,
+        output: `Found ${assetIds.length} result(s) for "${params.keyword}":\n\n${output}`,
+        metadata: { keyword: params.keyword, category, resultCount: assetIds.length },
       }
     }
 
-    const output = [`Found ${items.length} result(s) for "${params.keyword}":`, "", ...details]
-
-    if (result.data!.nextPageCursor) {
-      output.push("")
-      output.push(`More results available. Use cursor: "${result.data!.nextPageCursor}"`)
+    // Step 3: Filter and format results
+    let assets = detailsResult.data!.data
+    if (freeOnly) {
+      assets = assets.filter((a) => a.fiatProduct.isFree)
     }
+
+    if (assets.length === 0) {
+      return {
+        title: `Search: ${params.keyword}`,
+        output: `No free ${category.toLowerCase()} found for "${params.keyword}". Try setting freeOnly: false to see paid assets.`,
+        metadata: { keyword: params.keyword, category, resultCount: 0 },
+      }
+    }
+
+    const details = assets.map((a) => {
+      const verified = a.creator.isVerifiedCreator ? " ✓" : ""
+      const scripts = a.asset.hasScripts ? ` | ${a.asset.scriptCount} scripts` : ""
+      const votes = a.voting.voteCount > 0 ? ` | ${a.voting.upVotePercent}% liked (${a.voting.voteCount} votes)` : ""
+      const free = a.fiatProduct.isFree ? "Free" : "Paid"
+
+      return (
+        `[${a.asset.id}] ${a.asset.name}\n` +
+        `  ${getAssetTypeName(a.asset.typeId)} | ${free} | By: ${a.creator.name}${verified}${scripts}${votes}`
+      )
+    })
+
+    const output = [`Found ${assets.length} free ${category.toLowerCase()} for "${params.keyword}":\n`, ...details]
+
+    if (searchResult.data!.nextPageCursor) {
+      output.push(`\nMore results available (${searchResult.data!.totalResults} total).`)
+    }
+
+    output.push(`\nTo insert an asset into your game:`)
+    output.push(`  local asset = game:GetService("InsertService"):LoadAsset(ASSET_ID)`)
+    output.push(`  asset.Parent = workspace`)
 
     return {
-      title: `Search: ${params.keyword}`,
+      title: `${category}: ${params.keyword}`,
       output: output.join("\n"),
-      metadata: { keyword: params.keyword, resultCount: items.length },
+      metadata: { keyword: params.keyword, category, resultCount: assets.length },
     }
   },
 })
@@ -233,17 +242,16 @@ export const RobloxAssetDetailsTool = Tool.define<
 >("roblox_asset_details", {
   description: `Get detailed information about a Roblox asset.
 
-Returns name, description, type, price, creator, sales count, and more.
+Returns name, description, type, creator, voting stats, script info, and whether it's free.
 Use the asset ID from roblox_toolbox_search or from the Roblox website URL.
 
-The asset ID can be used with InsertService:LoadAsset() in Roblox to insert
-the asset into your game (if it's a model, audio, etc.).`,
+The asset ID can be used with InsertService:LoadAsset() to insert the asset into your game.`,
   parameters: z.object({
     assetId: z.number().describe("The asset ID to look up"),
   }),
   async execute(params) {
-    const url = `${ECONOMY_API}/v2/assets/${params.assetId}/details`
-    const result = await fetchWithTimeout<AssetDetails>(url)
+    const url = `${TOOLBOX_API}/items/details?assetIds=${params.assetId}`
+    const result = await fetchWithTimeout<ToolboxDetailsResponse>(url)
 
     if (!result.success) {
       return {
@@ -253,46 +261,48 @@ the asset into your game (if it's a model, audio, etc.).`,
       }
     }
 
-    const d = result.data!
-    const price = d.IsPublicDomain
-      ? "Free (Public Domain)"
-      : d.PriceInRobux
-        ? `${d.PriceInRobux} Robux`
-        : "Not for sale"
-
-    const output = [
-      `Name: ${d.Name}`,
-      `Asset ID: ${d.AssetId}`,
-      `Type: ${getAssetTypeName(d.AssetTypeId)}`,
-      ``,
-      `Description:`,
-      d.Description || "(No description)",
-      ``,
-      `Creator: ${d.Creator.Name} (${d.Creator.CreatorType})`,
-      `Verified: ${d.Creator.HasVerifiedBadge ? "Yes" : "No"}`,
-      ``,
-      `Price: ${price}`,
-      `Sales: ${d.Sales.toLocaleString()}`,
-      `For Sale: ${d.IsForSale ? "Yes" : "No"}`,
-      `Public Domain: ${d.IsPublicDomain ? "Yes" : "No"}`,
-      ``,
-      `Created: ${d.Created}`,
-      `Updated: ${d.Updated}`,
-      ``,
-      `To insert this asset in Roblox:`,
-      `  local asset = game:GetService("InsertService"):LoadAsset(${d.AssetId})`,
-      `  asset.Parent = workspace`,
-    ]
-
-    if (d.IsLimited || d.IsLimitedUnique) {
-      output.splice(10, 0, `Limited: ${d.IsLimitedUnique ? "Limited Unique" : "Limited"}`)
-      if (d.Remaining > 0) {
-        output.splice(11, 0, `Remaining: ${d.Remaining}`)
+    if (!result.data!.data || result.data!.data.length === 0) {
+      return {
+        title: `Asset ${params.assetId}`,
+        output: `Asset not found or not accessible.`,
+        metadata: { assetId: params.assetId },
       }
     }
 
+    const a = result.data!.data[0]
+    const verified = a.creator.isVerifiedCreator ? " (Verified)" : ""
+    const creatorType = a.creator.type === 1 ? "User" : "Group"
+
+    const output = [
+      `Name: ${a.asset.name}`,
+      `Asset ID: ${a.asset.id}`,
+      `Type: ${getAssetTypeName(a.asset.typeId)}`,
+      `Category: ${a.asset.categoryPath || "N/A"}`,
+      ``,
+      `Description:`,
+      a.asset.description || "(No description)",
+      ``,
+      `Creator: ${a.creator.name}${verified} (${creatorType})`,
+      ``,
+      `Price: ${a.fiatProduct.isFree ? "Free" : "Paid"}`,
+      `Purchasable: ${a.fiatProduct.purchasable ? "Yes" : "No"}`,
+      ``,
+      `Votes: ${a.voting.upVotePercent}% liked (${a.voting.voteCount} total)`,
+      `  👍 ${a.voting.upVotes}  👎 ${a.voting.downVotes}`,
+      ``,
+      `Scripts: ${a.asset.hasScripts ? `Yes (${a.asset.scriptCount} scripts)` : "No"}`,
+      `Endorsed: ${a.asset.isEndorsed ? "Yes" : "No"}`,
+      ``,
+      `Created: ${a.asset.createdUtc}`,
+      `Updated: ${a.asset.updatedUtc}`,
+      ``,
+      `To insert this asset in Roblox:`,
+      `  local asset = game:GetService("InsertService"):LoadAsset(${a.asset.id})`,
+      `  asset.Parent = workspace`,
+    ]
+
     return {
-      title: d.Name,
+      title: a.asset.name,
       output: output.join("\n"),
       metadata: { assetId: params.assetId },
     }
