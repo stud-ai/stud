@@ -26,6 +26,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 success() { echo -e "${GREEN}✓${NC} $1"; }
@@ -75,8 +76,16 @@ if [ -f "$PLUGIN_SOURCE" ]; then
     mkdir -p "$PLUGIN_DIR"
     cp "$PLUGIN_SOURCE" "$PLUGIN_DIR/"
     success "Plugin installed to $PLUGIN_DIR/Stud.server.lua"
+    
+    # Verify plugin installation
+    if [ -f "$PLUGIN_DIR/Stud.server.lua" ]; then
+        PLUGIN_SIZE=$(wc -c < "$PLUGIN_DIR/Stud.server.lua")
+        success "Plugin verified (${PLUGIN_SIZE} bytes)"
+    else
+        error "Plugin installation failed"
+    fi
 else
-    warn "Plugin source not found at $PLUGIN_SOURCE"
+    error "Plugin source not found at $PLUGIN_SOURCE"
 fi
 
 # Step 4: Build the core
@@ -117,22 +126,57 @@ echo "  export ROBLOX_UNIVERSE_ID=\"your-universe-id\""
 echo ""
 echo "Get your API key at: https://create.roblox.com/dashboard/credentials"
 
+# Step 6: Verify connection status
+echo ""
+echo "Step 6: Checking connection status..."
+echo "─────────────────────────────────────"
+
+# Check if bridge server is running
+BRIDGE_STATUS=$(curl -s http://localhost:3001/stud/status 2>/dev/null || echo "")
+
+if [ -n "$BRIDGE_STATUS" ]; then
+    success "Bridge server is running on port 3001"
+    
+    # Parse connection status
+    if echo "$BRIDGE_STATUS" | grep -q '"connected":true'; then
+        success "Roblox Studio is connected!"
+    else
+        info "Roblox Studio not connected yet"
+        echo "    To connect:"
+        echo "    1. Open Roblox Studio"
+        echo "    2. Enable HTTP Requests (Game Settings → Security)"
+        echo "    3. Click the 'Stud' button in the toolbar"
+    fi
+else
+    info "Bridge server not running (starts with Stud Desktop)"
+fi
+
 # Done!
 echo ""
 echo "════════════════════════════════════════════════════════════════"
 echo ""
 success "Setup complete!"
 echo ""
-echo "To start Stud Desktop:"
+echo -e "${CYAN}To start Stud Desktop:${NC}"
 echo "  cd $SCRIPT_DIR/packages/desktop"
 echo "  RUST_TARGET=$RUST_TARGET bunx tauri dev"
 echo ""
-echo "Or use the quick start command:"
+echo -e "${CYAN}Or use the quick start command:${NC}"
 echo "  bun run dev"
 echo ""
-echo "Before using Stud with Roblox Studio:"
-echo "  1. Open Roblox Studio"
-echo "  2. Go to Game Settings → Security → Enable HTTP Requests"
-echo "  3. Look for the 'Stud' button in the toolbar"
+echo -e "${CYAN}Roblox Studio Connection:${NC}"
+echo "  1. Start Stud Desktop (command above)"
+echo "  2. Open Roblox Studio"
+echo "  3. Go to Game Settings → Security → Enable HTTP Requests"
+echo "  4. Click the 'Stud' button in the Studio toolbar"
+echo "  5. You should see 'Connected' in the Stud widget"
+echo ""
+echo -e "${CYAN}Available Roblox Tools (17 total):${NC}"
+echo "  Studio: roblox_get_script, roblox_set_script, roblox_edit_script,"
+echo "          roblox_get_children, roblox_get_properties, roblox_set_property,"
+echo "          roblox_create, roblox_delete, roblox_clone, roblox_search,"
+echo "          roblox_get_selection, roblox_run_code"
+echo "  Cloud:  roblox_universe_info, roblox_datastore_list,"
+echo "          roblox_datastore_get, roblox_datastore_set, roblox_publish_place"
 echo ""
 echo "════════════════════════════════════════════════════════════════"
