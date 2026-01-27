@@ -12,3 +12,10 @@ export {
   RobloxGetSelectionTool,
   RobloxRunCodeTool,
 } from "./instance"
+export {
+  RobloxUniverseInfoTool,
+  RobloxDataStoreListTool,
+  RobloxDataStoreGetTool,
+  RobloxDataStoreSetTool,
+  RobloxPublishPlaceTool,
+} from "./cloud"

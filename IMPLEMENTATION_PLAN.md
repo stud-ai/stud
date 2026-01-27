@@ -326,7 +326,7 @@ export ROBLOX_UNIVERSE_ID="123456789"
 
 ### Phase 2: Cloud API
 
-- [ ] `tool/roblox/cloud.ts` - Cloud API tools
+- [x] `tool/roblox/cloud.ts` - Cloud API tools
 - [ ] Rate limiting & error handling
 
 ### Phase 3: Knowledge
@@ -336,12 +336,12 @@ export ROBLOX_UNIVERSE_ID="123456789"
 
 ### Phase 4: UI
 
-- [ ] Stud theme
+- [x] Stud theme
 - [ ] Studio connection indicator
 
 ### Phase 5: Rebrand
 
-- [ ] Environment variables
+- [x] Environment variables (STUD*\* aliases with OPENCODE*\* fallback)
 - [ ] Documentation
 
 ---

@@ -1,18 +1,26 @@
 function truthy(key: string) {
-  const value = process.env[key]?.toLowerCase()
+  // Check STUD_* first, then fall back to OPENCODE_* for backwards compatibility
+  const studKey = key.replace("OPENCODE_", "STUD_")
+  const value = (process.env[studKey] ?? process.env[key])?.toLowerCase()
   return value === "true" || value === "1"
+}
+
+function env(key: string): string | undefined {
+  // Check STUD_* first, then fall back to OPENCODE_* for backwards compatibility
+  const studKey = key.replace("OPENCODE_", "STUD_")
+  return process.env[studKey] ?? process.env[key]
 }
 
 export namespace Flag {
   export const OPENCODE_AUTO_SHARE = truthy("OPENCODE_AUTO_SHARE")
-  export const OPENCODE_GIT_BASH_PATH = process.env["OPENCODE_GIT_BASH_PATH"]
-  export const OPENCODE_CONFIG = process.env["OPENCODE_CONFIG"]
+  export const OPENCODE_GIT_BASH_PATH = env("OPENCODE_GIT_BASH_PATH")
+  export const OPENCODE_CONFIG = env("OPENCODE_CONFIG")
   export declare const OPENCODE_CONFIG_DIR: string | undefined
-  export const OPENCODE_CONFIG_CONTENT = process.env["OPENCODE_CONFIG_CONTENT"]
+  export const OPENCODE_CONFIG_CONTENT = env("OPENCODE_CONFIG_CONTENT")
   export const OPENCODE_DISABLE_AUTOUPDATE = truthy("OPENCODE_DISABLE_AUTOUPDATE")
   export const OPENCODE_DISABLE_PRUNE = truthy("OPENCODE_DISABLE_PRUNE")
   export const OPENCODE_DISABLE_TERMINAL_TITLE = truthy("OPENCODE_DISABLE_TERMINAL_TITLE")
-  export const OPENCODE_PERMISSION = process.env["OPENCODE_PERMISSION"]
+  export const OPENCODE_PERMISSION = env("OPENCODE_PERMISSION")
   export const OPENCODE_DISABLE_DEFAULT_PLUGINS = truthy("OPENCODE_DISABLE_DEFAULT_PLUGINS")
   export const OPENCODE_DISABLE_LSP_DOWNLOAD = truthy("OPENCODE_DISABLE_LSP_DOWNLOAD")
   export const OPENCODE_ENABLE_EXPERIMENTAL_MODELS = truthy("OPENCODE_ENABLE_EXPERIMENTAL_MODELS")
@@ -24,10 +32,10 @@ export namespace Flag {
   export const OPENCODE_DISABLE_CLAUDE_CODE_SKILLS =
     OPENCODE_DISABLE_CLAUDE_CODE || truthy("OPENCODE_DISABLE_CLAUDE_CODE_SKILLS")
   export declare const OPENCODE_DISABLE_PROJECT_CONFIG: boolean
-  export const OPENCODE_FAKE_VCS = process.env["OPENCODE_FAKE_VCS"]
-  export const OPENCODE_CLIENT = process.env["OPENCODE_CLIENT"] ?? "cli"
-  export const OPENCODE_SERVER_PASSWORD = process.env["OPENCODE_SERVER_PASSWORD"]
-  export const OPENCODE_SERVER_USERNAME = process.env["OPENCODE_SERVER_USERNAME"]
+  export const OPENCODE_FAKE_VCS = env("OPENCODE_FAKE_VCS")
+  export const OPENCODE_CLIENT = env("OPENCODE_CLIENT") ?? "cli"
+  export const OPENCODE_SERVER_PASSWORD = env("OPENCODE_SERVER_PASSWORD")
+  export const OPENCODE_SERVER_USERNAME = env("OPENCODE_SERVER_USERNAME")
 
   // Experimental
   export const OPENCODE_EXPERIMENTAL = truthy("OPENCODE_EXPERIMENTAL")
@@ -46,10 +54,10 @@ export namespace Flag {
   export const OPENCODE_EXPERIMENTAL_LSP_TOOL = OPENCODE_EXPERIMENTAL || truthy("OPENCODE_EXPERIMENTAL_LSP_TOOL")
   export const OPENCODE_DISABLE_FILETIME_CHECK = truthy("OPENCODE_DISABLE_FILETIME_CHECK")
   export const OPENCODE_EXPERIMENTAL_PLAN_MODE = OPENCODE_EXPERIMENTAL || truthy("OPENCODE_EXPERIMENTAL_PLAN_MODE")
-  export const OPENCODE_MODELS_URL = process.env["OPENCODE_MODELS_URL"]
+  export const OPENCODE_MODELS_URL = env("OPENCODE_MODELS_URL")
 
   function number(key: string) {
-    const value = process.env[key]
+    const value = env(key)
     if (!value) return undefined
     const parsed = Number(value)
     return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined
@@ -72,7 +80,7 @@ Object.defineProperty(Flag, "OPENCODE_DISABLE_PROJECT_CONFIG", {
 // because external tooling may set this env var at runtime
 Object.defineProperty(Flag, "OPENCODE_CONFIG_DIR", {
   get() {
-    return process.env["OPENCODE_CONFIG_DIR"]
+    return env("OPENCODE_CONFIG_DIR")
   },
   enumerable: true,
   configurable: false,

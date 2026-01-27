@@ -361,7 +361,11 @@ render(() => {
             window.__STUD__ ??= {}
             window.__STUD__.serverPassword = data().password ?? undefined
 
-            return <AppInterface defaultUrl={data().url} />
+            return (
+              <Show when={serverPassword()}>
+                <AppInterface defaultUrl={data().url} />
+              </Show>
+            )
           }}
         </ServerGate>
       </AppBaseProviders>

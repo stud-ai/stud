@@ -40,6 +40,11 @@ import {
   RobloxSearchTool,
   RobloxGetSelectionTool,
   RobloxRunCodeTool,
+  RobloxUniverseInfoTool,
+  RobloxDataStoreListTool,
+  RobloxDataStoreGetTool,
+  RobloxDataStoreSetTool,
+  RobloxPublishPlaceTool,
 } from "./roblox"
 
 export namespace ToolRegistry {
@@ -145,6 +150,12 @@ export namespace ToolRegistry {
       RobloxSearchTool,
       RobloxGetSelectionTool,
       RobloxRunCodeTool,
+      // Roblox Cloud API tools
+      RobloxUniverseInfoTool,
+      RobloxDataStoreListTool,
+      RobloxDataStoreGetTool,
+      RobloxDataStoreSetTool,
+      RobloxPublishPlaceTool,
       ...custom,
     ]
   }

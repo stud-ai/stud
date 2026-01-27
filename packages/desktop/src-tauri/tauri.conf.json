@@ -5,9 +5,9 @@
   "mainBinaryName": "Stud",
   "version": "../package.json",
   "build": {
-    "beforeDevCommand": "bun run dev",
+    "beforeDevCommand": "PATH=$HOME/.bun/bin:$PATH bun run dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "bun run build",
+    "beforeBuildCommand": "PATH=$HOME/.bun/bin:$PATH bun run build",
     "frontendDist": "../dist"
   },
   "app": {

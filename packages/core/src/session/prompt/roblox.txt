@@ -137,6 +137,13 @@ When Roblox Studio is connected, you have these tools:
 - `roblox_get_selection` - Get selected objects in Studio
 - `roblox_run_code` - Execute Luau code directly
 
+### Cloud API Tools (require ROBLOX_API_KEY)
+- `roblox_universe_info` - Get experience info
+- `roblox_datastore_list` - List all DataStores
+- `roblox_datastore_get` - Read a DataStore entry
+- `roblox_datastore_set` - Write a DataStore entry (requires confirmation)
+- `roblox_publish_place` - Publish a place version (requires confirmation)
+
 ### Best Practices
 
 1. Always use `--!strict` mode for new scripts
