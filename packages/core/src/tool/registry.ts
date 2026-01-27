@@ -45,6 +45,8 @@ import {
   RobloxDataStoreGetTool,
   RobloxDataStoreSetTool,
   RobloxPublishPlaceTool,
+  RobloxToolboxSearchTool,
+  RobloxAssetDetailsTool,
 } from "./roblox"
 
 export namespace ToolRegistry {
@@ -156,6 +158,9 @@ export namespace ToolRegistry {
       RobloxDataStoreGetTool,
       RobloxDataStoreSetTool,
       RobloxPublishPlaceTool,
+      // Roblox Toolbox/Catalog tools
+      RobloxToolboxSearchTool,
+      RobloxAssetDetailsTool,
       ...custom,
     ]
   }
