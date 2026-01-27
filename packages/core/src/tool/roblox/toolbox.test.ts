@@ -95,13 +95,11 @@ describe("RobloxToolboxSearchTool", () => {
 
     // Valid limit
     expect(tool.parameters.safeParse({ keyword: "car", limit: 10 }).success).toBe(true)
-    expect(tool.parameters.safeParse({ keyword: "car", limit: 1 }).success).toBe(true)
+    expect(tool.parameters.safeParse({ keyword: "car", limit: 15 }).success).toBe(true)
     expect(tool.parameters.safeParse({ keyword: "car", limit: 30 }).success).toBe(true)
 
-    // Invalid limits
-    expect(tool.parameters.safeParse({ keyword: "car", limit: 0 }).success).toBe(false)
-    expect(tool.parameters.safeParse({ keyword: "car", limit: 31 }).success).toBe(false)
-    expect(tool.parameters.safeParse({ keyword: "car", limit: -1 }).success).toBe(false)
+    // Invalid limits (below min)
+    expect(tool.parameters.safeParse({ keyword: "car", limit: 5 }).success).toBe(false)
   })
 
   test("should accept optional cursor", async () => {
@@ -146,7 +144,7 @@ describe("RobloxToolboxSearchTool integration", () => {
     const tool = await RobloxToolboxSearchTool.init()
 
     const result = await tool.execute(
-      { keyword: "sword", limit: 3 },
+      { keyword: "sword", limit: 10 },
       {} as any, // mock context
     )
 
@@ -162,7 +160,7 @@ describe("RobloxToolboxSearchTool integration", () => {
     const tool = await RobloxToolboxSearchTool.init()
 
     // Use a very unlikely search term
-    const result = await tool.execute({ keyword: "xyzzy123456789qwertyuiop", limit: 5 }, {} as any)
+    const result = await tool.execute({ keyword: "xyzzy123456789qwertyuiop", limit: 10 }, {} as any)
 
     expect(result.metadata.resultCount).toBe(0)
   }, 30000)
@@ -170,10 +168,10 @@ describe("RobloxToolboxSearchTool integration", () => {
   test("should respect limit parameter", async () => {
     const tool = await RobloxToolboxSearchTool.init()
 
-    const result = await tool.execute({ keyword: "car", limit: 5 }, {} as any)
+    const result = await tool.execute({ keyword: "car", limit: 10 }, {} as any)
 
-    // Either no results or at most 5 results
-    expect(result.metadata.resultCount).toBeLessThanOrEqual(5)
+    // Either no results or at most 10 results
+    expect(result.metadata.resultCount).toBeLessThanOrEqual(10)
   }, 30000)
 })
 

@@ -156,11 +156,17 @@ Examples:
 Note: This searches the public catalog. Results may include both free and paid assets.`,
   parameters: z.object({
     keyword: z.string().describe("Search keyword (e.g., 'car', 'sword', 'tree')"),
-    limit: z.number().min(1).max(30).optional().describe("Maximum results (1-30, default 10)"),
+    limit: z.number().min(10).max(30).optional().describe("Maximum results: 10, 28, or 30 (default 10)"),
     cursor: z.string().optional().describe("Pagination cursor from previous search"),
   }),
   async execute(params) {
-    const limit = params.limit || 10
+    // API only allows 10, 28, 30, 50, 60, 100, 120 - map to closest allowed value
+    const allowedLimits = [10, 28, 30]
+    const requestedLimit = params.limit || 10
+    const limit = allowedLimits.reduce((prev, curr) =>
+      Math.abs(curr - requestedLimit) < Math.abs(prev - requestedLimit) ? curr : prev,
+    )
+
     const url = new URL(`${CATALOG_API}/v1/search/items`)
     url.searchParams.set("keyword", params.keyword)
     url.searchParams.set("limit", limit.toString())

@@ -144,6 +144,15 @@ When Roblox Studio is connected, you have these tools:
 - `roblox_datastore_set` - Write a DataStore entry (requires confirmation)
 - `roblox_publish_place` - Publish a place version (requires confirmation)
 
+### Toolbox/Catalog Tools
+- `roblox_toolbox_search` - Search for assets (models, audio, plugins, etc.) by keyword
+- `roblox_asset_details` - Get details about a specific asset (name, price, creator, etc.)
+
+Use these to find assets in the Roblox catalog. Example workflow:
+1. Search: `roblox_toolbox_search` with keyword "car"
+2. Get details: `roblox_asset_details` with the asset ID from search results
+3. Insert in game: Use `roblox_run_code` with `InsertService:LoadAsset(assetId)`
+
 ### Best Practices
 
 1. Always use `--!strict` mode for new scripts
