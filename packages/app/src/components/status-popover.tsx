@@ -343,72 +343,166 @@ export function StatusPopover() {
 
           <Tabs.Content value="bridge">
             <div class="flex flex-col px-2 pb-2">
-              <div class="flex flex-col p-3 bg-background-base rounded-sm min-h-14 gap-3">
-                <div class="flex items-center gap-2">
+              <div class="flex flex-col p-3 bg-background-base rounded-sm min-h-14 gap-4">
+                {/* Connection Status Card */}
+                <div
+                  classList={{
+                    "flex items-center gap-3 p-3 rounded-lg border transition-all": true,
+                    "border-border-success-base bg-surface-success-base/5": store.bridge.connected,
+                    "border-border-warning-base bg-surface-warning-base/5":
+                      store.bridge.running && !store.bridge.connected,
+                    "border-border-critical-base bg-surface-critical-base/5": !store.bridge.running,
+                  }}
+                >
+                  {/* Animated Status Indicator */}
+                  <div class="relative flex items-center justify-center">
+                    <div
+                      classList={{
+                        "size-3 rounded-full shrink-0 z-10": true,
+                        "bg-icon-success-base": store.bridge.connected,
+                        "bg-icon-warning-base": store.bridge.running && !store.bridge.connected,
+                        "bg-icon-critical-base": !store.bridge.running,
+                      }}
+                    />
+                    <Show when={store.bridge.connected || (store.bridge.running && !store.bridge.connected)}>
+                      <div
+                        classList={{
+                          "absolute size-3 rounded-full animate-ping opacity-75": true,
+                          "bg-icon-success-base": store.bridge.connected,
+                          "bg-icon-warning-base": store.bridge.running && !store.bridge.connected,
+                        }}
+                      />
+                    </Show>
+                  </div>
+
+                  <div class="flex flex-col flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                      <span class="text-14-medium text-text-strong">Roblox Studio</span>
+                      <Show when={store.bridge.connected}>
+                        <span class="text-10-medium text-icon-success-base bg-surface-success-base/20 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+                          Live
+                        </span>
+                      </Show>
+                    </div>
+                    <span
+                      classList={{
+                        "text-12-regular": true,
+                        "text-icon-success-base": store.bridge.connected,
+                        "text-icon-warning-base": store.bridge.running && !store.bridge.connected,
+                        "text-icon-critical-base": !store.bridge.running,
+                      }}
+                    >
+                      {store.bridge.connected
+                        ? "Connected and ready"
+                        : store.bridge.running
+                          ? "Waiting for Studio plugin..."
+                          : "Bridge not running"}
+                    </span>
+                  </div>
+
+                  {/* Connection Icon */}
                   <div
                     classList={{
-                      "size-2 rounded-full shrink-0": true,
-                      "bg-icon-success-base": store.bridge.connected,
-                      "bg-icon-warning-base": store.bridge.running && !store.bridge.connected,
-                      "bg-icon-critical-base": !store.bridge.running,
+                      "size-8 rounded-full flex items-center justify-center shrink-0": true,
+                      "bg-surface-success-base/20": store.bridge.connected,
+                      "bg-surface-warning-base/20": store.bridge.running && !store.bridge.connected,
+                      "bg-surface-critical-base/20": !store.bridge.running,
                     }}
-                  />
-                  <span class="text-14-medium text-text-strong">Roblox Studio</span>
-                  <span class="text-12-regular text-text-weak ml-auto">
-                    {store.bridge.connected
-                      ? "Connected"
-                      : store.bridge.running
-                        ? "Waiting for plugin..."
-                        : "Bridge not running"}
-                  </span>
+                  >
+                    <Show
+                      when={store.bridge.connected}
+                      fallback={
+                        <Show
+                          when={store.bridge.running}
+                          fallback={<Icon name="close" size="small" class="text-icon-critical-base" />}
+                        >
+                          <Icon name="dash" size="small" class="text-icon-warning-base" />
+                        </Show>
+                      }
+                    >
+                      <Icon name="check" size="small" class="text-icon-success-base" />
+                    </Show>
+                  </div>
                 </div>
 
+                {/* Bridge Details */}
                 <Show when={store.bridge.running}>
-                  <div class="flex flex-col gap-1 text-12-regular text-text-weak">
-                    <div class="flex justify-between">
-                      <span>Bridge Server</span>
-                      <span class="text-text-base">localhost:3001</span>
+                  <div class="flex flex-col gap-2 px-1">
+                    <div class="flex items-center justify-between text-12-regular">
+                      <span class="text-text-weak">Bridge Server</span>
+                      <span class="text-text-base font-mono text-11-regular bg-surface-base px-2 py-0.5 rounded">
+                        localhost:3001
+                      </span>
                     </div>
                     <Show when={store.bridge.pendingRequests > 0}>
-                      <div class="flex justify-between">
-                        <span>Pending Requests</span>
-                        <span class="text-text-base">{store.bridge.pendingRequests}</span>
+                      <div class="flex items-center justify-between text-12-regular">
+                        <span class="text-text-weak">Pending Requests</span>
+                        <span class="text-text-base bg-surface-warning-base/20 text-icon-warning-base px-2 py-0.5 rounded font-medium">
+                          {store.bridge.pendingRequests}
+                        </span>
                       </div>
                     </Show>
                   </div>
                 </Show>
 
+                {/* Help Text */}
                 <Show when={!store.bridge.connected}>
-                  <div class="text-12-regular text-text-weak bg-surface-base p-2 rounded-sm">
+                  <div class="text-12-regular text-text-weak bg-surface-base p-3 rounded-lg border border-border-weak-base">
                     <Show
                       when={store.bridge.running}
                       fallback={
-                        <p>
-                          The bridge server is not running. Start the Stud desktop app to enable Studio integration.
-                        </p>
+                        <div class="flex items-start gap-2">
+                          <Icon name="help" size="small" class="text-text-weak shrink-0 mt-0.5" />
+                          <p>Start the Stud desktop app to enable Roblox Studio integration.</p>
+                        </div>
                       }
                     >
-                      <p>To connect Roblox Studio:</p>
-                      <ol class="list-decimal list-inside mt-1 space-y-0.5">
-                        <li>Open Roblox Studio</li>
-                        <li>Enable HTTP Requests in Game Settings</li>
-                        <li>Click the Stud toolbar button</li>
+                      <p class="font-medium text-text-base mb-2">To connect Roblox Studio:</p>
+                      <ol class="space-y-1.5">
+                        <li class="flex items-center gap-2">
+                          <span class="size-5 rounded-full bg-surface-raised-base text-text-weak text-11-medium flex items-center justify-center shrink-0">
+                            1
+                          </span>
+                          <span>Open Roblox Studio</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                          <span class="size-5 rounded-full bg-surface-raised-base text-text-weak text-11-medium flex items-center justify-center shrink-0">
+                            2
+                          </span>
+                          <span>Enable HTTP Requests in Game Settings</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                          <span class="size-5 rounded-full bg-surface-raised-base text-text-weak text-11-medium flex items-center justify-center shrink-0">
+                            3
+                          </span>
+                          <span>Click the Stud toolbar button</span>
+                        </li>
                       </ol>
                     </Show>
                   </div>
                 </Show>
 
+                {/* Connected Tips */}
                 <Show when={store.bridge.connected}>
-                  <div class="text-12-regular text-text-weak bg-surface-base p-2 rounded-sm">
-                    <p>Studio operations create undo waypoints.</p>
-                    <p class="mt-1">
-                      Use <code class="bg-surface-raised-base px-1 rounded">Ctrl+Z</code> in Studio to undo AI changes.
-                    </p>
+                  <div class="text-12-regular text-text-weak bg-surface-success-base/5 border border-border-success-base/30 p-3 rounded-lg">
+                    <div class="flex items-start gap-2">
+                      <Icon name="circle-check" size="small" class="text-icon-success-base shrink-0 mt-0.5" />
+                      <div>
+                        <p>Studio operations create undo waypoints.</p>
+                        <p class="mt-1">
+                          Press{" "}
+                          <kbd class="bg-surface-base border border-border-weak-base px-1.5 py-0.5 rounded text-11-medium text-text-base">
+                            Ctrl+Z
+                          </kbd>{" "}
+                          in Studio to undo AI changes.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </Show>
 
                 <Button variant="secondary" class="self-start h-8 px-3 py-1.5" onClick={() => refreshBridgeStatus()}>
-                  Refresh
+                  Refresh Status
                 </Button>
               </div>
             </div>

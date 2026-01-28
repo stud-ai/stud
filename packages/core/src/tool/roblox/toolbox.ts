@@ -94,6 +94,38 @@ interface ToolboxDetailsResponse {
   data: ToolboxAssetDetails[]
 }
 
+const THUMBNAIL_API = "https://thumbnails.roblox.com/v1/assets"
+
+interface ThumbnailResponse {
+  data: Array<{
+    targetId: number
+    state: string
+    imageUrl: string | null
+  }>
+}
+
+async function fetchThumbnails(assetIds: number[]): Promise<Map<number, string>> {
+  const thumbnailMap = new Map<number, string>()
+  if (assetIds.length === 0) return thumbnailMap
+
+  try {
+    const url = `${THUMBNAIL_API}?assetIds=${assetIds.join(",")}&size=150x150&format=Png`
+    const response = await fetch(url, { signal: AbortSignal.timeout(5000) })
+    if (!response.ok) return thumbnailMap
+
+    const data = (await response.json()) as ThumbnailResponse
+    for (const item of data.data) {
+      if (item.state === "Completed" && item.imageUrl) {
+        thumbnailMap.set(item.targetId, item.imageUrl)
+      }
+    }
+  } catch {
+    // Silently fail - thumbnails are optional
+  }
+
+  return thumbnailMap
+}
+
 async function fetchWithTimeout<T>(
   url: string,
   cookie?: string,
@@ -243,11 +275,15 @@ Example: Search "car" in Models category to find free car models.`,
       }
     }
 
+    // Step 4: Fetch real thumbnail URLs from Roblox API
+    const thumbnails = await fetchThumbnails(assets.map((a) => a.asset.id))
+    const fallbackThumb = "https://tr.rbxcdn.com/180DAY-e9bb38d37c89e5c8c8d102d2b6e23b8d/150/150/Image/Webp/noFilter"
+
     // Build structured asset data for UI
     const structuredAssets: ToolboxAsset[] = assets.map((a) => ({
       id: a.asset.id,
       name: a.asset.name,
-      thumbnailUrl: `https://www.roblox.com/asset-thumbnail/image?assetId=${a.asset.id}&width=150&height=150&format=png`,
+      thumbnailUrl: thumbnails.get(a.asset.id) || fallbackThumb,
       type: getAssetTypeName(a.asset.typeId),
       typeId: a.asset.typeId,
       creator: a.creator.name,
@@ -265,7 +301,7 @@ Example: Search "car" in Models category to find free car models.`,
       const verified = a.creator.isVerifiedCreator ? " (Verified)" : ""
       const scripts = a.asset.hasScripts ? ` | ${a.asset.scriptCount} scripts` : ""
       const votes = a.voting.voteCount > 0 ? ` | ${a.voting.upVotePercent}% liked (${a.voting.voteCount} votes)` : ""
-      const thumb = `https://www.roblox.com/asset-thumbnail/image?assetId=${a.asset.id}&width=150&height=150&format=png`
+      const thumb = thumbnails.get(a.asset.id) || fallbackThumb
 
       return (
         `### [${a.asset.id}] ${a.asset.name}\n\n` +
@@ -290,12 +326,6 @@ Example: Search "car" in Models category to find free car models.`,
     }
   },
 })
-
-const THUMBNAIL_API = "https://thumbnails.roblox.com/v1/assets"
-
-function getThumbnailUrl(assetId: number): string {
-  return `${THUMBNAIL_API}?assetIds=${assetId}&size=150x150&format=Png`
-}
 
 export const RobloxInsertAssetTool = Tool.define<
   z.ZodObject<{
