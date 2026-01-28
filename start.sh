@@ -325,6 +325,83 @@ install_platform_deps() {
     fi
 }
 
+check_rojo() {
+    if command -v rojo &> /dev/null; then
+        local rojo_version=$(rojo --version 2>/dev/null | cut -d' ' -f2)
+        status_ok "Rojo ${rojo_version}"
+        return 0
+    else
+        status_fail "Rojo not found"
+        return 1
+    fi
+}
+
+install_rojo() {
+    info "Installing Rojo..."
+    
+    # Try aftman first (Roblox toolchain manager)
+    if command -v aftman &> /dev/null; then
+        start_spinner "Installing Rojo via Aftman"
+        aftman add rojo-rbx/rojo@latest &>/dev/null || true
+        stop_spinner
+    # Try cargo if available
+    elif command -v cargo &> /dev/null; then
+        start_spinner "Installing Rojo via Cargo"
+        cargo install rojo &>/dev/null
+        stop_spinner
+    # Try downloading binary directly
+    else
+        start_spinner "Downloading Rojo binary"
+        local os_type=""
+        local arch=""
+        
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            os_type="macos"
+            if [[ $(uname -m) == "arm64" ]]; then
+                arch="aarch64"
+            else
+                arch="x86_64"
+            fi
+        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            os_type="linux"
+            arch="x86_64"
+        else
+            stop_spinner
+            status_fail "Please install Rojo manually: https://rojo.space/docs/installation/"
+            return 1
+        fi
+        
+        # Download latest release
+        local download_url="https://github.com/rojo-rbx/rojo/releases/latest/download/rojo-${os_type}-${arch}.zip"
+        local temp_dir=$(mktemp -d)
+        
+        if curl -fsSL "$download_url" -o "$temp_dir/rojo.zip" 2>/dev/null; then
+            unzip -q "$temp_dir/rojo.zip" -d "$temp_dir"
+            mkdir -p "$HOME/.local/bin"
+            mv "$temp_dir/rojo" "$HOME/.local/bin/" 2>/dev/null || mv "$temp_dir/rojo-"* "$HOME/.local/bin/rojo"
+            chmod +x "$HOME/.local/bin/rojo"
+            export PATH="$HOME/.local/bin:$PATH"
+            rm -rf "$temp_dir"
+            stop_spinner
+        else
+            stop_spinner
+            rm -rf "$temp_dir"
+            status_fail "Failed to download Rojo"
+            info "Install manually: https://rojo.space/docs/installation/"
+            return 1
+        fi
+    fi
+    
+    if command -v rojo &> /dev/null; then
+        status_ok "Rojo $(rojo --version | cut -d' ' -f2) installed"
+        return 0
+    else
+        status_fail "Failed to install Rojo"
+        info "Install manually: https://rojo.space/docs/installation/"
+        return 1
+    fi
+}
+
 run_prereq_checks() {
     section "Prerequisites"
     
@@ -354,6 +431,15 @@ run_prereq_checks() {
             install_platform_deps || all_ok=false
         else
             all_ok=false
+        fi
+    fi
+    
+    # Check Rojo
+    if ! check_rojo; then
+        if confirm "Rojo is recommended for syncing with Roblox Studio. Install it now?"; then
+            install_rojo || true  # Don't fail if Rojo install fails, it's optional
+        else
+            status_skip "Rojo installation skipped (you can install later)"
         fi
     fi
     
@@ -474,12 +560,16 @@ show_connection_instructions() {
     echo ""
     echo -e "  ${DIM}────────────────────────────────────────────${NC}"
     echo ""
-    echo -e "  ${BOLD}Roblox Studio Connection${NC}"
+    echo -e "  ${BOLD}Roblox Studio Setup${NC}"
     echo ""
     echo "  1. Open Roblox Studio"
-    echo "  2. Enable HTTP Requests:"
-    echo -e "     ${DIM}Game Settings > Security > Allow HTTP Requests${NC}"
-    echo "  3. Click the 'Stud' button in the toolbar"
+    echo "  2. Go to Game Settings > Security and enable:"
+    echo -e "     ${DIM}- Allow HTTP Requests${NC}"
+    echo -e "     ${DIM}- Enable Studio Access to API Services${NC}"
+    echo -e "     ${DIM}- Allow Third Party Sales${NC}"
+    echo -e "     ${DIM}- Allow Loading Third Party Assets${NC}"
+    echo "  3. Click the 'Stud' button in the Plugins toolbar"
+    echo "  4. The plugin will connect automatically"
     echo ""
     echo -e "  ${DIM}────────────────────────────────────────────${NC}"
     echo ""

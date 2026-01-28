@@ -1,5 +1,6 @@
 import z from "zod"
 import { Tool } from "../tool"
+import { RobloxAuth } from "@/roblox/auth"
 
 const TOOLBOX_API = "https://apis.roblox.com/toolbox-service/v1"
 const TIMEOUT_MS = 15000
@@ -93,13 +94,23 @@ interface ToolboxDetailsResponse {
   data: ToolboxAssetDetails[]
 }
 
-async function fetchWithTimeout<T>(url: string): Promise<{ success: boolean; data?: T; error?: string }> {
+async function fetchWithTimeout<T>(
+  url: string,
+  cookie?: string,
+): Promise<{ success: boolean; data?: T; error?: string }> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
 
   try {
-    const response = await fetch(url, { signal: controller.signal })
+    const headers: Record<string, string> = {}
+    if (cookie) {
+      headers.Cookie = `.ROBLOSECURITY=${cookie}`
+    }
+    const response = await fetch(url, { signal: controller.signal, headers })
     if (!response.ok) {
+      if (response.status === 401) {
+        return { success: false, error: "Unauthorized - please login to Roblox via Settings > Roblox Account" }
+      }
       return { success: false, error: `HTTP ${response.status}: ${response.statusText}` }
     }
     const data = await response.json()
@@ -173,9 +184,12 @@ Example: Search "car" in Models category to find free car models.`,
     const freeOnly = params.freeOnly !== false // default true
     const limit = params.limit || 10
 
+    // Get auth cookie for authenticated requests
+    const cookie = await RobloxAuth.getCookie()
+
     // Step 1: Search for assets
     const searchUrl = `${TOOLBOX_API}/marketplace/${categoryId}?keyword=${encodeURIComponent(params.keyword)}&pageNumber=1&pageSize=${limit}`
-    const searchResult = await fetchWithTimeout<ToolboxSearchResponse>(searchUrl)
+    const searchResult = await fetchWithTimeout<ToolboxSearchResponse>(searchUrl, cookie ?? undefined)
 
     if (!searchResult.success) {
       return {
@@ -196,7 +210,7 @@ Example: Search "car" in Models category to find free car models.`,
 
     // Step 2: Batch fetch details for all assets (single request!)
     const detailsUrl = `${TOOLBOX_API}/items/details?assetIds=${assetIds.join(",")}`
-    const detailsResult = await fetchWithTimeout<ToolboxDetailsResponse>(detailsUrl)
+    const detailsResult = await fetchWithTimeout<ToolboxDetailsResponse>(detailsUrl, cookie ?? undefined)
 
     if (!detailsResult.success) {
       // Fallback: return just IDs if details fail
@@ -293,8 +307,8 @@ export const RobloxInsertAssetTool = Tool.define<
 >("roblox_insert_asset", {
   description: `Insert a toolbox asset into the game.
 
-Uses InsertService:LoadAsset() to fetch and insert the asset from Roblox's servers.
-The asset must be free and publicly available.
+Fetches the asset from Roblox's servers and inserts it into your game.
+Uses game:GetObjects() which works in Studio without requiring asset ownership.
 
 The inserted asset will be a Model containing the asset's contents.
 Use roblox_toolbox_search to find asset IDs.
@@ -321,19 +335,23 @@ Examples:
     const parentPath = params.parent || "game.Workspace"
     const nameAssignment = params.name ? `model.Name = "${params.name}"` : ""
 
+    // Use game:GetObjects() instead of InsertService:LoadAsset()
+    // GetObjects works in Studio without requiring the user to own the asset
     const code = `
-local InsertService = game:GetService("InsertService")
+local assetId = ${params.assetId}
 local success, result = pcall(function()
-  local model = InsertService:LoadAsset(${params.assetId})
-  if model then
-    ${nameAssignment}
-    model.Parent = ${parentPath}
-    return model:GetFullName()
+  local objects = game:GetObjects("rbxassetid://" .. assetId)
+  if #objects == 0 then
+    error("No objects returned for asset " .. assetId)
   end
-  return nil
+  local model = objects[1]
+  ${nameAssignment}
+  model.Parent = ${parentPath}
+  return model:GetFullName() .. " (" .. #model:GetDescendants() .. " descendants)"
 end)
-if success and result then
-  print("Inserted at: " .. result)
+if success then
+  print("Inserted: " .. result)
+  return result
 else
   error(result or "Failed to insert asset")
 end
@@ -381,8 +399,9 @@ The asset ID can be used with InsertService:LoadAsset() to insert the asset into
     assetId: z.number().describe("The asset ID to look up"),
   }),
   async execute(params) {
+    const cookie = await RobloxAuth.getCookie()
     const url = `${TOOLBOX_API}/items/details?assetIds=${params.assetId}`
-    const result = await fetchWithTimeout<ToolboxDetailsResponse>(url)
+    const result = await fetchWithTimeout<ToolboxDetailsResponse>(url, cookie ?? undefined)
 
     if (!result.success) {
       return {

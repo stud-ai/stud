@@ -1397,7 +1397,7 @@ export default function Page() {
   createEffect(() => {
     const sessionID = params.id
     if (!sessionID) return
-    const raw = sessionStorage.getItem("opencode.pendingMessage")
+    const raw = sessionStorage.getItem("stud.pendingMessage") || sessionStorage.getItem("opencode.pendingMessage")
     if (!raw) return
     const parts = raw.split("|")
     const pendingSessionID = parts[0]
@@ -1405,6 +1405,7 @@ export default function Page() {
     if (!pendingSessionID || !messageID) return
     if (pendingSessionID !== sessionID) return
 
+    sessionStorage.removeItem("stud.pendingMessage")
     sessionStorage.removeItem("opencode.pendingMessage")
     setUi("pendingMessage", messageID)
   })

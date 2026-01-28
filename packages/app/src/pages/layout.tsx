@@ -1745,7 +1745,7 @@ export default function Layout(props: ParentProps) {
                   getLabel={messageLabel}
                   onMessageSelect={(message) => {
                     if (!isActive()) {
-                      sessionStorage.setItem("opencode.pendingMessage", `${props.session.id}|${message.id}`)
+                      sessionStorage.setItem("stud.pendingMessage", `${props.session.id}|${message.id}`)
                       navigate(`${props.slug}/session/${props.session.id}`)
                       return
                     }
@@ -2138,6 +2138,8 @@ export default function Layout(props: ParentProps) {
       () => props.project.vcs === "git" && layout.sidebar.workspaces(props.project.worktree)(),
     )
     const [open, setOpen] = createSignal(false)
+    const [contextMenuOpen, setContextMenuOpen] = createSignal(false)
+    const [contextMenuPos, setContextMenuPos] = createSignal({ x: 0, y: 0 })
 
     const preview = createMemo(() => !props.mobile && layout.sidebar.opened())
     const overlay = createMemo(() => !props.mobile && !layout.sidebar.opened())
@@ -2179,6 +2181,13 @@ export default function Layout(props: ParentProps) {
     }
 
     const projectName = () => props.project.name || getFilename(props.project.worktree)
+
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault()
+      setContextMenuPos({ x: e.clientX, y: e.clientY })
+      setContextMenuOpen(true)
+    }
+
     const trigger = (
       <button
         type="button"
@@ -2204,6 +2213,7 @@ export default function Layout(props: ParentProps) {
         }}
         onClick={() => navigateToProject(props.project.worktree)}
         onBlur={() => setOpen(false)}
+        onContextMenu={handleContextMenu}
       >
         <ProjectIcon project={props.project} notify />
       </button>
@@ -2228,12 +2238,12 @@ export default function Layout(props: ParentProps) {
             <div class="-m-3 p-2 flex flex-col w-72">
               <div class="px-4 pt-2 pb-1 flex items-center gap-2">
                 <div class="text-14-medium text-text-strong truncate grow">{displayName(props.project)}</div>
-                <Tooltip value={language.t("common.close")} placement="top" gutter={6}>
+                <Tooltip value={language.t("sidebar.project.remove")} placement="top" gutter={6}>
                   <IconButton
                     icon="circle-x"
                     variant="ghost"
                     class="shrink-0"
-                    aria-label={language.t("common.close")}
+                    aria-label={language.t("sidebar.project.remove")}
                     onClick={(event) => {
                       event.stopPropagation()
                       setOpen(false)
@@ -2304,6 +2314,25 @@ export default function Layout(props: ParentProps) {
             </div>
           </HoverCard>
         </Show>
+        <DropdownMenu open={contextMenuOpen()} onOpenChange={setContextMenuOpen}>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              class="fixed z-50"
+              style={{
+                left: `${contextMenuPos().x}px`,
+                top: `${contextMenuPos().y}px`,
+              }}
+            >
+              <DropdownMenu.Item onSelect={() => dialog.show(() => <DialogEditProject project={props.project} />)}>
+                <DropdownMenu.ItemLabel>{language.t("common.edit")}</DropdownMenu.ItemLabel>
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item onSelect={() => closeProject(props.project.worktree)}>
+                <DropdownMenu.ItemLabel>{language.t("sidebar.project.remove")}</DropdownMenu.ItemLabel>
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu>
       </div>
     )
   }
@@ -2503,7 +2532,7 @@ export default function Layout(props: ParentProps) {
                         </DropdownMenu.Item>
                         <DropdownMenu.Separator />
                         <DropdownMenu.Item onSelect={() => closeProject(p.worktree)}>
-                          <DropdownMenu.ItemLabel>{language.t("common.close")}</DropdownMenu.ItemLabel>
+                          <DropdownMenu.ItemLabel>{language.t("sidebar.project.remove")}</DropdownMenu.ItemLabel>
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
                     </DropdownMenu.Portal>

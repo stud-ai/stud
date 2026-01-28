@@ -122,13 +122,6 @@ export const dict = {
   "provider.connect.apiKey.label": "{{provider}} API key",
   "provider.connect.apiKey.placeholder": "API key",
   "provider.connect.apiKey.required": "API key is required",
-  "provider.connect.opencodeZen.line1":
-    "OpenCode Zen gives you access to a curated set of reliable optimized models for coding agents.",
-  "provider.connect.opencodeZen.line2":
-    "With a single API key you'll get access to models such as Claude, GPT, Gemini, GLM and more.",
-  "provider.connect.opencodeZen.visit.prefix": "Visit ",
-  "provider.connect.opencodeZen.visit.link": "opencode.ai/zen",
-  "provider.connect.opencodeZen.visit.suffix": " to collect your API key.",
   "provider.connect.oauth.code.visit.prefix": "Visit ",
   "provider.connect.oauth.code.visit.link": "this link",
   "provider.connect.oauth.code.visit.suffix":
@@ -425,7 +418,20 @@ export const dict = {
 
   "home.recentProjects": "Recent projects",
   "home.empty.title": "No recent projects",
-  "home.empty.description": "Get started by opening a local project",
+  "home.empty.description": "Get started by opening a local project or scanning for Roblox projects",
+  "home.robloxProjects": "Roblox Projects",
+  "home.scan": "Scan for projects",
+  "home.scanForProjects": "Scan for projects",
+  "home.scanning": "Scanning for projects...",
+  "home.noProjectsFound": "No Roblox projects found",
+  "home.noProjectsFoundDescription": "We couldn't find any Roblox projects in common directories",
+  "home.tip.title": "Where are my Roblox projects?",
+  "home.tip.cloudSave":
+    "By default, Roblox Studio saves to the cloud (no local files). To work with Stud, use File > Save to File As... to save as .rbxl or .rbxlx",
+  "home.tip.localPath": "Save to: ~/Documents or any folder you can open here",
+  "home.tip.rojo":
+    "For the best experience, use Rojo to sync local Lua files with Studio. Create a project with rojo init and Stud will detect it automatically.",
+  "home.tip.learnMore": "Learn more",
 
   "session.tab.session": "Session",
   "session.tab.review": "Review",
@@ -516,8 +522,9 @@ export const dict = {
   "sidebar.gettingStarted.line2": "Connect any provider to use models, inc. Claude, GPT, Gemini etc.",
   "sidebar.project.recentSessions": "Recent sessions",
   "sidebar.project.viewAllSessions": "View all sessions",
+  "sidebar.project.remove": "Remove from Stud",
 
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "Stud Desktop",
 
   "settings.section.desktop": "Desktop",
   "settings.section.server": "Server",
@@ -690,6 +697,27 @@ export const dict = {
   "settings.permissions.tool.external_directory.description": "Access files outside the project directory",
   "settings.permissions.tool.doom_loop.title": "Doom Loop",
   "settings.permissions.tool.doom_loop.description": "Detect repeated tool calls with identical input",
+
+  "settings.roblox.title": "Roblox",
+  "settings.roblox.subtitle": "Connect your Roblox account for authenticated API access",
+  "settings.roblox.section.account": "Account",
+  "settings.roblox.section.info": "How it works",
+  "settings.roblox.login": "Login",
+  "settings.roblox.logout": "Logout",
+  "settings.roblox.cookieLabel": ".ROBLOSECURITY Cookie",
+  "settings.roblox.cookiePlaceholder": "Paste your .ROBLOSECURITY cookie here",
+  "settings.roblox.error.emptyCookie": "Please enter a cookie",
+  "settings.roblox.error.loginFailed": "Login failed",
+  "settings.roblox.error.networkError": "Network error - please try again",
+  "settings.roblox.info.why":
+    "Roblox authentication enables access to the Toolbox API for searching and inserting assets into your game.",
+  "settings.roblox.info.security":
+    "Your cookie is stored locally on your machine with restricted permissions and is never sent to any external servers except Roblox.",
+  "settings.roblox.info.howTo":
+    "To get your .ROBLOSECURITY cookie, open Developer Tools in your browser while logged into Roblox, go to Application > Cookies, and copy the value.",
+  "settings.roblox.warning.title": "Security Warning",
+  "settings.roblox.warning.description":
+    "Never share your .ROBLOSECURITY cookie with anyone. It provides full access to your Roblox account. Stud only uses it locally to authenticate with Roblox APIs.",
 
   "session.delete.failed.title": "Failed to delete session",
   "session.delete.title": "Delete session",

@@ -8,6 +8,7 @@ import { Instance } from "../../project/instance"
 import { Installation } from "@/installation"
 import { Log } from "../../util/log"
 import { lazy } from "../../util/lazy"
+import { RobloxDiscovery } from "../../roblox/discovery"
 
 const log = Log.create({ service: "server" })
 
@@ -130,6 +131,62 @@ export const GlobalRoutes = lazy(() =>
           },
         })
         return c.json(true)
+      },
+    )
+    .get(
+      "/discover",
+      describeRoute({
+        summary: "Discover Roblox projects",
+        description: "Scan common directories for Roblox projects (Rojo, Wally, .rbxl files).",
+        operationId: "global.discover",
+        responses: {
+          200: {
+            description: "Discovered projects",
+            content: {
+              "application/json": {
+                schema: resolver(z.array(RobloxDiscovery.Project)),
+              },
+            },
+          },
+        },
+      }),
+      async (c) => {
+        const projects = await RobloxDiscovery.discover()
+        return c.json(projects)
+      },
+    )
+    .post(
+      "/discover",
+      describeRoute({
+        summary: "Discover Roblox projects in specific directories",
+        description: "Scan specified directories for Roblox projects.",
+        operationId: "global.discoverIn",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: resolver(
+                z.object({
+                  directories: z.array(z.string()).describe("Directories to scan"),
+                }),
+              ),
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: "Discovered projects",
+            content: {
+              "application/json": {
+                schema: resolver(z.array(RobloxDiscovery.Project)),
+              },
+            },
+          },
+        },
+      }),
+      async (c) => {
+        const body = await c.req.json()
+        const projects = await RobloxDiscovery.discover(body.directories)
+        return c.json(projects)
       },
     ),
 )

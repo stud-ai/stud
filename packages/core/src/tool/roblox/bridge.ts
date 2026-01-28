@@ -40,111 +40,123 @@ function cleanupStaleRequests() {
   }
 }
 
-const server = Bun.serve({
-  port: BRIDGE_PORT,
-  async fetch(req) {
-    const url = new URL(req.url)
-    const path = url.pathname
+function tryStartServer(port: number): ReturnType<typeof Bun.serve> | null {
+  try {
+    return Bun.serve({
+      port,
+      async fetch(req) {
+        const url = new URL(req.url)
+        const path = url.pathname
 
-    // CORS headers for local development
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    }
+        // CORS headers for local development
+        const corsHeaders = {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        }
 
-    if (req.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders })
-    }
+        if (req.method === "OPTIONS") {
+          return new Response(null, { headers: corsHeaders })
+        }
 
-    // Status endpoint
-    if (path === "/stud/status") {
-      const now = Date.now()
-      connected = now - lastPollTime < 2000
+        // Status endpoint
+        if (path === "/stud/status") {
+          const now = Date.now()
+          connected = now - lastPollTime < 2000
 
-      return Response.json(
-        {
-          connected,
-          pendingRequests: pendingRequests.size,
-          lastPollTime,
-        },
-        { headers: corsHeaders },
-      )
-    }
+          return Response.json(
+            {
+              connected,
+              pendingRequests: pendingRequests.size,
+              lastPollTime,
+            },
+            { headers: corsHeaders },
+          )
+        }
 
-    // Stud sends requests here
-    if (path === "/stud/request" && req.method === "POST") {
-      cleanupStaleRequests()
+        // Stud sends requests here
+        if (path === "/stud/request" && req.method === "POST") {
+          cleanupStaleRequests()
 
-      const body = await req.json()
-      const id = generateId()
+          const body = await req.json()
+          const id = generateId()
 
-      const promise = new Promise<{ status: number; body: string }>((resolve, reject) => {
-        pendingRequests.set(id, {
-          id,
-          request: body,
-          resolve,
-          reject,
-          timestamp: Date.now(),
-        })
-      })
+          const promise = new Promise<{ status: number; body: string }>((resolve, reject) => {
+            pendingRequests.set(id, {
+              id,
+              request: body,
+              resolve,
+              reject,
+              timestamp: Date.now(),
+            })
+          })
 
-      try {
-        const result = await promise
-        return new Response(result.body, {
-          status: result.status,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        })
-      } catch (e) {
-        return Response.json(
-          { error: e instanceof Error ? e.message : "Unknown error" },
-          { status: 500, headers: corsHeaders },
-        )
-      }
-    }
+          try {
+            const result = await promise
+            return new Response(result.body, {
+              status: result.status,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            })
+          } catch (e) {
+            return Response.json(
+              { error: e instanceof Error ? e.message : "Unknown error" },
+              { status: 500, headers: corsHeaders },
+            )
+          }
+        }
 
-    // Studio plugin polls here
-    if (path === "/stud/poll" && req.method === "GET") {
-      lastPollTime = Date.now()
-      connected = true
+        // Studio plugin polls here
+        if (path === "/stud/poll" && req.method === "GET") {
+          lastPollTime = Date.now()
+          connected = true
 
-      // Return first pending request if any
-      for (const [id, pending] of pendingRequests) {
-        return Response.json(
-          {
-            id,
-            request: pending.request,
-          },
-          { headers: corsHeaders },
-        )
-      }
+          // Return first pending request if any
+          for (const [id, pending] of pendingRequests) {
+            return Response.json(
+              {
+                id,
+                request: pending.request,
+              },
+              { headers: corsHeaders },
+            )
+          }
 
-      // No pending requests
-      return Response.json({ id: null, request: null }, { headers: corsHeaders })
-    }
+          // No pending requests
+          return Response.json({ id: null, request: null }, { headers: corsHeaders })
+        }
 
-    // Studio plugin responds here
-    if (path === "/stud/respond" && req.method === "POST") {
-      const body = await req.json()
-      const pending = pendingRequests.get(body.id)
+        // Studio plugin responds here
+        if (path === "/stud/respond" && req.method === "POST") {
+          const body = await req.json()
+          const pending = pendingRequests.get(body.id)
 
-      if (pending) {
-        pending.resolve(body.response)
-        pendingRequests.delete(body.id)
-        return Response.json({ ok: true }, { headers: corsHeaders })
-      }
+          if (pending) {
+            pending.resolve(body.response)
+            pendingRequests.delete(body.id)
+            return Response.json({ ok: true }, { headers: corsHeaders })
+          }
 
-      return Response.json({ error: "Request not found" }, { status: 404, headers: corsHeaders })
-    }
+          return Response.json({ error: "Request not found" }, { status: 404, headers: corsHeaders })
+        }
 
-    return Response.json({ error: "Not found" }, { status: 404, headers: corsHeaders })
-  },
-})
+        return Response.json({ error: "Not found" }, { status: 404, headers: corsHeaders })
+      },
+    })
+  } catch {
+    return null
+  }
+}
 
-console.log(`[Stud Bridge] Listening on http://localhost:${BRIDGE_PORT}`)
-console.log(`[Stud Bridge] Waiting for Roblox Studio plugin to connect...`)
+const server = tryStartServer(BRIDGE_PORT)
 
-// Periodically cleanup stale requests
-setInterval(cleanupStaleRequests, 5000)
+if (server) {
+  console.log(`[Stud Bridge] Listening on http://localhost:${BRIDGE_PORT}`)
+  console.log(`[Stud Bridge] Waiting for Roblox Studio plugin to connect...`)
+
+  // Periodically cleanup stale requests
+  setInterval(cleanupStaleRequests, 5000)
+} else {
+  console.log(`[Stud Bridge] Port ${BRIDGE_PORT} already in use, assuming bridge is already running`)
+}
 
 export { server }
