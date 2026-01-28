@@ -208,3 +208,8 @@ Copy `studio-plugin/Stud.server.lua` to your Roblox plugins folder:
 ## License
 
 MIT
+
+## Contributors
+
+- **improdead**
+- **madebyshaurya**
