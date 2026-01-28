@@ -1,121 +1,571 @@
 #!/bin/bash
 
-# Stud Start Script
-# One command to install, setup, and run Stud
+# ═══════════════════════════════════════════════════════════════════════════════
+# Stud - AI-Powered Roblox Development Tool
+# Start script with prerequisite checking and auto-installation
+# ═══════════════════════════════════════════════════════════════════════════════
 
 set -e
-
-echo "╔═══════════════════════════════════════════════════════════════╗"
-echo "║                                                               ║"
-echo "║   ███████╗████████╗██╗   ██╗██████╗                          ║"
-echo "║   ██╔════╝╚══██╔══╝██║   ██║██╔══██╗                         ║"
-echo "║   ███████╗   ██║   ██║   ██║██║  ██║                         ║"
-echo "║   ╚════██║   ██║   ██║   ██║██║  ██║                         ║"
-echo "║   ███████║   ██║   ╚██████╔╝██████╔╝                         ║"
-echo "║   ╚══════╝   ╚═╝    ╚═════╝ ╚═════╝                          ║"
-echo "║                                                               ║"
-echo "║   AI-Powered Roblox Development Tool                         ║"
-echo "║                                                               ║"
-echo "╚═══════════════════════════════════════════════════════════════╝"
-echo ""
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# Colors
+# ─────────────────────────────────────────────────────────────────────────────────
+# Configuration
+# ─────────────────────────────────────────────────────────────────────────────────
+
+VERSION="0.1.0"
+MIN_BUN_VERSION="1.0.0"
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Colors and Formatting
+# ─────────────────────────────────────────────────────────────────────────────────
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
+DIM='\033[2m'
+BOLD='\033[1m'
 NC='\033[0m'
 
-success() { echo -e "${GREEN}✓${NC} $1"; }
-info() { echo -e "${BLUE}→${NC} $1"; }
-warn() { echo -e "${YELLOW}!${NC} $1"; }
-error() { echo -e "${RED}✗${NC} $1"; exit 1; }
+# ─────────────────────────────────────────────────────────────────────────────────
+# Output Functions
+# ─────────────────────────────────────────────────────────────────────────────────
 
-# Check and install Bun if needed
-if command -v bun &> /dev/null; then
-    success "Bun $(bun --version)"
-else
+print_header() {
+    clear
+    echo ""
+    echo -e "${CYAN}"
+    echo "  ███████╗████████╗██╗   ██╗██████╗ "
+    echo "  ██╔════╝╚══██╔══╝██║   ██║██╔══██╗"
+    echo "  ███████╗   ██║   ██║   ██║██║  ██║"
+    echo "  ╚════██║   ██║   ██║   ██║██║  ██║"
+    echo "  ███████║   ██║   ╚██████╔╝██████╔╝"
+    echo "  ╚══════╝   ╚═╝    ╚═════╝ ╚═════╝ "
+    echo -e "${NC}"
+    echo -e "  ${DIM}AI-Powered Roblox Development${NC}              ${DIM}v${VERSION}${NC}"
+    
+    # Show git commit if available
+    if [ -d ".git" ]; then
+        local commit=$(git rev-parse --short HEAD 2>/dev/null || echo "")
+        if [ -n "$commit" ]; then
+            echo -e "  ${DIM}commit: ${commit}${NC}"
+        fi
+    fi
+    echo ""
+    echo -e "  ${DIM}────────────────────────────────────────────${NC}"
+    echo ""
+}
+
+status_ok() {
+    echo -e "  ${GREEN}[OK]${NC}   $1"
+}
+
+status_skip() {
+    echo -e "  ${YELLOW}[SKIP]${NC} $1"
+}
+
+status_fail() {
+    echo -e "  ${RED}[FAIL]${NC} $1"
+}
+
+status_wait() {
+    echo -e "  ${BLUE}[..]${NC}   $1"
+}
+
+info() {
+    echo -e "  ${BLUE}>${NC} $1"
+}
+
+warn() {
+    echo -e "  ${YELLOW}!${NC} $1"
+}
+
+error() {
+    echo -e "\n  ${RED}Error:${NC} $1\n"
+    exit 1
+}
+
+section() {
+    echo ""
+    echo -e "  ${BOLD}$1${NC}"
+    echo ""
+}
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Spinner for long operations
+# ─────────────────────────────────────────────────────────────────────────────────
+
+spinner_pid=""
+
+start_spinner() {
+    local message="$1"
+    (
+        local frames='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+        local i=0
+        while true; do
+            printf "\r  ${BLUE}%s${NC}  %s" "${frames:$i:1}" "$message"
+            i=$(( (i + 1) % ${#frames} ))
+            sleep 0.1
+        done
+    ) &
+    spinner_pid=$!
+    disown
+}
+
+stop_spinner() {
+    if [ -n "$spinner_pid" ]; then
+        kill "$spinner_pid" 2>/dev/null || true
+        wait "$spinner_pid" 2>/dev/null || true
+        spinner_pid=""
+        printf "\r\033[K"  # Clear line
+    fi
+}
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# User Prompts
+# ─────────────────────────────────────────────────────────────────────────────────
+
+confirm() {
+    local message="$1"
+    local default="${2:-y}"
+    
+    if [ "$default" = "y" ]; then
+        local prompt="[Y/n]"
+    else
+        local prompt="[y/N]"
+    fi
+    
+    echo ""
+    echo -e "  ${CYAN}$message${NC}"
+    echo -n "  $prompt "
+    read -r response
+    
+    if [ -z "$response" ]; then
+        response="$default"
+    fi
+    
+    case "$response" in
+        [yY]|[yY][eE][sS]) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Cleanup
+# ─────────────────────────────────────────────────────────────────────────────────
+
+cleanup() {
+    stop_spinner
+}
+
+trap cleanup EXIT
+trap 'echo -e "\n\n  ${DIM}Interrupted.${NC}"; exit 130' INT
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Help
+# ─────────────────────────────────────────────────────────────────────────────────
+
+show_help() {
+    echo ""
+    echo "  Stud - AI-Powered Roblox Development Tool"
+    echo ""
+    echo "  Usage: ./start.sh [options]"
+    echo ""
+    echo "  Options:"
+    echo "    --help, -h      Show this help message"
+    echo "    --version, -v   Show version information"
+    echo "    --check         Check prerequisites only (don't start)"
+    echo "    --build         Build for production"
+    echo "    --skip-plugin   Skip Roblox plugin installation"
+    echo ""
+    exit 0
+}
+
+show_version() {
+    echo "Stud v${VERSION}"
+    if [ -d ".git" ]; then
+        local commit=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+        echo "commit: $commit"
+    fi
+    exit 0
+}
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Prerequisite Checks
+# ─────────────────────────────────────────────────────────────────────────────────
+
+check_bun() {
+    if command -v bun &> /dev/null; then
+        local bun_version=$(bun --version 2>/dev/null)
+        status_ok "Bun ${bun_version}"
+        return 0
+    else
+        status_fail "Bun not found"
+        return 1
+    fi
+}
+
+install_bun() {
     info "Installing Bun..."
-    curl -fsSL https://bun.sh/install | bash
-    export PATH="$HOME/.bun/bin:$PATH"
-    success "Bun installed"
-fi
-
-# Install dependencies if node_modules missing or package.json changed
-if [ ! -d "node_modules" ] || [ "package.json" -nt "node_modules" ]; then
-    info "Installing dependencies..."
-    bun install --silent
-    success "Dependencies installed"
-else
-    success "Dependencies up to date"
-fi
-
-# Install Roblox Studio Plugin
-PLUGIN_SOURCE="$SCRIPT_DIR/studio-plugin/Stud.server.lua"
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    PLUGIN_DIR="$HOME/Documents/Roblox/Plugins"
-elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-    PLUGIN_DIR="$LOCALAPPDATA/Roblox/Plugins"
-else
-    PLUGIN_DIR="$HOME/.local/share/roblox/plugins"
-fi
-
-if [ -f "$PLUGIN_SOURCE" ]; then
-    mkdir -p "$PLUGIN_DIR"
-    # Only copy if plugin doesn't exist or source is newer
-    if [ ! -f "$PLUGIN_DIR/Stud.server.lua" ] || [ "$PLUGIN_SOURCE" -nt "$PLUGIN_DIR/Stud.server.lua" ]; then
-        cp "$PLUGIN_SOURCE" "$PLUGIN_DIR/"
-        success "Plugin installed to $PLUGIN_DIR"
+    start_spinner "Downloading and installing Bun"
+    curl -fsSL https://bun.sh/install | bash &>/dev/null
+    stop_spinner
+    
+    # Add to PATH for this session
+    export BUN_INSTALL="$HOME/.bun"
+    export PATH="$BUN_INSTALL/bin:$PATH"
+    
+    if command -v bun &> /dev/null; then
+        status_ok "Bun $(bun --version) installed"
+        return 0
     else
-        success "Plugin up to date"
+        status_fail "Failed to install Bun"
+        return 1
     fi
-else
-    warn "Plugin source not found (studio-plugin/Stud.server.lua)"
-fi
+}
 
-# Set Rust target for Tauri
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    if [[ $(uname -m) == "arm64" ]]; then
-        export RUST_TARGET="aarch64-apple-darwin"
+check_rust() {
+    if command -v cargo &> /dev/null; then
+        local rust_version=$(rustc --version 2>/dev/null | cut -d' ' -f2)
+        status_ok "Rust ${rust_version}"
+        return 0
     else
-        export RUST_TARGET="x86_64-apple-darwin"
+        status_fail "Rust not found"
+        return 1
     fi
-elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-    export RUST_TARGET="x86_64-pc-windows-msvc"
-else
-    if [[ $(uname -m) == "aarch64" ]]; then
-        export RUST_TARGET="aarch64-unknown-linux-gnu"
-    else
-        export RUST_TARGET="x86_64-unknown-linux-gnu"
-    fi
-fi
+}
 
-# Build core if binary doesn't exist
-CORE_BIN="$SCRIPT_DIR/packages/core/dist/stud-$RUST_TARGET"
-if [ ! -f "$CORE_BIN" ]; then
-    info "Building core..."
+install_rust() {
+    info "Installing Rust..."
+    start_spinner "Downloading and installing Rust"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y &>/dev/null
+    stop_spinner
+    
+    # Add to PATH for this session
+    source "$HOME/.cargo/env" 2>/dev/null || true
+    
+    if command -v cargo &> /dev/null; then
+        status_ok "Rust $(rustc --version | cut -d' ' -f2) installed"
+        return 0
+    else
+        status_fail "Failed to install Rust"
+        return 1
+    fi
+}
+
+check_platform_deps() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS - check for Xcode CLI tools
+        if xcode-select -p &> /dev/null; then
+            status_ok "Xcode CLI tools"
+            return 0
+        else
+            status_fail "Xcode CLI tools not found"
+            return 1
+        fi
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux - check for WebKit2GTK and other deps
+        local missing=()
+        
+        if ! pkg-config --exists webkit2gtk-4.1 2>/dev/null; then
+            missing+=("libwebkit2gtk-4.1-dev")
+        fi
+        if ! pkg-config --exists gtk+-3.0 2>/dev/null; then
+            missing+=("libgtk-3-dev")
+        fi
+        
+        if [ ${#missing[@]} -eq 0 ]; then
+            status_ok "Linux build dependencies"
+            return 0
+        else
+            status_fail "Missing: ${missing[*]}"
+            return 1
+        fi
+    else
+        # Windows or other - assume OK
+        status_ok "Platform dependencies"
+        return 0
+    fi
+}
+
+install_platform_deps() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        info "Installing Xcode CLI tools..."
+        xcode-select --install 2>/dev/null || true
+        echo ""
+        warn "A dialog may have appeared. Please complete the installation and run this script again."
+        exit 0
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        info "Installing Linux build dependencies..."
+        echo ""
+        
+        # Detect package manager
+        if command -v apt-get &> /dev/null; then
+            echo "  Running: sudo apt update && sudo apt install ..."
+            echo ""
+            sudo apt update
+            sudo apt install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+        elif command -v dnf &> /dev/null; then
+            echo "  Running: sudo dnf install ..."
+            echo ""
+            sudo dnf install -y webkit2gtk4.1-devel gtk3-devel libappindicator-gtk3-devel librsvg2-devel
+        elif command -v pacman &> /dev/null; then
+            echo "  Running: sudo pacman -S ..."
+            echo ""
+            sudo pacman -S --noconfirm webkit2gtk-4.1 gtk3 libappindicator-gtk3 librsvg
+        else
+            error "Unsupported package manager. Please install WebKit2GTK 4.1 and GTK3 manually."
+        fi
+        
+        status_ok "Linux dependencies installed"
+        return 0
+    fi
+}
+
+run_prereq_checks() {
+    section "Prerequisites"
+    
+    local all_ok=true
+    
+    # Check Bun
+    if ! check_bun; then
+        if confirm "Bun is required. Install it now?"; then
+            install_bun || all_ok=false
+        else
+            all_ok=false
+        fi
+    fi
+    
+    # Check Rust
+    if ! check_rust; then
+        if confirm "Rust is required for the desktop app. Install it now?"; then
+            install_rust || all_ok=false
+        else
+            all_ok=false
+        fi
+    fi
+    
+    # Check platform-specific deps
+    if ! check_platform_deps; then
+        if confirm "Platform dependencies are missing. Install them now?"; then
+            install_platform_deps || all_ok=false
+        else
+            all_ok=false
+        fi
+    fi
+    
+    if [ "$all_ok" = false ]; then
+        echo ""
+        error "Some prerequisites are missing. Please install them and try again."
+    fi
+    
+    return 0
+}
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Setup Functions
+# ─────────────────────────────────────────────────────────────────────────────────
+
+install_dependencies() {
+    if [ ! -d "node_modules" ] || [ "package.json" -nt "node_modules" ] || [ "bun.lock" -nt "node_modules" ]; then
+        start_spinner "Installing dependencies"
+        bun install --silent 2>/dev/null
+        stop_spinner
+        status_ok "Dependencies installed"
+    else
+        status_ok "Dependencies up to date"
+    fi
+}
+
+install_plugin() {
+    local plugin_source="$SCRIPT_DIR/studio-plugin/Stud.server.lua"
+    local plugin_dir=""
+    
+    # Determine plugin directory
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        plugin_dir="$HOME/Documents/Roblox/Plugins"
+    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; then
+        plugin_dir="$LOCALAPPDATA/Roblox/Plugins"
+    else
+        plugin_dir="$HOME/.local/share/roblox/plugins"
+    fi
+    
+    if [ ! -f "$plugin_source" ]; then
+        status_skip "Plugin source not found"
+        return 0
+    fi
+    
+    mkdir -p "$plugin_dir"
+    
+    if [ ! -f "$plugin_dir/Stud.server.lua" ] || [ "$plugin_source" -nt "$plugin_dir/Stud.server.lua" ]; then
+        cp "$plugin_source" "$plugin_dir/"
+        status_ok "Plugin installed to $plugin_dir"
+    else
+        status_ok "Plugin up to date"
+    fi
+}
+
+determine_rust_target() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        if [[ $(uname -m) == "arm64" ]]; then
+            echo "aarch64-apple-darwin"
+        else
+            echo "x86_64-apple-darwin"
+        fi
+    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; then
+        echo "x86_64-pc-windows-msvc"
+    else
+        if [[ $(uname -m) == "aarch64" ]]; then
+            echo "aarch64-unknown-linux-gnu"
+        else
+            echo "x86_64-unknown-linux-gnu"
+        fi
+    fi
+}
+
+build_core() {
+    local rust_target=$(determine_rust_target)
+    local core_bin="$SCRIPT_DIR/packages/core/dist/stud-$rust_target"
+    
+    if [ -f "$core_bin" ]; then
+        status_ok "Core binary ready"
+        return 0
+    fi
+    
+    if [ ! -d "$SCRIPT_DIR/packages/core" ]; then
+        status_skip "Core package not found"
+        return 0
+    fi
+    
+    start_spinner "Building core binary"
     cd "$SCRIPT_DIR/packages/core"
-    bun run build 2>/dev/null || warn "Core build skipped (needs Rust)"
+    if bun run build &>/dev/null; then
+        stop_spinner
+        status_ok "Core binary built"
+    else
+        stop_spinner
+        status_skip "Core build skipped (optional)"
+    fi
     cd "$SCRIPT_DIR"
-fi
+}
 
-echo ""
-echo "════════════════════════════════════════════════════════════════"
-echo ""
-success "Starting Stud Desktop..."
-echo ""
-echo -e "${CYAN}Roblox Studio Connection:${NC}"
-echo "  1. Open Roblox Studio"
-echo "  2. Enable HTTP Requests (Game Settings → Security)"
-echo "  3. Click 'Stud' button in toolbar"
-echo ""
-echo "════════════════════════════════════════════════════════════════"
-echo ""
+run_setup() {
+    section "Setup"
+    
+    install_dependencies
+    
+    if [ "$SKIP_PLUGIN" != "true" ]; then
+        install_plugin
+    else
+        status_skip "Plugin installation skipped"
+    fi
+    
+    build_core
+}
 
-# Run the desktop app
-exec bun run dev
+# ─────────────────────────────────────────────────────────────────────────────────
+# Launch
+# ─────────────────────────────────────────────────────────────────────────────────
+
+show_connection_instructions() {
+    echo ""
+    echo -e "  ${DIM}────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "  ${BOLD}Roblox Studio Connection${NC}"
+    echo ""
+    echo "  1. Open Roblox Studio"
+    echo "  2. Enable HTTP Requests:"
+    echo -e "     ${DIM}Game Settings > Security > Allow HTTP Requests${NC}"
+    echo "  3. Click the 'Stud' button in the toolbar"
+    echo ""
+    echo -e "  ${DIM}────────────────────────────────────────────${NC}"
+    echo ""
+}
+
+launch_app() {
+    section "Launch"
+    
+    status_ok "Starting Stud Desktop..."
+    
+    show_connection_instructions
+    
+    # Set Rust target for Tauri
+    export RUST_TARGET=$(determine_rust_target)
+    
+    # Run the app
+    exec bun run dev
+}
+
+build_production() {
+    section "Production Build"
+    
+    start_spinner "Building production binaries"
+    bun run build
+    stop_spinner
+    
+    status_ok "Production build complete"
+    echo ""
+    info "Binaries are in packages/desktop/src-tauri/target/release/"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────────
+# Main
+# ─────────────────────────────────────────────────────────────────────────────────
+
+main() {
+    local CHECK_ONLY=false
+    local BUILD_PROD=false
+    SKIP_PLUGIN=false
+    
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --help|-h)
+                show_help
+                ;;
+            --version|-v)
+                show_version
+                ;;
+            --check)
+                CHECK_ONLY=true
+                shift
+                ;;
+            --build)
+                BUILD_PROD=true
+                shift
+                ;;
+            --skip-plugin)
+                SKIP_PLUGIN=true
+                shift
+                ;;
+            *)
+                echo "Unknown option: $1"
+                echo "Use --help for usage information."
+                exit 1
+                ;;
+        esac
+    done
+    
+    print_header
+    run_prereq_checks
+    
+    if [ "$CHECK_ONLY" = true ]; then
+        echo ""
+        status_ok "All prerequisites satisfied!"
+        echo ""
+        exit 0
+    fi
+    
+    run_setup
+    
+    if [ "$BUILD_PROD" = true ]; then
+        build_production
+    else
+        launch_app
+    fi
+}
+
+main "$@"
