@@ -1720,14 +1720,17 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
         onSubmit={handleSubmit}
         classList={{
           "group/prompt-input": true,
-          "bg-surface-raised-stronger-non-alpha shadow-xs-border relative": true,
-          "rounded-[14px] overflow-clip focus-within:shadow-xs-border": true,
-          "border-icon-info-active border-dashed": store.dragging,
+          "bg-[#242424] relative": true,
+          "rounded-xl overflow-clip": true,
+          "border border-[#333333]": true,
+          "focus-within:border-[#444444]": true,
+          "transition-colors duration-200": true,
+          "border-icon-info-active border-dashed!": store.dragging,
           [props.class ?? ""]: !!props.class,
         }}
       >
         <Show when={store.dragging}>
-          <div class="absolute inset-0 z-10 flex items-center justify-center bg-surface-raised-stronger-non-alpha/90 pointer-events-none">
+          <div class="absolute inset-0 z-10 flex items-center justify-center bg-[#242424]/90 pointer-events-none">
             <div class="flex flex-col items-center gap-2 text-text-weak">
               <Icon name="photo" class="size-8" />
               <span class="text-14-regular">{language.t("prompt.dropzone.label")}</span>
@@ -1735,7 +1738,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
           </div>
         </Show>
         <Show when={prompt.context.items().length > 0}>
-          <div class="flex flex-nowrap items-start gap-2 p-2 overflow-x-auto no-scrollbar">
+          <div class="flex flex-nowrap items-center gap-1.5 px-3 py-2 overflow-x-auto no-scrollbar border-b border-[#333333]">
             <For each={prompt.context.items()}>
               {(item) => {
                 const active = () => {
@@ -1757,48 +1760,40 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                   >
                     <div
                       classList={{
-                        "group shrink-0 flex flex-col rounded-[6px] pl-2 pr-1 py-1 max-w-[200px] h-12 transition-all transition-transform shadow-xs-border hover:shadow-xs-border-hover": true,
-                        "cursor-pointer hover:bg-surface-interactive-weak": !!item.commentID && !active(),
-                        "cursor-pointer bg-surface-interactive-hover hover:bg-surface-interactive-hover shadow-xs-border-hover":
-                          active(),
-                        "bg-background-stronger": !active(),
+                        "group shrink-0 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-12-regular transition-colors": true,
+                        "bg-[#2a2a2a] border border-[#333333]": !active(),
+                        "cursor-pointer hover:bg-[#333333] hover:border-[#444444]": !!item.commentID && !active(),
+                        "bg-[#333333] border-[#444444]": active(),
                       }}
                       onClick={() => {
                         openComment(item)
                       }}
                     >
-                      <div class="flex items-center gap-1.5">
-                        <FileIcon node={{ path: item.path, type: "file" }} class="shrink-0 size-3.5" />
-                        <div class="flex items-center text-11-regular min-w-0 font-medium">
-                          <span class="text-text-strong whitespace-nowrap">{getFilenameTruncated(item.path, 14)}</span>
-                          <Show when={item.selection}>
-                            {(sel) => (
-                              <span class="text-text-weak whitespace-nowrap shrink-0">
-                                {sel().startLine === sel().endLine
-                                  ? `:${sel().startLine}`
-                                  : `:${sel().startLine}-${sel().endLine}`}
-                              </span>
-                            )}
-                          </Show>
-                        </div>
-                        <IconButton
-                          type="button"
-                          icon="close-small"
-                          variant="ghost"
-                          class="ml-auto h-5 w-5 opacity-0 group-hover:opacity-100 transition-all"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            if (item.commentID) comments.remove(item.path, item.commentID)
-                            prompt.context.remove(item.key)
-                          }}
-                          aria-label={language.t("prompt.context.removeFile")}
-                        />
-                      </div>
-                      <Show when={item.comment}>
-                        {(comment) => (
-                          <div class="text-12-regular text-text-strong ml-5 pr-1 truncate">{comment()}</div>
+                      <FileIcon node={{ path: item.path, type: "file" }} class="shrink-0 size-3.5" />
+                      <span class="text-text-strong whitespace-nowrap max-w-[120px] truncate">
+                        {getFilenameTruncated(item.path, 14)}
+                      </span>
+                      <Show when={item.selection}>
+                        {(sel) => (
+                          <span class="text-text-weak whitespace-nowrap">
+                            {sel().startLine === sel().endLine
+                              ? `:${sel().startLine}`
+                              : `:${sel().startLine}-${sel().endLine}`}
+                          </span>
                         )}
                       </Show>
+                      <button
+                        type="button"
+                        class="size-4 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 hover:bg-surface-raised-base-hover transition-opacity"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (item.commentID) comments.remove(item.path, item.commentID)
+                          prompt.context.remove(item.key)
+                        }}
+                        aria-label={language.t("prompt.context.removeFile")}
+                      >
+                        <Icon name="close" class="size-3 text-text-weak" />
+                      </button>
                     </div>
                   </Tooltip>
                 )
@@ -1870,14 +1865,14 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
             onKeyDown={handleKeyDown}
             classList={{
               "select-text": true,
-              "w-full p-3 pr-12 text-14-regular text-text-strong focus:outline-none whitespace-pre-wrap": true,
+              "w-full px-3 py-3 text-14-regular text-text-strong focus:outline-none whitespace-pre-wrap": true,
               "[&_[data-type=file]]:text-syntax-property": true,
               "[&_[data-type=agent]]:text-syntax-type": true,
               "font-mono!": store.mode === "shell",
             }}
           />
           <Show when={!prompt.dirty()}>
-            <div class="absolute top-0 inset-x-0 p-3 pr-12 text-14-regular text-text-weak pointer-events-none whitespace-nowrap truncate">
+            <div class="absolute top-0 inset-x-0 px-3 py-3 text-14-regular text-text-weak pointer-events-none whitespace-nowrap truncate">
               {store.mode === "shell"
                 ? language.t("prompt.placeholder.shell")
                 : commentCount() > 1
@@ -1888,7 +1883,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
             </div>
           </Show>
         </div>
-        <div class="relative p-3 flex items-center justify-between">
+        <div class="relative px-3 py-2 flex items-center justify-between border-t border-[#333333]">
           <div class="flex items-center justify-start gap-0.5">
             <Switch>
               <Match when={store.mode === "shell"}>
@@ -1991,7 +1986,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
               </Match>
             </Switch>
           </div>
-          <div class="flex items-center gap-3 absolute right-3 bottom-3">
+          <div class="flex items-center gap-2">
             <input
               ref={fileInputRef}
               type="file"
@@ -2003,22 +1998,20 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                 e.currentTarget.value = ""
               }}
             />
-            <div class="flex items-center gap-2">
-              <SessionContextUsage />
-              <Show when={store.mode === "normal"}>
-                <Tooltip placement="top" value={language.t("prompt.action.attachFile")}>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    class="size-6"
-                    onClick={() => fileInputRef.click()}
-                    aria-label={language.t("prompt.action.attachFile")}
-                  >
-                    <Icon name="photo" class="size-4.5" />
-                  </Button>
-                </Tooltip>
-              </Show>
-            </div>
+            <SessionContextUsage />
+            <Show when={store.mode === "normal"}>
+              <Tooltip placement="top" value={language.t("prompt.action.attachFile")}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  class="size-6"
+                  onClick={() => fileInputRef.click()}
+                  aria-label={language.t("prompt.action.attachFile")}
+                >
+                  <Icon name="photo" class="size-4" />
+                </Button>
+              </Tooltip>
+            </Show>
             <Tooltip
               placement="top"
               inactive={!prompt.dirty() && !working()}
@@ -2044,7 +2037,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                 disabled={!prompt.dirty() && !working()}
                 icon={working() ? "stop" : "arrow-up"}
                 variant="primary"
-                class="h-6 w-4.5"
+                class="size-6 rounded-lg"
                 aria-label={working() ? language.t("prompt.action.stop") : language.t("prompt.action.send")}
               />
             </Tooltip>

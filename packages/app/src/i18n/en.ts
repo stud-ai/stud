@@ -523,6 +523,19 @@ export const dict = {
   "sidebar.project.recentSessions": "Recent sessions",
   "sidebar.project.viewAllSessions": "View all sessions",
   "sidebar.project.remove": "Remove from Stud",
+  "sidebar.threads": "Threads",
+  "sidebar.noThreads": "No threads yet",
+  "sidebar.instanceTree": "Explorer",
+  "sidebar.instanceTree.refresh": "Refresh explorer",
+  "sidebar.instanceTree.placeholder": "Instance tree coming soon",
+  "session.untitled": "Untitled",
+
+  "planningMode.toggle": "Toggle planning mode",
+  "planningMode.enable": "Enable planning mode",
+  "planningMode.disable": "Disable planning mode",
+  "planningMode.title": "Plan",
+  "planningMode.empty": "No plan yet",
+  "planningMode.empty.description": "Start a conversation to generate a plan",
 
   "app.name.desktop": "Stud Desktop",
 

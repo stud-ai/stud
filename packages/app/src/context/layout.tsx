@@ -89,6 +89,13 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         session: {
           width: 600,
         },
+        leftSidebar: {
+          width: 280,
+          opened: true,
+        },
+        planningMode: {
+          enabled: false,
+        },
         mobileSidebar: {
           opened: false,
         },
@@ -493,6 +500,62 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
             return
           }
           setStore("session", "width", width)
+        },
+      },
+      leftSidebar: {
+        opened: createMemo(() => store.leftSidebar?.opened ?? true),
+        width: createMemo(() => store.leftSidebar?.width ?? 280),
+        open() {
+          if (!store.leftSidebar) {
+            setStore("leftSidebar", { opened: true, width: 280 })
+            return
+          }
+          setStore("leftSidebar", "opened", true)
+        },
+        close() {
+          if (!store.leftSidebar) {
+            setStore("leftSidebar", { opened: false, width: 280 })
+            return
+          }
+          setStore("leftSidebar", "opened", false)
+        },
+        toggle() {
+          if (!store.leftSidebar) {
+            setStore("leftSidebar", { opened: false, width: 280 })
+            return
+          }
+          setStore("leftSidebar", "opened", (x) => !x)
+        },
+        resize(width: number) {
+          if (!store.leftSidebar) {
+            setStore("leftSidebar", { opened: true, width })
+            return
+          }
+          setStore("leftSidebar", "width", width)
+        },
+      },
+      planningMode: {
+        enabled: createMemo(() => store.planningMode?.enabled ?? false),
+        enable() {
+          if (!store.planningMode) {
+            setStore("planningMode", { enabled: true })
+            return
+          }
+          setStore("planningMode", "enabled", true)
+        },
+        disable() {
+          if (!store.planningMode) {
+            setStore("planningMode", { enabled: false })
+            return
+          }
+          setStore("planningMode", "enabled", false)
+        },
+        toggle() {
+          if (!store.planningMode) {
+            setStore("planningMode", { enabled: true })
+            return
+          }
+          setStore("planningMode", "enabled", (x) => !x)
         },
       },
       mobileSidebar: {
