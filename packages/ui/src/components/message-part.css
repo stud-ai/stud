@@ -196,12 +196,18 @@
 
 [data-component="tool-output"] {
   white-space: pre;
-  padding: 8px 12px;
+  padding: 10px 14px;
   height: fit-content;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  background: var(--surface-inset-base);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  font-family: var(--font-family-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-weak);
 
   [data-component="markdown"] {
     width: 100%;
@@ -212,6 +218,13 @@
       padding: 0;
       background-color: transparent !important;
       border: none !important;
+      font-size: 12px;
+    }
+
+    code {
+      font-size: 12px;
+      background: transparent;
+      padding: 0;
     }
   }
 
@@ -223,13 +236,22 @@
 
   &[data-scrollable] {
     height: auto;
-    max-height: 240px;
+    max-height: 280px;
     overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-weak-base) transparent;
 
     &::-webkit-scrollbar {
-      display: none;
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--border-weak-base);
+      border-radius: 3px;
     }
 
     [data-component="markdown"] {

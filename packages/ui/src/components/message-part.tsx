@@ -774,6 +774,7 @@ ToolRegistry.register({
       <BasicTool
         {...props}
         icon="glasses"
+        status={props.status}
         trigger={{
           title: i18n.t("ui.tool.read"),
           subtitle: props.input.filePath ? getFilename(props.input.filePath) : "",
@@ -792,6 +793,7 @@ ToolRegistry.register({
       <BasicTool
         {...props}
         icon="bullet-list"
+        status={props.status}
         trigger={{ title: i18n.t("ui.tool.list"), subtitle: getDirectory(props.input.path || "/") }}
       >
         <Show when={props.output}>
@@ -814,6 +816,7 @@ ToolRegistry.register({
       <BasicTool
         {...props}
         icon="magnifying-glass-menu"
+        status={props.status}
         trigger={{
           title: i18n.t("ui.tool.glob"),
           subtitle: getDirectory(props.input.path || "/"),
@@ -843,6 +846,7 @@ ToolRegistry.register({
       <BasicTool
         {...props}
         icon="magnifying-glass-menu"
+        status={props.status}
         trigger={{
           title: i18n.t("ui.tool.grep"),
           subtitle: getDirectory(props.input.path || "/"),
@@ -869,6 +873,7 @@ ToolRegistry.register({
       <BasicTool
         {...props}
         icon="window-cursor"
+        status={props.status}
         trigger={{
           title: i18n.t("ui.tool.webfetch"),
           subtitle: props.input.url || "",
@@ -983,6 +988,7 @@ ToolRegistry.register({
                   <BasicTool
                     icon="task"
                     defaultOpen={true}
+                    status={props.status}
                     trigger={{
                       title: i18n.t("ui.tool.agent", { type: props.input.subagent_type || props.tool }),
                       titleClass: "capitalize",
@@ -1013,6 +1019,7 @@ ToolRegistry.register({
             <BasicTool
               icon="task"
               defaultOpen={true}
+              status={props.status}
               trigger={{
                 title: i18n.t("ui.tool.agent", { type: props.input.subagent_type || props.tool }),
                 titleClass: "capitalize",
@@ -1213,6 +1220,7 @@ ToolRegistry.register({
       <BasicTool
         {...props}
         icon="code-lines"
+        status={props.status}
         trigger={{
           title: i18n.t("ui.tool.patch"),
           subtitle: subtitle(),
@@ -1298,6 +1306,7 @@ ToolRegistry.register({
         {...props}
         defaultOpen
         icon="checklist"
+        status={props.status}
         trigger={{
           title: i18n.t("ui.tool.todos"),
           subtitle: subtitle(),
@@ -1341,6 +1350,7 @@ ToolRegistry.register({
         {...props}
         defaultOpen={completed()}
         icon="bubble-5"
+        status={props.status}
         trigger={{
           title: i18n.t("ui.tool.questions"),
           subtitle: subtitle(),
