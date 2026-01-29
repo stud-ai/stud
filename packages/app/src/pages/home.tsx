@@ -1,68 +1,54 @@
-import { createMemo, createSignal, For, Match, onMount, Show, Switch } from "solid-js"
-import { Button } from "@stud/ui/button"
-import { Logo } from "@stud/ui/logo"
+import { createSignal, Match, onCleanup, onMount, Switch } from "solid-js"
 import { useLayout } from "@/context/layout"
 import { useNavigate } from "@solidjs/router"
 import { base64Encode } from "@stud/util/encode"
 import { Icon } from "@stud/ui/icon"
 import { usePlatform } from "@/context/platform"
-import { DateTime } from "luxon"
 import { useDialog } from "@stud/ui/context/dialog"
 import { DialogSelectDirectory } from "@/components/dialog-select-directory"
 import { DialogSelectServer } from "@/components/dialog-select-server"
 import { useServer } from "@/context/server"
-import { useGlobalSync } from "@/context/global-sync"
 import { useLanguage } from "@/context/language"
-import { ProjectCard, type DiscoveredProject } from "@/components/project-card"
-import { IconButton } from "@stud/ui/icon-button"
-import { Link } from "@/components/link"
+import { showToast } from "@stud/ui/toast"
+import { Button } from "@stud/ui/button"
+
+type BridgeState = "connected" | "waiting" | "error" | "checking"
 
 export default function Home() {
-  const sync = useGlobalSync()
   const layout = useLayout()
   const platform = usePlatform()
   const dialog = useDialog()
   const navigate = useNavigate()
   const server = useServer()
   const language = useLanguage()
-  const homedir = createMemo(() => sync.data.path.home)
 
-  // Discovered Roblox projects
-  const [discovered, setDiscovered] = createSignal<DiscoveredProject[]>([])
-  const [scanning, setScanning] = createSignal(false)
-  const [hasScanned, setHasScanned] = createSignal(false)
+  // Bridge status
+  const [bridgeStatus, setBridgeStatus] = createSignal<BridgeState>("checking")
+  const [connecting, setConnecting] = createSignal(false)
 
-  // Recent projects from existing storage
-  const recent = createMemo(() => {
-    return sync.data.project
-      .toSorted((a, b) => (b.time.updated ?? b.time.created) - (a.time.updated ?? a.time.created))
-      .slice(0, 5)
-  })
-
-  // Combined view: show discovered projects if available, otherwise recent
-  const showDiscovery = createMemo(() => discovered().length > 0 || hasScanned())
-
-  async function scanForProjects() {
-    setScanning(true)
+  const checkBridge = async () => {
     try {
-      const response = await fetch(`${server.url}/global/discover`)
+      const response = await fetch("http://localhost:3001/stud/status", {
+        method: "GET",
+        signal: AbortSignal.timeout(2000),
+      })
       if (response.ok) {
-        const projects = (await response.json()) as DiscoveredProject[]
-        setDiscovered(projects)
+        const data = await response.json()
+        setBridgeStatus(data.connected ? "connected" : "waiting")
+        return data.connected ? "connected" : "waiting"
       }
-    } catch (e) {
-      console.error("Failed to discover projects:", e)
-    } finally {
-      setScanning(false)
-      setHasScanned(true)
+      setBridgeStatus("error")
+      return "error"
+    } catch {
+      setBridgeStatus("error")
+      return "error"
     }
   }
 
-  // Auto-scan on mount if we have no recent projects
   onMount(() => {
-    if (sync.data.project.length === 0) {
-      scanForProjects()
-    }
+    checkBridge()
+    const interval = setInterval(checkBridge, 3000)
+    onCleanup(() => clearInterval(interval))
   })
 
   function openProject(directory: string) {
@@ -96,200 +82,150 @@ export default function Home() {
     }
   }
 
+  async function connectToStudio() {
+    setConnecting(true)
+    const status = await checkBridge()
+    setConnecting(false)
+
+    if (status === "connected") {
+      showToast({
+        title: language.t("bridge.connected"),
+        description: language.t("home.connectToStudio.success"),
+      })
+      // Navigate to a new session in a special "roblox-studio" project
+      const studioDir = "roblox-studio"
+      layout.projects.open(studioDir)
+      navigate(`/${base64Encode(studioDir)}/session`)
+    } else if (status === "waiting") {
+      showToast({
+        title: language.t("bridge.waiting"),
+        description: language.t("home.connectToStudio.waiting"),
+      })
+    } else {
+      showToast({
+        title: language.t("bridge.notRunning"),
+        description: language.t("home.connectToStudio.error"),
+      })
+    }
+  }
+
+  function openRobloxFile() {
+    chooseProject()
+  }
+
+  function connectViaRojo() {
+    chooseProject()
+  }
+
+  // ASCII art logo
+  const asciiLogo = `███████╗████████╗██╗   ██╗██████╗ 
+██╔════╝╚══██╔══╝██║   ██║██╔══██╗
+███████╗   ██║   ██║   ██║██║  ██║
+╚════██║   ██║   ██║   ██║██║  ██║
+███████║   ██║   ╚██████╔╝██████╔╝
+╚══════╝   ╚═╝    ╚═════╝ ╚═════╝ `
+
   return (
-    <div class="min-h-full flex flex-col">
-      {/* Header */}
-      <div class="flex flex-col items-center pt-16 pb-8 px-4">
-        <Logo class="w-48 opacity-20" />
-        <Button
-          size="large"
-          variant="ghost"
-          class="mt-4 text-14-regular text-text-weak"
-          onClick={() => dialog.show(() => <DialogSelectServer />)}
-        >
-          <div
-            classList={{
-              "size-2 rounded-full": true,
-              "bg-icon-success-base": server.healthy() === true,
-              "bg-icon-critical-base": server.healthy() === false,
-              "bg-border-weak-base": server.healthy() === undefined,
-            }}
-          />
-          {server.name}
-        </Button>
-      </div>
+    <div class="h-full w-full flex items-center justify-center">
+      <div class="flex flex-col items-center max-w-lg w-full px-6">
+        {/* ASCII Art Logo */}
+        <div class="flex flex-col items-center mb-6">
+          <pre class="text-white text-[10px] leading-tight font-mono select-none whitespace-pre">{asciiLogo}</pre>
+          <p class="mt-3 text-14-regular text-text-weak">{language.t("home.tagline")}</p>
+          <Button
+            size="large"
+            variant="ghost"
+            class="mt-2 text-12-regular text-text-weak"
+            onClick={() => dialog.show(() => <DialogSelectServer />)}
+          >
+            <div
+              classList={{
+                "size-2 rounded-full": true,
+                "bg-icon-success-base": server.healthy() === true,
+                "bg-icon-critical-base": server.healthy() === false,
+                "bg-border-weak-base": server.healthy() === undefined,
+              }}
+            />
+            {server.name}
+          </Button>
+        </div>
 
-      {/* Main Content */}
-      <div class="flex-1 px-6 pb-8 max-w-6xl mx-auto w-full">
-        <Switch>
-          {/* Discovered Projects Grid */}
-          <Match when={showDiscovery()}>
-            <div class="flex flex-col gap-6">
-              {/* Header with actions */}
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <h2 class="text-16-medium text-text-strong">{language.t("home.robloxProjects")}</h2>
-                  <Show when={discovered().length > 0}>
-                    <span class="px-2 py-0.5 text-12-medium rounded-full bg-surface-base-active text-text-weak">
-                      {discovered().length}
-                    </span>
-                  </Show>
-                </div>
-                <div class="flex items-center gap-2">
-                  <IconButton
-                    icon="refresh"
-                    variant="ghost"
-                    aria-label={language.t("home.scan")}
-                    onClick={scanForProjects}
-                    disabled={scanning()}
-                    classList={{ "animate-spin": scanning() }}
-                  />
-                  <Button icon="folder-add-left" size="normal" class="pl-2 pr-3" onClick={chooseProject}>
-                    {language.t("command.project.open")}
-                  </Button>
-                </div>
+        {/* Connection Options */}
+        <div class="flex flex-col gap-4 w-full">
+          {/* Primary CTA - Connect to Studio */}
+          <button
+            class="w-full p-6 rounded-lg border-2 border-border-primary-base bg-surface-base-weak hover:bg-surface-base-active transition-colors text-left group disabled:opacity-50"
+            onClick={connectToStudio}
+            disabled={connecting()}
+          >
+            <div class="flex items-center gap-4">
+              <div class="size-12 rounded-lg bg-surface-primary-weak flex items-center justify-center">
+                <Icon name="window-cursor" size="large" class="text-icon-primary-base" />
               </div>
-
-              {/* Project Grid */}
-              <Show
-                when={discovered().length > 0}
-                fallback={
-                  <div class="flex flex-col items-center justify-center py-16 text-center">
-                    <Show
-                      when={scanning()}
-                      fallback={
-                        <>
-                          <Icon name="search" size="large" class="text-text-muted mb-4" />
-                          <div class="text-14-medium text-text-strong mb-1">{language.t("home.noProjectsFound")}</div>
-                          <div class="text-12-regular text-text-weak mb-4">
-                            {language.t("home.noProjectsFoundDescription")}
-                          </div>
-                          <Button onClick={chooseProject}>{language.t("command.project.open")}</Button>
-
-                          {/* Tip about Roblox file locations */}
-                          <div class="mt-8 p-4 rounded-lg bg-surface-base-weak border border-border-weak-base text-left max-w-md">
-                            <div class="flex items-start gap-3">
-                              <Icon name="info-circle" size="small" class="text-icon-primary-base mt-0.5 shrink-0" />
-                              <div class="flex flex-col gap-2">
-                                <div class="text-13-medium text-text-strong">{language.t("home.tip.title")}</div>
-                                <div class="text-12-regular text-text-weak">{language.t("home.tip.cloudSave")}</div>
-                                <div class="text-12-regular text-text-weak">{language.t("home.tip.rojo")}</div>
-                                <Link href="https://rojo.space/docs" class="text-12-medium">
-                                  {language.t("home.tip.learnMore")}
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      }
-                    >
-                      <Icon name="refresh" size="large" class="text-text-muted mb-4 animate-spin" />
-                      <div class="text-14-medium text-text-strong">{language.t("home.scanning")}</div>
-                    </Show>
-                  </div>
-                }
-              >
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <For each={discovered()}>
-                    {(project) => (
-                      <ProjectCard project={project} homedir={homedir()} onClick={() => openProject(project.path)} />
-                    )}
-                  </For>
+              <div class="flex-1">
+                <div class="text-16-medium text-text-strong group-hover:text-text-primary">
+                  {language.t("home.connectToStudio")}
                 </div>
-              </Show>
-
-              {/* Recent Sessions Section */}
-              <Show when={recent().length > 0}>
-                <div class="mt-8 pt-8 border-t border-border-weak-base">
-                  <h3 class="text-14-medium text-text-strong mb-4">{language.t("home.recentProjects")}</h3>
-                  <div class="flex flex-col gap-2">
-                    <For each={recent()}>
-                      {(project) => (
-                        <Button
-                          size="large"
-                          variant="ghost"
-                          class="text-14-mono text-left justify-between px-3"
-                          onClick={() => openProject(project.worktree)}
-                        >
-                          {project.worktree.replace(homedir(), "~")}
-                          <div class="text-14-regular text-text-weak">
-                            {DateTime.fromMillis(project.time.updated ?? project.time.created).toRelative()}
-                          </div>
-                        </Button>
-                      )}
-                    </For>
-                  </div>
-                </div>
-              </Show>
+                <div class="text-13-regular text-text-weak">{language.t("home.connectToStudio.description")}</div>
+              </div>
+              <Icon name="arrow-right" size="normal" class="text-text-muted group-hover:text-icon-primary-base" />
             </div>
-          </Match>
+          </button>
 
-          {/* Recent Projects List (original view) */}
-          <Match when={sync.data.project.length > 0}>
-            <div class="flex flex-col gap-4">
-              <div class="flex gap-2 items-center justify-between pl-3">
-                <div class="text-14-medium text-text-strong">{language.t("home.recentProjects")}</div>
-                <div class="flex items-center gap-2">
-                  <Button variant="ghost" size="normal" onClick={scanForProjects} disabled={scanning()}>
-                    <Icon name="search" size="small" classList={{ "animate-spin": scanning() }} />
-                    {language.t("home.scanForProjects")}
-                  </Button>
-                  <Button icon="folder-add-left" size="normal" class="pl-2 pr-3" onClick={chooseProject}>
-                    {language.t("command.project.open")}
-                  </Button>
+          {/* Secondary Options */}
+          <div class="grid grid-cols-2 gap-4">
+            <button
+              class="p-4 rounded-lg border border-border-weak-base bg-surface-base-weak hover:bg-surface-base-active transition-colors text-left group"
+              onClick={openRobloxFile}
+            >
+              <div class="flex items-center gap-3">
+                <div class="size-10 rounded-lg bg-surface-base-active flex items-center justify-center">
+                  <Icon name="folder" size="normal" class="text-text-weak" />
+                </div>
+                <div class="flex-1">
+                  <div class="text-14-medium text-text-strong">{language.t("home.openRobloxFile")}</div>
+                  <div class="text-12-regular text-text-weak">{language.t("home.openRobloxFile.description")}</div>
                 </div>
               </div>
-              <ul class="flex flex-col gap-2">
-                <For each={recent()}>
-                  {(project) => (
-                    <Button
-                      size="large"
-                      variant="ghost"
-                      class="text-14-mono text-left justify-between px-3"
-                      onClick={() => openProject(project.worktree)}
-                    >
-                      {project.worktree.replace(homedir(), "~")}
-                      <div class="text-14-regular text-text-weak">
-                        {DateTime.fromMillis(project.time.updated ?? project.time.created).toRelative()}
-                      </div>
-                    </Button>
-                  )}
-                </For>
-              </ul>
-            </div>
-          </Match>
+            </button>
 
-          {/* Empty State */}
-          <Match when={true}>
-            <div class="flex flex-col items-center justify-center py-16">
-              <Icon name="folder-add-left" size="large" class="text-text-muted mb-4" />
-              <div class="text-14-medium text-text-strong mb-1">{language.t("home.empty.title")}</div>
-              <div class="text-12-regular text-text-weak mb-4">{language.t("home.empty.description")}</div>
-              <div class="flex gap-3">
-                <Button variant="secondary" onClick={scanForProjects} disabled={scanning()}>
-                  <Icon name="search" size="small" classList={{ "animate-spin": scanning() }} />
-                  {language.t("home.scanForProjects")}
-                </Button>
-                <Button onClick={chooseProject}>{language.t("command.project.open")}</Button>
-              </div>
-
-              {/* Tip about Roblox file locations */}
-              <div class="mt-8 p-4 rounded-lg bg-surface-base-weak border border-border-weak-base text-left max-w-md">
-                <div class="flex items-start gap-3">
-                  <Icon name="info-circle" size="small" class="text-icon-primary-base mt-0.5 shrink-0" />
-                  <div class="flex flex-col gap-2">
-                    <div class="text-13-medium text-text-strong">{language.t("home.tip.title")}</div>
-                    <div class="text-12-regular text-text-weak">{language.t("home.tip.cloudSave")}</div>
-                    <div class="text-12-regular text-text-weak">{language.t("home.tip.rojo")}</div>
-                    <Link href="https://rojo.space/docs" class="text-12-medium">
-                      {language.t("home.tip.learnMore")}
-                    </Link>
-                  </div>
+            <button
+              class="p-4 rounded-lg border border-border-weak-base bg-surface-base-weak hover:bg-surface-base-active transition-colors text-left group"
+              onClick={connectViaRojo}
+            >
+              <div class="flex items-center gap-3">
+                <div class="size-10 rounded-lg bg-surface-base-active flex items-center justify-center">
+                  <Icon name="code" size="normal" class="text-text-weak" />
+                </div>
+                <div class="flex-1">
+                  <div class="text-14-medium text-text-strong">{language.t("home.connectViaRojo")}</div>
+                  <div class="text-12-regular text-text-weak">{language.t("home.connectViaRojo.description")}</div>
                 </div>
               </div>
-            </div>
-          </Match>
-        </Switch>
+            </button>
+          </div>
+        </div>
+
+        {/* Bridge Status */}
+        <div class="flex justify-center mt-6">
+          <div class="flex items-center gap-2 text-12-regular text-text-weak">
+            <div
+              classList={{
+                "size-2 rounded-full": true,
+                "bg-icon-success-base": bridgeStatus() === "connected",
+                "bg-icon-warning-base": bridgeStatus() === "waiting",
+                "bg-icon-critical-base": bridgeStatus() === "error",
+                "bg-border-weak-base": bridgeStatus() === "checking",
+              }}
+            />
+            <Switch>
+              <Match when={bridgeStatus() === "connected"}>{language.t("bridge.connected")}</Match>
+              <Match when={bridgeStatus() === "waiting"}>{language.t("bridge.waiting")}</Match>
+              <Match when={bridgeStatus() === "error"}>{language.t("bridge.notRunning")}</Match>
+              <Match when={bridgeStatus() === "checking"}>{language.t("bridge.checking")}</Match>
+            </Switch>
+          </div>
+        </div>
       </div>
     </div>
   )

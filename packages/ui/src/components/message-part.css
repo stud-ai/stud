@@ -859,6 +859,13 @@
     object-fit: cover;
     background-color: var(--surface-inset-base);
     border-bottom: 1px solid var(--border-weaker-base);
+
+    &[data-placeholder="true"] {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+    }
   }
 
   [data-slot="toolbox-asset-info"] {

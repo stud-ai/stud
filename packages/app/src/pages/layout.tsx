@@ -1563,14 +1563,13 @@ export default function Layout(props: ParentProps) {
     const notifications = createMemo(() => notification.project.unseen(props.project.worktree))
     const hasError = createMemo(() => notifications().some((n) => n.type === "error"))
     const name = createMemo(() => props.project.name || getFilename(props.project.worktree))
-    const opencode = "4b0ea68d7af9a6031a7ffda7ad66e0cb83315750"
 
     return (
       <div class={`relative size-8 shrink-0 rounded ${props.class ?? ""}`}>
         <div class="size-full rounded overflow-clip">
           <Avatar
             fallback={name()}
-            src={props.project.id === opencode ? "https://opencode.ai/favicon.svg" : props.project.icon?.override}
+            src={props.project.icon?.override}
             {...getAvatarColors(props.project.icon?.color)}
             class="size-full rounded"
             classList={{ "badge-mask": notifications().length > 0 && props.notify }}
@@ -2739,77 +2738,81 @@ export default function Layout(props: ParentProps) {
     <div class="relative bg-background-base flex-1 min-h-0 flex flex-col select-none [&_input]:select-text [&_textarea]:select-text [&_[contenteditable]]:select-text">
       <Titlebar />
       <div class="flex-1 min-h-0 flex">
-        <nav
-          aria-label={language.t("sidebar.nav.projectsAndSessions")}
-          classList={{
-            "hidden xl:block": true,
-            "relative shrink-0": true,
-          }}
-          style={{ width: layout.sidebar.opened() ? `${Math.max(layout.sidebar.width(), 244)}px` : "64px" }}
-          ref={(el) => {
-            setState("nav", el)
-          }}
-          onMouseEnter={() => {
-            if (navLeave.current === undefined) return
-            clearTimeout(navLeave.current)
-            navLeave.current = undefined
-          }}
-          onMouseLeave={() => {
-            if (!sidebarHovering()) return
-
-            if (navLeave.current !== undefined) clearTimeout(navLeave.current)
-            navLeave.current = window.setTimeout(() => {
-              navLeave.current = undefined
-              setState("hoverProject", undefined)
-              setState("hoverSession", undefined)
-            }, 300)
-          }}
-        >
-          <div class="@container w-full h-full contain-strict">
-            <SidebarContent />
-          </div>
-          <Show when={!layout.sidebar.opened() ? hoverProjectData() : undefined} keyed>
-            {(project) => (
-              <div class="absolute inset-y-0 left-16 z-50 flex">
-                <SidebarPanel project={project} />
-              </div>
-            )}
-          </Show>
-          <Show when={layout.sidebar.opened()}>
-            <ResizeHandle
-              direction="horizontal"
-              size={layout.sidebar.width()}
-              min={244}
-              max={window.innerWidth * 0.3 + 64}
-              collapseThreshold={244}
-              onResize={layout.sidebar.resize}
-              onCollapse={layout.sidebar.close}
-            />
-          </Show>
-        </nav>
-        <div class="xl:hidden">
-          <div
-            classList={{
-              "fixed inset-x-0 top-10 bottom-0 z-40 transition-opacity duration-200": true,
-              "opacity-100 pointer-events-auto": layout.mobileSidebar.opened(),
-              "opacity-0 pointer-events-none": !layout.mobileSidebar.opened(),
-            }}
-            onClick={(e) => {
-              if (e.target === e.currentTarget) layout.mobileSidebar.hide()
-            }}
-          />
+        <Show when={params.dir}>
           <nav
             aria-label={language.t("sidebar.nav.projectsAndSessions")}
             classList={{
-              "@container fixed top-10 bottom-0 left-0 z-50 w-72 bg-background-base transition-transform duration-200 ease-out": true,
-              "translate-x-0": layout.mobileSidebar.opened(),
-              "-translate-x-full": !layout.mobileSidebar.opened(),
+              "hidden xl:block": true,
+              "relative shrink-0": true,
             }}
-            onClick={(e) => e.stopPropagation()}
+            style={{ width: layout.sidebar.opened() ? `${Math.max(layout.sidebar.width(), 244)}px` : "64px" }}
+            ref={(el) => {
+              setState("nav", el)
+            }}
+            onMouseEnter={() => {
+              if (navLeave.current === undefined) return
+              clearTimeout(navLeave.current)
+              navLeave.current = undefined
+            }}
+            onMouseLeave={() => {
+              if (!sidebarHovering()) return
+
+              if (navLeave.current !== undefined) clearTimeout(navLeave.current)
+              navLeave.current = window.setTimeout(() => {
+                navLeave.current = undefined
+                setState("hoverProject", undefined)
+                setState("hoverSession", undefined)
+              }, 300)
+            }}
           >
-            <SidebarContent mobile />
+            <div class="@container w-full h-full contain-strict">
+              <SidebarContent />
+            </div>
+            <Show when={!layout.sidebar.opened() ? hoverProjectData() : undefined} keyed>
+              {(project) => (
+                <div class="absolute inset-y-0 left-16 z-50 flex">
+                  <SidebarPanel project={project} />
+                </div>
+              )}
+            </Show>
+            <Show when={layout.sidebar.opened()}>
+              <ResizeHandle
+                direction="horizontal"
+                size={layout.sidebar.width()}
+                min={244}
+                max={window.innerWidth * 0.3 + 64}
+                collapseThreshold={244}
+                onResize={layout.sidebar.resize}
+                onCollapse={layout.sidebar.close}
+              />
+            </Show>
           </nav>
-        </div>
+        </Show>
+        <Show when={params.dir}>
+          <div class="xl:hidden">
+            <div
+              classList={{
+                "fixed inset-x-0 top-10 bottom-0 z-40 transition-opacity duration-200": true,
+                "opacity-100 pointer-events-auto": layout.mobileSidebar.opened(),
+                "opacity-0 pointer-events-none": !layout.mobileSidebar.opened(),
+              }}
+              onClick={(e) => {
+                if (e.target === e.currentTarget) layout.mobileSidebar.hide()
+              }}
+            />
+            <nav
+              aria-label={language.t("sidebar.nav.projectsAndSessions")}
+              classList={{
+                "@container fixed top-10 bottom-0 left-0 z-50 w-72 bg-background-base transition-transform duration-200 ease-out": true,
+                "translate-x-0": layout.mobileSidebar.opened(),
+                "-translate-x-full": !layout.mobileSidebar.opened(),
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <SidebarContent mobile />
+            </nav>
+          </div>
+        </Show>
 
         <main
           classList={{

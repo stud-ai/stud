@@ -33,6 +33,13 @@ export const dict = {
   "ui.sessionTurn.status.thinkingWithTopic": "Thinking - {{topic}}",
   "ui.sessionTurn.status.gatheringThoughts": "Gathering thoughts",
   "ui.sessionTurn.status.consideringNextSteps": "Considering next steps",
+  "ui.sessionTurn.status.searchingToolbox": "Searching Roblox Toolbox",
+  "ui.sessionTurn.status.insertingAsset": "Inserting asset into Studio",
+  "ui.sessionTurn.status.runningInStudio": "Running code in Studio",
+  "ui.sessionTurn.status.readingGame": "Reading game data",
+  "ui.sessionTurn.status.modifyingGame": "Modifying game",
+  "ui.sessionTurn.status.creatingScript": "Creating script",
+  "ui.sessionTurn.status.runningTool": "Running tool",
 
   "ui.messagePart.diagnostic.error": "Error",
   "ui.messagePart.title.edit": "Edit",

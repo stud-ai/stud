@@ -1328,6 +1328,29 @@ interface ToolboxAsset {
   votePercent: number
 }
 
+function AssetThumbnail(props: { src: string; alt: string }) {
+  const [failed, setFailed] = createSignal(false)
+
+  return (
+    <Show
+      when={!failed()}
+      fallback={
+        <div data-slot="toolbox-asset-thumbnail" data-placeholder="true">
+          <Icon name="photo" size="large" />
+        </div>
+      }
+    >
+      <img
+        data-slot="toolbox-asset-thumbnail"
+        src={props.src}
+        alt={props.alt}
+        loading="lazy"
+        onError={() => setFailed(true)}
+      />
+    </Show>
+  )
+}
+
 ToolRegistry.register({
   name: "roblox_toolbox_search",
   render(props) {
@@ -1372,7 +1395,7 @@ ToolRegistry.register({
                   onClick={() => insertAsset(asset)}
                   title={`Click to insert ${asset.name}`}
                 >
-                  <img data-slot="toolbox-asset-thumbnail" src={asset.thumbnailUrl} alt={asset.name} loading="lazy" />
+                  <AssetThumbnail src={asset.thumbnailUrl} alt={asset.name} />
                   <div data-slot="toolbox-asset-info">
                     <span data-slot="toolbox-asset-name">{asset.name}</span>
                     <span data-slot="toolbox-asset-meta">

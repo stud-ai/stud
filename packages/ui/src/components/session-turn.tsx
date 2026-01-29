@@ -59,7 +59,29 @@ function computeStatusFromPart(part: PartType | undefined, t: Translator): strin
         return t("ui.sessionTurn.status.makingEdits")
       case "bash":
         return t("ui.sessionTurn.status.runningCommands")
+      // Roblox tools
+      case "roblox_toolbox_search":
+        return t("ui.sessionTurn.status.searchingToolbox")
+      case "roblox_insert_asset":
+        return t("ui.sessionTurn.status.insertingAsset")
+      case "roblox_run_code":
+        return t("ui.sessionTurn.status.runningInStudio")
+      case "roblox_get_properties":
+      case "roblox_get_descendants":
+      case "roblox_get_children":
+        return t("ui.sessionTurn.status.readingGame")
+      case "roblox_set_property":
+      case "roblox_create_instance":
+      case "roblox_clone_instance":
+      case "roblox_destroy_instance":
+        return t("ui.sessionTurn.status.modifyingGame")
+      case "roblox_create_script":
+        return t("ui.sessionTurn.status.creatingScript")
       default:
+        // For MCP tools, show a generic "Running tool" message
+        if (part.tool.includes("_") || part.tool.includes(":")) {
+          return t("ui.sessionTurn.status.runningTool")
+        }
         return undefined
     }
   }

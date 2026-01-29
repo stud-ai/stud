@@ -243,11 +243,14 @@ Example: Search "car" in Models category to find free car models.`,
       }
     }
 
+    // Step 4: Fetch actual thumbnail URLs from Roblox CDN
+    const thumbnailMap = await fetchThumbnailUrls(assets.map((a) => a.asset.id))
+
     // Build structured asset data for UI
     const structuredAssets: ToolboxAsset[] = assets.map((a) => ({
       id: a.asset.id,
       name: a.asset.name,
-      thumbnailUrl: `https://www.roblox.com/asset-thumbnail/image?assetId=${a.asset.id}&width=150&height=150&format=png`,
+      thumbnailUrl: thumbnailMap.get(a.asset.id) || getPlaceholderThumbnail(a.asset.id),
       type: getAssetTypeName(a.asset.typeId),
       typeId: a.asset.typeId,
       creator: a.creator.name,
@@ -261,11 +264,11 @@ Example: Search "car" in Models category to find free car models.`,
       description: a.asset.description,
     }))
 
-    const details = assets.map((a) => {
+    const details = assets.map((a, index) => {
       const verified = a.creator.isVerifiedCreator ? " (Verified)" : ""
       const scripts = a.asset.hasScripts ? ` | ${a.asset.scriptCount} scripts` : ""
       const votes = a.voting.voteCount > 0 ? ` | ${a.voting.upVotePercent}% liked (${a.voting.voteCount} votes)` : ""
-      const thumb = `https://www.roblox.com/asset-thumbnail/image?assetId=${a.asset.id}&width=150&height=150&format=png`
+      const thumb = structuredAssets[index]?.thumbnailUrl || getPlaceholderThumbnail(a.asset.id)
 
       return (
         `### [${a.asset.id}] ${a.asset.name}\n\n` +
@@ -293,8 +296,38 @@ Example: Search "car" in Models category to find free car models.`,
 
 const THUMBNAIL_API = "https://thumbnails.roblox.com/v1/assets"
 
-function getThumbnailUrl(assetId: number): string {
-  return `${THUMBNAIL_API}?assetIds=${assetId}&size=150x150&format=Png`
+interface ThumbnailResponse {
+  data: Array<{
+    targetId: number
+    state: string
+    imageUrl: string
+  }>
+}
+
+async function fetchThumbnailUrls(assetIds: number[]): Promise<Map<number, string>> {
+  const result = new Map<number, string>()
+  if (assetIds.length === 0) return result
+
+  try {
+    const url = `${THUMBNAIL_API}?assetIds=${assetIds.join(",")}&size=150x150&format=Png`
+    const response = await fetch(url)
+    if (response.ok) {
+      const data = (await response.json()) as ThumbnailResponse
+      for (const item of data.data) {
+        if (item.state === "Completed" && item.imageUrl) {
+          result.set(item.targetId, item.imageUrl)
+        }
+      }
+    }
+  } catch {
+    // Fallback to placeholder URLs
+  }
+  return result
+}
+
+function getPlaceholderThumbnail(assetId: number): string {
+  // Use rbxcdn for direct thumbnail access (works without CORS issues)
+  return `https://tr.rbxcdn.com/asset-thumbnail/image?assetId=${assetId}&width=150&height=150&format=Png`
 }
 
 export const RobloxInsertAssetTool = Tool.define<
