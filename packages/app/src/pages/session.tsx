@@ -1665,7 +1665,7 @@ export default function Page() {
   })
 
   return (
-    <div class="relative bg-[#09090b] size-full overflow-hidden flex flex-col">
+    <div class="relative bg-background-base size-full overflow-hidden flex flex-col">
       <SessionHeader />
       <div class="flex-1 min-h-0 flex flex-col md:flex-row">
         {/* Left Sidebar - Threads + Instance Tree */}
@@ -1705,7 +1705,7 @@ export default function Page() {
         {/* Session panel - centered chat area */}
         <div
           classList={{
-            "@container relative flex flex-col min-h-0 h-full bg-[#09090b]": true,
+            "@container relative flex flex-col min-h-0 h-full bg-background-base": true,
             "flex-1 pt-6 md:pt-3": true,
           }}
           style={{

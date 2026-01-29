@@ -136,7 +136,7 @@ export function SessionTerminalPanel(props: TerminalPanelProps) {
       id="terminal-panel"
       role="region"
       aria-label={language.t("terminal.title")}
-      class="relative w-full flex flex-col shrink-0 border-t border-[#1f1f23] bg-[#0c0c0e]"
+      class="relative w-full flex flex-col shrink-0 border-t border-border-weak-base bg-surface-inset-base"
       style={{ height: `${layout.terminal.height()}px` }}
     >
       {/* Resize Handle */}
@@ -154,7 +154,7 @@ export function SessionTerminalPanel(props: TerminalPanelProps) {
         when={terminal.ready()}
         fallback={
           <div class="flex flex-col h-full pointer-events-none">
-            <div class="h-9 flex items-center gap-2 px-3 border-b border-[#1f1f23] bg-[#0a0a0c]">
+            <div class="h-9 flex items-center gap-2 px-3 border-b border-border-weak-base bg-surface-inset-base">
               <For each={props.handoffTerminals}>
                 {(title) => (
                   <div class="px-2.5 py-1 rounded bg-white/5 text-12-medium text-text-subtle truncate max-w-32">
@@ -182,7 +182,7 @@ export function SessionTerminalPanel(props: TerminalPanelProps) {
           <ConstrainDragYAxis />
           <div class="flex flex-col h-full">
             {/* Terminal Header/Tabs */}
-            <div class="h-9 flex items-center border-b border-[#1f1f23] bg-[#0a0a0c]">
+            <div class="h-9 flex items-center border-b border-border-weak-base bg-surface-inset-base">
               {/* Tab List */}
               <div class="flex-1 flex items-center h-full overflow-x-auto scrollbar-none">
                 <Tabs
@@ -214,7 +214,7 @@ export function SessionTerminalPanel(props: TerminalPanelProps) {
               </div>
 
               {/* Actions */}
-              <div class="flex items-center gap-1 px-2 border-l border-[#1f1f23]">
+              <div class="flex items-center gap-1 px-2 border-l border-border-weak-base">
                 <Tooltip value={language.t("terminal.clear")} placement="bottom">
                   <IconButton
                     icon="trash"
@@ -233,7 +233,7 @@ export function SessionTerminalPanel(props: TerminalPanelProps) {
                     aria-label={language.t("terminal.kill")}
                   />
                 </Tooltip>
-                <div class="w-px h-4 bg-[#1f1f23] mx-1" />
+                <div class="w-px h-4 bg-border-weak-base mx-1" />
                 <TooltipKeybind title={language.t("command.terminal.new")} keybind={command.keybind("terminal.new")}>
                   <IconButton
                     icon="plus-small"
@@ -256,7 +256,7 @@ export function SessionTerminalPanel(props: TerminalPanelProps) {
             </div>
 
             {/* Terminal Content */}
-            <div class="flex-1 min-h-0 relative bg-[#0c0c0e]">
+            <div class="flex-1 min-h-0 relative bg-surface-inset-base">
               <For each={terminal.all()}>
                 {(pty) => (
                   <div
@@ -281,7 +281,7 @@ export function SessionTerminalPanel(props: TerminalPanelProps) {
                 return (
                   <Show when={pty()}>
                     {(t) => (
-                      <div class="px-3 py-1.5 rounded bg-[#1a1a1e] border border-[#2a2a2e] text-13-medium text-text-base shadow-lg">
+                      <div class="px-3 py-1.5 rounded bg-surface-raised-base border border-border-weak-base text-13-medium text-text-base shadow-lg">
                         <Icon name="console" size="small" class="mr-2 text-text-subtle" />
                         {getTabLabel(t())}
                       </div>
@@ -386,9 +386,9 @@ function TerminalTab(props: TerminalTabProps) {
     >
       <button
         type="button"
-        class="h-full px-3 flex items-center gap-2 text-12-medium border-r border-[#1f1f23] transition-colors duration-150"
+        class="h-full px-3 flex items-center gap-2 text-12-medium border-r border-border-weak-base transition-colors duration-150"
         classList={{
-          "bg-[#0c0c0e] text-text-base": props.isActive,
+          "bg-surface-inset-base text-text-base": props.isActive,
           "bg-transparent text-text-subtle hover:text-text-weak hover:bg-white/[0.02]": !props.isActive,
         }}
         onClick={focus}

@@ -14,6 +14,7 @@ import { Tooltip } from "@stud/ui/tooltip"
 import { DialogProjectRules } from "@/components/dialog-project-rules"
 import { DialogSettings } from "@/components/dialog-settings"
 import { InstanceTree } from "@/components/instance-tree"
+import { DialogDeleteSession } from "@/components/dialog-delete-session"
 import type { Session } from "@stud/sdk/v2/client"
 
 interface SessionLeftSidebarProps {
@@ -90,7 +91,7 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3, easing: [0.22, 1, 0.36, 1] }}
-      class="relative flex flex-col h-full bg-[#09090b]"
+      class="relative flex flex-col h-full bg-background-base"
       style={{ width: `${props.width}px` }}
     >
       {/* Navigation */}
@@ -100,7 +101,7 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
           animate={{ opacity: mounted() ? 1 : 0, x: mounted() ? 0 : -10 }}
           transition={{ duration: 0.3, delay: 0.1 }}
           type="button"
-          class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-13-medium text-text-muted hover:text-text-base hover:bg-white/5 active:scale-[0.98] transition-all duration-150 group"
+          class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-13-medium text-text-muted hover:text-text-base hover:bg-surface-base-hover active:scale-[0.98] transition-all duration-150 group"
           onClick={navigateToHome}
         >
           <Icon name="menu" size="small" class="text-text-subtle group-hover:text-text-base transition-colors" />
@@ -111,7 +112,7 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
           animate={{ opacity: mounted() ? 1 : 0, x: mounted() ? 0 : -10 }}
           transition={{ duration: 0.3, delay: 0.15 }}
           type="button"
-          class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-13-medium text-text-muted hover:text-text-base hover:bg-white/5 active:scale-[0.98] transition-all duration-150 group"
+          class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-13-medium text-text-muted hover:text-text-base hover:bg-surface-base-hover active:scale-[0.98] transition-all duration-150 group"
           onClick={showProjectRules}
         >
           <Icon name="checklist" size="small" class="text-text-subtle group-hover:text-text-base transition-colors" />
@@ -148,16 +149,28 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
                   animate={{ opacity: mounted() ? 1 : 0, x: mounted() ? 0 : -10 }}
                   transition={{ duration: 0.25, delay: 0.25 + index * 0.03 }}
                   type="button"
-                  class="flex items-center gap-2 px-2 py-1.5 rounded text-left transition-all duration-150 active:scale-[0.98]"
+                  class="flex items-center gap-2 px-2 py-1.5 rounded text-left transition-all duration-150 active:scale-[0.98] group/session"
                   classList={{
-                    "bg-white/5 text-text-strong": isActive(session()),
-                    "text-text-muted hover:text-text-base hover:bg-white/5": !isActive(session()),
+                    "bg-surface-base-hover text-text-strong": isActive(session()),
+                    "text-text-muted hover:text-text-base hover:bg-surface-base-hover": !isActive(session()),
                   }}
                   onClick={() => navigateToSession(session())}
                 >
                   <span class="flex-1 min-w-0 truncate text-13-regular">
                     {session().title || language.t("session.untitled")}
                   </span>
+                  <div class="flex items-center gap-1 opacity-0 group-hover/session:opacity-100 transition-opacity">
+                    <IconButton
+                      icon="trash"
+                      variant="ghost"
+                      class="size-4 text-text-subtle hover:text-text-critical-base transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        dialog.show(() => <DialogDeleteSession session={session()} />)
+                      }}
+                      aria-label={language.t("common.delete")}
+                    />
+                  </div>
                 </Motion.button>
               )}
             </Index>
@@ -180,7 +193,7 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
       <div class="mt-2 flex-1 min-h-0 flex flex-col">
         <Collapsible variant="ghost" class="w-full flex-1 min-h-0 flex flex-col" forceMount={false} open={true}>
           <Collapsible.Trigger>
-            <div class="flex items-center justify-between px-3 py-1.5 group cursor-pointer hover:bg-white/5 rounded mx-1">
+            <div class="flex items-center justify-between px-3 py-1.5 group cursor-pointer hover:bg-surface-base-hover rounded mx-1">
               <div class="flex items-center gap-1.5">
                 <Icon name="chevron-down" size="small" class="text-text-subtle" />
                 <span class="text-11-medium text-text-subtle uppercase tracking-wider group-hover:text-text-weak transition-colors">
@@ -207,7 +220,7 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: mounted() ? 1 : 0, y: mounted() ? 0 : 10 }}
         transition={{ duration: 0.3, delay: 0.4 }}
-        class="mt-auto px-3 py-3 border-t border-white/5 flex items-center justify-between"
+        class="mt-auto px-3 py-3 border-t border-border-weak-base flex items-center justify-between"
       >
         <div class="flex items-center gap-2">
           <div class="size-5 rounded bg-orange-500/20 flex items-center justify-center text-orange-500">

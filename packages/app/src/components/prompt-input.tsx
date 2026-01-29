@@ -1720,17 +1720,17 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
         onSubmit={handleSubmit}
         classList={{
           "group/prompt-input": true,
-          "bg-[#09090b] relative": true,
+          "bg-background-base relative": true,
           "rounded-xl overflow-clip": true,
-          "border border-[#27272a]": true,
-          "focus-within:border-[#3f3f46]": true,
+          "border border-border-weak-base": true,
+          "focus-within:border-border-base": true,
           "transition-colors duration-200": true,
           "border-icon-info-active border-dashed!": store.dragging,
           [props.class ?? ""]: !!props.class,
         }}
       >
         <Show when={store.dragging}>
-          <div class="absolute inset-0 z-10 flex items-center justify-center bg-[#242424]/90 pointer-events-none">
+          <div class="absolute inset-0 z-10 flex items-center justify-center bg-surface-inset-base/90 pointer-events-none">
             <div class="flex flex-col items-center gap-2 text-text-weak">
               <Icon name="photo" class="size-8" />
               <span class="text-14-regular">{language.t("prompt.dropzone.label")}</span>
@@ -1738,7 +1738,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
           </div>
         </Show>
         <Show when={prompt.context.items().length > 0}>
-          <div class="flex flex-nowrap items-center gap-1.5 px-3 py-2 overflow-x-auto no-scrollbar border-b border-[#27272a]">
+          <div class="flex flex-nowrap items-center gap-1.5 px-3 py-2 overflow-x-auto no-scrollbar border-b border-border-weak-base">
             <For each={prompt.context.items()}>
               {(item) => {
                 const active = () => {
@@ -1761,9 +1761,10 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                     <div
                       classList={{
                         "group shrink-0 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-12-regular transition-colors": true,
-                        "bg-[#2a2a2a] border border-[#333333]": !active(),
-                        "cursor-pointer hover:bg-[#333333] hover:border-[#444444]": !!item.commentID && !active(),
-                        "bg-[#333333] border-[#444444]": active(),
+                        "bg-surface-raised-base border border-border-weak-base": !active(),
+                        "cursor-pointer hover:bg-surface-raised-strong hover:border-border-base":
+                          !!item.commentID && !active(),
+                        "bg-surface-raised-strong border-border-base": active(),
                       }}
                       onClick={() => {
                         openComment(item)
@@ -1883,7 +1884,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
             </div>
           </Show>
         </div>
-        <div class="relative px-3 py-2 flex items-center justify-between border-t border-[#27272a]">
+        <div class="relative px-3 py-2 flex items-center justify-between border-t border-border-weak-base">
           <div class="flex items-center justify-start gap-0.5">
             <Switch>
               <Match when={store.mode === "shell"}>
