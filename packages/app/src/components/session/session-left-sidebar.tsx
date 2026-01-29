@@ -49,7 +49,7 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
   const sessions = createMemo(() => {
     const dir = directory()
     if (!dir) return []
-    const [store] = globalSync.child(dir, { bootstrap: false })
+    const [store] = globalSync.child(dir, { bootstrap: true })
     const now = Date.now()
     const oneMinuteAgo = now - 60 * 1000
     return store.session
