@@ -59,7 +59,7 @@ export function SessionPlanView(props: SessionPlanViewProps) {
           </Show>
         </div>
         <Show when={isPlanAgent()}>
-          <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-raised-base border border-border-base">
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#27272a] border border-[#3f3f46]">
             <Icon name="brain" size="small" class="text-text-secondary" />
             <span class="text-12-regular text-text-secondary">Plan Agent</span>
           </div>

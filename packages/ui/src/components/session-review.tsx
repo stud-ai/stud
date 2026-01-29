@@ -285,9 +285,12 @@ export const SessionReview = (props: SessionReviewProps) => {
         classList={{
           [props.classes?.header ?? ""]: !!props.classes?.header,
         }}
+        class="flex items-center justify-between px-4 py-2 bg-[#09090b] border-b border-[#27272a]"
       >
-        <div data-slot="session-review-title">{i18n.t("ui.sessionReview.title")}</div>
-        <div data-slot="session-review-actions">
+        <div data-slot="session-review-title" class="text-12-medium text-text-muted uppercase tracking-wider">
+          {i18n.t("ui.sessionReview.title")}
+        </div>
+        <div data-slot="session-review-actions" class="flex items-center gap-2">
           <Show when={props.onDiffStyleChange}>
             <RadioGroup
               options={["unified", "split"] as const}
@@ -297,13 +300,17 @@ export const SessionReview = (props: SessionReviewProps) => {
                 i18n.t(style === "unified" ? "ui.sessionReview.diffStyle.unified" : "ui.sessionReview.diffStyle.split")
               }
               onSelect={(style) => style && props.onDiffStyleChange?.(style)}
+              class="flex bg-[#1a1a1a] rounded p-0.5 border border-[#333333]"
+              itemClass="px-2 py-0.5 text-11-medium rounded-sm data-[selected]:bg-[#333333] data-[selected]:text-text-strong text-text-muted transition-colors hover:text-text-base"
             />
           </Show>
-          <Button size="normal" icon="chevron-grabber-vertical" onClick={handleExpandOrCollapseAll}>
-            <Switch>
-              <Match when={open().length > 0}>{i18n.t("ui.sessionReview.collapseAll")}</Match>
-              <Match when={true}>{i18n.t("ui.sessionReview.expandAll")}</Match>
-            </Switch>
+          <Button
+            size="small"
+            variant="ghost"
+            class="text-text-muted hover:text-text-strong size-6 p-0"
+            onClick={handleExpandOrCollapseAll}
+          >
+            <Icon name={open().length > 0 ? "collapse" : "expand"} size="small" />
           </Button>
           {props.actions}
         </div>
@@ -501,21 +508,50 @@ export const SessionReview = (props: SessionReviewProps) => {
                   id={diffId(diff.file)}
                   data-file={diff.file}
                   data-slot="session-review-accordion-item"
+                  class="border-b border-[#27272a] last:border-0"
                 >
-                  <StickyAccordionHeader>
-                    <Accordion.Trigger>
-                      <div data-slot="session-review-trigger-content">
-                        <div data-slot="session-review-file-info">
-                          <FileIcon node={{ path: diff.file, type: "file" }} />
-                          <div data-slot="session-review-file-name-container">
+                  <StickyAccordionHeader class="bg-[#09090b] hover:bg-[#18181b] transition-colors">
+                    <Accordion.Trigger class="w-full">
+                      <div
+                        data-slot="session-review-trigger-content"
+                        class="flex items-center justify-between px-4 py-3 w-full"
+                      >
+                        <div data-slot="session-review-file-info" class="flex items-center gap-3 min-w-0">
+                          <FileIcon
+                            node={{ path: diff.file, type: "file" }}
+                            class="size-4 shrink-0 text-text-secondary"
+                          />
+                          <div data-slot="session-review-file-name-container" class="flex items-center gap-2 min-w-0">
+                            <span data-slot="session-review-filename" class="text-13-medium text-text-strong truncate">
+                              {getFilename(diff.file)}
+                            </span>
                             <Show when={diff.file.includes("/")}>
-                              <span data-slot="session-review-directory">{`\u202A${getDirectory(diff.file)}\u202C`}</span>
+                              <span
+                                data-slot="session-review-directory"
+                                class="text-13-regular text-text-muted truncate dir-rtl"
+                              >
+                                {getDirectory(diff.file)}
+                              </span>
                             </Show>
-                            <span data-slot="session-review-filename">{getFilename(diff.file)}</span>
+                          </div>
+                        </div>
+                        <div data-slot="session-review-trigger-actions" class="flex items-center gap-3 shrink-0">
+                          <Switch>
+                            <Match when={isAdded()}>
+                              <span class="text-12-medium text-green-400">+{afterText().split("\n").length}</span>
+                            </Match>
+                            <Match when={isDeleted()}>
+                              <span class="text-12-medium text-red-400">-{beforeText().split("\n").length}</span>
+                            </Match>
+                            <Match when={true}>
+                              <DiffChanges changes={diff} />
+                            </Match>
+                          </Switch>
+                          <div class="flex items-center gap-1 text-text-muted">
                             <Show when={props.onViewFile}>
                               <button
-                                data-slot="session-review-view-button"
                                 type="button"
+                                class="p-1 rounded hover:bg-white/10 transition-colors"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   props.onViewFile?.(diff.file)
@@ -524,30 +560,17 @@ export const SessionReview = (props: SessionReviewProps) => {
                                 <Icon name="eye" size="small" />
                               </button>
                             </Show>
+                            <Icon
+                              name="chevron-down"
+                              size="small"
+                              class="transition-transform ui-expanded:rotate-180"
+                            />
                           </div>
-                        </div>
-                        <div data-slot="session-review-trigger-actions">
-                          <Switch>
-                            <Match when={isAdded()}>
-                              <span data-slot="session-review-change" data-type="added">
-                                {i18n.t("ui.sessionReview.change.added")}
-                              </span>
-                            </Match>
-                            <Match when={isDeleted()}>
-                              <span data-slot="session-review-change" data-type="removed">
-                                {i18n.t("ui.sessionReview.change.removed")}
-                              </span>
-                            </Match>
-                            <Match when={true}>
-                              <DiffChanges changes={diff} />
-                            </Match>
-                          </Switch>
-                          <Icon name="chevron-grabber-vertical" size="small" />
                         </div>
                       </div>
                     </Accordion.Trigger>
                   </StickyAccordionHeader>
-                  <Accordion.Content data-slot="session-review-accordion-content">
+                  <Accordion.Content data-slot="session-review-accordion-content" class="bg-[#09090b]">
                     <div
                       data-slot="session-review-diff-wrapper"
                       ref={(el) => {

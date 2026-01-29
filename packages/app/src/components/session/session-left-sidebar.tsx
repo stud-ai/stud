@@ -61,48 +61,50 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
   const isActive = (session: Session) => session.id === params.id
 
   return (
-    <div class="relative flex flex-col h-full bg-[#242424]" style={{ width: `${props.width}px` }}>
+    <div class="relative flex flex-col h-full bg-[#09090b]" style={{ width: `${props.width}px` }}>
       {/* Navigation */}
-      <div class="flex flex-col px-2 pt-3 pb-2">
+      <div class="flex flex-col px-2 pt-3 pb-2 gap-0.5">
         <button
           type="button"
-          class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-13-regular text-text-base hover:bg-white/5 transition-colors"
+          class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-13-medium text-text-muted hover:text-text-base hover:bg-white/5 transition-colors group"
         >
-          <Icon name="menu" size="small" class="text-text-weak" />
+          <Icon name="menu" size="small" class="text-text-subtle group-hover:text-text-base transition-colors" />
           <span>Home</span>
         </button>
         <button
           type="button"
-          class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-13-regular text-text-base hover:bg-white/5 transition-colors"
+          class="flex items-center gap-2.5 px-2.5 py-1.5 rounded text-13-medium text-text-muted hover:text-text-base hover:bg-white/5 transition-colors group"
         >
-          <Icon name="checklist" size="small" class="text-text-weak" />
+          <Icon name="checklist" size="small" class="text-text-subtle group-hover:text-text-base transition-colors" />
           <span>Project Rules</span>
         </button>
       </div>
 
       {/* Threads Section */}
-      <div class="flex-1 min-h-0 flex flex-col border-t border-white/5">
-        <div class="flex items-center justify-between px-3 py-2">
-          <span class="text-12-regular text-text-weak">{language.t("sidebar.threads")}</span>
+      <div class="flex-1 min-h-0 flex flex-col mt-2">
+        <div class="flex items-center justify-between px-3 py-1.5 group">
+          <span class="text-11-medium text-text-subtle uppercase tracking-wider group-hover:text-text-weak transition-colors">
+            {language.t("sidebar.threads")}
+          </span>
           <IconButton
             icon="plus-small"
             variant="ghost"
-            class="size-5 text-text-weak hover:text-text-base"
+            class="size-4 text-text-subtle hover:text-text-base opacity-0 group-hover:opacity-100 transition-all"
             onClick={navigateToNewSession}
             aria-label={language.t("command.session.new")}
           />
         </div>
 
         <div class="flex-1 overflow-y-auto px-2">
-          <div class="flex flex-col">
+          <div class="flex flex-col gap-0.5">
             <For each={sessions()}>
               {(session) => (
                 <button
                   type="button"
-                  class="flex items-center gap-2 px-2.5 py-1.5 rounded text-left transition-colors"
+                  class="flex items-center gap-2 px-2 py-1.5 rounded text-left transition-colors"
                   classList={{
-                    "bg-white/10 text-text-strong": isActive(session),
-                    "text-text-base hover:bg-white/5": !isActive(session),
+                    "bg-white/5 text-text-strong": isActive(session),
+                    "text-text-muted hover:text-text-base hover:bg-white/5": !isActive(session),
                   }}
                   onClick={() => navigateToSession(session)}
                 >
@@ -114,35 +116,37 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
             </For>
 
             <Show when={sessions().length === 0}>
-              <div class="px-2.5 py-4 text-12-regular text-text-muted">{language.t("sidebar.noThreads")}</div>
+              <div class="px-2 py-2 text-13-regular text-text-subtle">{language.t("sidebar.noThreads")}</div>
             </Show>
           </div>
         </div>
       </div>
 
       {/* Pages Section */}
-      <div class="border-t border-white/5">
-        <div class="flex items-center justify-between px-3 py-2">
-          <span class="text-12-regular text-text-weak">Pages</span>
-          <div class="flex items-center gap-0.5">
+      <div class="mt-2">
+        <div class="flex items-center justify-between px-3 py-1.5 group">
+          <span class="text-11-medium text-text-subtle uppercase tracking-wider group-hover:text-text-weak transition-colors">
+            Pages
+          </span>
+          <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all">
             <IconButton
               icon="folder"
               variant="ghost"
-              class="size-5 text-text-weak hover:text-text-base"
+              class="size-4 text-text-subtle hover:text-text-base"
               aria-label="Add folder"
             />
             <IconButton
               icon="plus-small"
               variant="ghost"
-              class="size-5 text-text-weak hover:text-text-base"
+              class="size-4 text-text-subtle hover:text-text-base"
               aria-label="Add page"
             />
           </div>
         </div>
 
         {/* Explorer placeholder */}
-        <div class="px-2 pb-3">
-          <div class="flex items-center gap-2 px-2.5 py-1.5 text-13-regular text-text-weak">
+        <div class="px-2 pb-2">
+          <div class="flex items-center gap-2 px-2 py-1.5 text-13-regular text-text-muted opacity-60">
             <Icon name="folder" size="small" />
             <span>{language.t("sidebar.instanceTree.placeholder")}</span>
           </div>
@@ -150,9 +154,14 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
       </div>
 
       {/* Footer */}
-      <div class="border-t border-white/5 px-3 py-2.5">
-        <div class="text-12-regular text-text-base">{projectName()}</div>
-        <div class="text-11-regular text-text-muted">Stud</div>
+      <div class="mt-auto px-3 py-3 border-t border-white/5 flex items-center gap-2">
+        <div class="size-5 rounded bg-orange-500/20 flex items-center justify-center text-orange-500">
+          <Icon name="server" size="small" />
+        </div>
+        <div class="flex flex-col">
+          <div class="text-12-medium text-text-base leading-none mb-0.5">{projectName()}</div>
+          <div class="text-10-regular text-text-subtle leading-none">Stud v0.1.0</div>
+        </div>
       </div>
 
       {/* Resize Handle */}

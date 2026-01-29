@@ -1720,10 +1720,10 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
         onSubmit={handleSubmit}
         classList={{
           "group/prompt-input": true,
-          "bg-[#242424] relative": true,
+          "bg-[#09090b] relative": true,
           "rounded-xl overflow-clip": true,
-          "border border-[#333333]": true,
-          "focus-within:border-[#444444]": true,
+          "border border-[#27272a]": true,
+          "focus-within:border-[#3f3f46]": true,
           "transition-colors duration-200": true,
           "border-icon-info-active border-dashed!": store.dragging,
           [props.class ?? ""]: !!props.class,
@@ -1738,7 +1738,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
           </div>
         </Show>
         <Show when={prompt.context.items().length > 0}>
-          <div class="flex flex-nowrap items-center gap-1.5 px-3 py-2 overflow-x-auto no-scrollbar border-b border-[#333333]">
+          <div class="flex flex-nowrap items-center gap-1.5 px-3 py-2 overflow-x-auto no-scrollbar border-b border-[#27272a]">
             <For each={prompt.context.items()}>
               {(item) => {
                 const active = () => {
@@ -1883,7 +1883,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
             </div>
           </Show>
         </div>
-        <div class="relative px-3 py-2 flex items-center justify-between border-t border-[#333333]">
+        <div class="relative px-3 py-2 flex items-center justify-between border-t border-[#27272a]">
           <div class="flex items-center justify-start gap-0.5">
             <Switch>
               <Match when={store.mode === "shell"}>
