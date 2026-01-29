@@ -18,7 +18,7 @@ Your output must be:
 - Focus on the main topic or question the user needs to retrieve
 - Vary your phrasing - avoid repetitive patterns like always starting with "Analyzing"
 - When a file is mentioned, focus on WHAT the user wants to do WITH the file, not just that they shared it
-- Keep exact: technical terms, numbers, filenames, HTTP codes
+- Keep exact: technical terms, numbers, filenames, service names
 - Remove: the, this, my, a, an
 - Never assume tech stack
 - Never use tools
@@ -28,6 +28,8 @@ Your output must be:
 - Always output something meaningful, even if the input is minimal.
 - If the user message is short or conversational (e.g. "hello", "lol", "what's up", "hey"):
   → create a title that reflects the user's tone or intent (such as Greeting, Quick check-in, Light chat, Intro message, etc.)
+- For Roblox/game dev requests, use game dev terminology appropriately:
+  → models, scripts, GUI, DataStore, RemoteEvents, parts, services, etc.
 </rules>
 
 <examples>
@@ -41,4 +43,10 @@ Your output must be:
 "@utils/parser.ts this is broken" → Parser bug fix
 "look at @config.json" → Config review
 "@App.tsx add dark mode toggle" → Dark mode toggle in App
+"search for sword models in toolbox" → Finding sword models
+"add a gun to my game" → Gun model setup
+"make NPC walk around" → NPC pathfinding script
+"create leaderboard" → Leaderboard system
+"save player data" → DataStore player saving
+"fix my combat script" → Combat script debugging
 </examples>

@@ -1,5 +1,4 @@
-import { createSignal, Index, onMount } from "solid-js"
-import { Motion } from "solid-motionone"
+import { Index } from "solid-js"
 import { Dialog } from "@stud/ui/dialog"
 import { Button } from "@stud/ui/button"
 import { Icon } from "@stud/ui/icon"
@@ -9,11 +8,6 @@ import { useLanguage } from "@/context/language"
 export function DialogConnectionHelp() {
   const dialog = useDialog()
   const language = useLanguage()
-  const [mounted, setMounted] = createSignal(false)
-
-  onMount(() => {
-    setTimeout(() => setMounted(true), 50)
-  })
 
   const steps = [
     {
@@ -43,59 +37,32 @@ export function DialogConnectionHelp() {
   ]
 
   return (
-    <Dialog title={language.t("connectionHelp.title")} fit>
-      <div class="flex flex-col gap-6 px-6 pb-6 max-w-md">
-        <Motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: mounted() ? 1 : 0, y: mounted() ? 0 : 10 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-          class="text-14-regular text-text-weak"
-        >
-          {language.t("connectionHelp.subtitle")}
-        </Motion.p>
+    <Dialog title={language.t("connectionHelp.title")} class="w-[480px] max-w-[90vw]" fit transition>
+      <div class="flex flex-col gap-5 px-6 pb-6">
+        <p class="text-14-regular text-text-weak">{language.t("connectionHelp.subtitle")}</p>
 
-        <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-3">
           <Index each={steps}>
-            {(step, index) => (
-              <Motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: mounted() ? 1 : 0, x: mounted() ? 0 : -20 }}
-                transition={{ duration: 0.4, delay: 0.15 + index * 0.1, easing: [0.22, 1, 0.36, 1] }}
-                class="flex items-start gap-4 p-4 rounded-lg bg-surface-base border border-border-weak-base hover:border-border-base hover:bg-surface-base-active transition-all duration-200"
-              >
-                <Motion.div
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: mounted() ? 1 : 0.5, opacity: mounted() ? 1 : 0 }}
-                  transition={{ duration: 0.3, delay: 0.25 + index * 0.1, easing: [0.22, 1, 0.36, 1] }}
-                  class="size-10 rounded-lg bg-surface-primary-weak flex items-center justify-center shrink-0"
-                >
+            {(step) => (
+              <div class="flex items-start gap-4 p-4 rounded-lg bg-surface-base border border-border-weak-base hover:border-border-base transition-colors">
+                <div class="size-10 rounded-lg bg-surface-primary-weak flex items-center justify-center shrink-0">
                   <Icon name={step().icon} size="normal" class="text-icon-primary-base" />
-                </Motion.div>
+                </div>
                 <div class="flex flex-col gap-1 min-w-0">
                   <div class="flex items-center gap-2">
-                    <Motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: mounted() ? 1 : 0 }}
-                      transition={{ duration: 0.3, delay: 0.3 + index * 0.1, easing: [0.22, 1, 0.36, 1] }}
-                      class="size-5 rounded-full bg-surface-raised-base text-text-weak text-11-medium flex items-center justify-center shrink-0"
-                    >
+                    <span class="size-5 rounded-full bg-surface-raised-base text-text-weak text-11-medium flex items-center justify-center shrink-0">
                       {step().number}
-                    </Motion.span>
+                    </span>
                     <span class="text-14-medium text-text-strong">{step().title}</span>
                   </div>
                   <p class="text-13-regular text-text-weak">{step().description}</p>
                 </div>
-              </Motion.div>
+              </div>
             )}
           </Index>
         </div>
 
-        <Motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: mounted() ? 1 : 0, y: mounted() ? 0 : 10 }}
-          transition={{ duration: 0.4, delay: 0.6 }}
-          class="p-4 rounded-lg bg-surface-warning-base/10 border border-border-warning-base/30"
-        >
+        <div class="p-4 rounded-lg bg-surface-warning-base/10 border border-border-warning-base/30">
           <div class="flex items-start gap-2">
             <Icon name="help" size="small" class="text-icon-warning-base shrink-0 mt-0.5" />
             <div class="text-13-regular text-text-base">
@@ -107,18 +74,13 @@ export function DialogConnectionHelp() {
               </ul>
             </div>
           </div>
-        </Motion.div>
+        </div>
 
-        <Motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: mounted() ? 1 : 0, y: mounted() ? 0 : 10 }}
-          transition={{ duration: 0.3, delay: 0.7 }}
-          class="flex justify-end gap-2"
-        >
+        <div class="flex justify-end">
           <Button variant="primary" size="large" onClick={() => dialog.close()}>
             {language.t("common.gotIt")}
           </Button>
-        </Motion.div>
+        </div>
       </div>
     </Dialog>
   )

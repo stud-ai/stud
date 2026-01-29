@@ -1750,28 +1750,28 @@ NOTE: At any point in time through this workflow you should feel free to ask the
     modelID: string
   }) {
     if (input.session.parentID) return
-    if (!Session.isDefaultTitle(input.session.title)) return
 
-    // Find first non-synthetic user message
-    const firstRealUserIdx = input.history.findIndex(
+    // Count real user messages
+    const realUserMessages = input.history.filter(
       (m) => m.info.role === "user" && !m.parts.every((p) => "synthetic" in p && p.synthetic),
     )
-    if (firstRealUserIdx === -1) return
+    const userMsgCount = realUserMessages.length
 
-    const isFirst =
-      input.history.filter((m) => m.info.role === "user" && !m.parts.every((p) => "synthetic" in p && p.synthetic))
-        .length === 1
-    if (!isFirst) return
+    // Generate title on first message OR update every 5 messages for better context
+    const isDefaultTitle = Session.isDefaultTitle(input.session.title)
+    const shouldUpdate = isDefaultTitle ? userMsgCount === 1 : userMsgCount > 0 && userMsgCount % 5 === 0
 
-    // Gather all messages up to and including the first real user message for context
-    // This includes any shell/subtask executions that preceded the user's first prompt
-    const contextMessages = input.history.slice(0, firstRealUserIdx + 1)
-    const firstRealUser = contextMessages[firstRealUserIdx]
+    if (!shouldUpdate) return
+
+    // Use the most recent user messages for context (up to last 3)
+    const recentMessages = realUserMessages.slice(-3)
+    if (recentMessages.length === 0) return
+
+    const latestUser = recentMessages[recentMessages.length - 1]
 
     // For subtask-only messages (from command invocations), extract the prompt directly
-    // since toModelMessage converts subtask parts to generic "The following tool was executed by the user"
-    const subtaskParts = firstRealUser.parts.filter((p) => p.type === "subtask") as MessageV2.SubtaskPart[]
-    const hasOnlySubtaskParts = subtaskParts.length > 0 && firstRealUser.parts.every((p) => p.type === "subtask")
+    const subtaskParts = latestUser.parts.filter((p) => p.type === "subtask") as MessageV2.SubtaskPart[]
+    const hasOnlySubtaskParts = subtaskParts.length > 0 && latestUser.parts.every((p) => p.type === "subtask")
 
     const agent = await Agent.get("title")
     if (!agent) return
@@ -1781,9 +1781,20 @@ NOTE: At any point in time through this workflow you should feel free to ask the
         (await Provider.getSmallModel(input.providerID)) ?? (await Provider.getModel(input.providerID, input.modelID))
       )
     })
+
+    // Build context from recent messages
+    const contextContent = hasOnlySubtaskParts
+      ? subtaskParts.map((p) => p.prompt).join("\n")
+      : recentMessages
+          .map((m) => {
+            const textParts = m.parts.filter((p) => p.type === "text") as MessageV2.TextPart[]
+            return textParts.map((p) => p.text).join("\n")
+          })
+          .join("\n")
+
     const result = await LLM.stream({
       agent,
-      user: firstRealUser.info as MessageV2.User,
+      user: latestUser.info as MessageV2.User,
       system: [],
       small: true,
       tools: {},
@@ -1794,11 +1805,8 @@ NOTE: At any point in time through this workflow you should feel free to ask the
       messages: [
         {
           role: "user",
-          content: "Generate a title for this conversation:\n",
+          content: `Generate a title for this conversation based on what the user is working on:\n\n${contextContent}`,
         },
-        ...(hasOnlySubtaskParts
-          ? [{ role: "user" as const, content: subtaskParts.map((p) => p.prompt).join("\n") }]
-          : MessageV2.toModelMessages(contextMessages, model)),
       ],
     })
     const text = await result.text.catch((err) => log.error("failed to generate title", { error: err }))
