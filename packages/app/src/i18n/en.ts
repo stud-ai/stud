@@ -782,4 +782,31 @@ export const dict = {
   "workspace.reset.archived.one": "1 session will be archived.",
   "workspace.reset.archived.many": "{{count}} sessions will be archived.",
   "workspace.reset.note": "This will reset the workspace to match the default branch.",
+
+  // Connection Help Dialog
+  "bridge.notConnecting": "Not connecting?",
+  "connectionHelp.title": "How to Connect to Roblox Studio",
+  "connectionHelp.subtitle":
+    "Follow these steps to connect Stud with Roblox Studio for real-time editing and AI assistance.",
+  "connectionHelp.step1.title": "Install the Plugin",
+  "connectionHelp.step1.description":
+    "Make sure the Stud plugin is installed in Roblox Studio. You can find it in the Roblox Plugin Marketplace or install it from the plugin folder.",
+  "connectionHelp.step2.title": "Enable HTTP Requests",
+  "connectionHelp.step2.description":
+    "In Roblox Studio, go to Game Settings > Security and enable 'Allow HTTP Requests'. This lets the plugin communicate with Stud.",
+  "connectionHelp.step3.title": "Open Your Game",
+  "connectionHelp.step3.description":
+    "Open any place file in Roblox Studio. The plugin will automatically start trying to connect.",
+  "connectionHelp.step4.title": "Click the Stud Button",
+  "connectionHelp.step4.description":
+    "In the Studio toolbar, click the Stud plugin button to establish the connection. You should see the status change to 'Connected'.",
+  "connectionHelp.troubleshooting.title": "Still having trouble?",
+  "connectionHelp.troubleshooting.tip1": "Make sure Stud desktop app is running",
+  "connectionHelp.troubleshooting.tip2": "Check that no firewall is blocking localhost:3001",
+  "connectionHelp.troubleshooting.tip3": "Try restarting both Stud and Roblox Studio",
+  "common.gotIt": "Got it",
+
+  // Sidebar navigation
+  "sidebar.home": "Home",
+  "sidebar.projectRules": "Project Rules",
 }

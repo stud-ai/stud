@@ -71,6 +71,7 @@ import { navStart } from "@/utils/perf"
 import { DialogSelectDirectory } from "@/components/dialog-select-directory"
 import { DialogEditProject } from "@/components/dialog-edit-project"
 import { Titlebar } from "@/components/titlebar"
+import { PageTransition } from "@/components/page-transition"
 import { useServer } from "@/context/server"
 import { useLanguage, type Locale } from "@/context/language"
 
@@ -2738,90 +2739,13 @@ export default function Layout(props: ParentProps) {
     <div class="relative bg-background-base flex-1 min-h-0 flex flex-col select-none [&_input]:select-text [&_textarea]:select-text [&_[contenteditable]]:select-text">
       <Titlebar />
       <div class="flex-1 min-h-0 flex">
-        <Show when={params.dir}>
-          <nav
-            aria-label={language.t("sidebar.nav.projectsAndSessions")}
-            classList={{
-              "hidden xl:block": true,
-              "relative shrink-0": true,
-            }}
-            style={{ width: layout.sidebar.opened() ? `${Math.max(layout.sidebar.width(), 244)}px` : "64px" }}
-            ref={(el) => {
-              setState("nav", el)
-            }}
-            onMouseEnter={() => {
-              if (navLeave.current === undefined) return
-              clearTimeout(navLeave.current)
-              navLeave.current = undefined
-            }}
-            onMouseLeave={() => {
-              if (!sidebarHovering()) return
-
-              if (navLeave.current !== undefined) clearTimeout(navLeave.current)
-              navLeave.current = window.setTimeout(() => {
-                navLeave.current = undefined
-                setState("hoverProject", undefined)
-                setState("hoverSession", undefined)
-              }, 300)
-            }}
-          >
-            <div class="@container w-full h-full contain-strict">
-              <SidebarContent />
-            </div>
-            <Show when={!layout.sidebar.opened() ? hoverProjectData() : undefined} keyed>
-              {(project) => (
-                <div class="absolute inset-y-0 left-16 z-50 flex">
-                  <SidebarPanel project={project} />
-                </div>
-              )}
-            </Show>
-            <Show when={layout.sidebar.opened()}>
-              <ResizeHandle
-                direction="horizontal"
-                size={layout.sidebar.width()}
-                min={244}
-                max={window.innerWidth * 0.3 + 64}
-                collapseThreshold={244}
-                onResize={layout.sidebar.resize}
-                onCollapse={layout.sidebar.close}
-              />
-            </Show>
-          </nav>
-        </Show>
-        <Show when={params.dir}>
-          <div class="xl:hidden">
-            <div
-              classList={{
-                "fixed inset-x-0 top-10 bottom-0 z-40 transition-opacity duration-200": true,
-                "opacity-100 pointer-events-auto": layout.mobileSidebar.opened(),
-                "opacity-0 pointer-events-none": !layout.mobileSidebar.opened(),
-              }}
-              onClick={(e) => {
-                if (e.target === e.currentTarget) layout.mobileSidebar.hide()
-              }}
-            />
-            <nav
-              aria-label={language.t("sidebar.nav.projectsAndSessions")}
-              classList={{
-                "@container fixed top-10 bottom-0 left-0 z-50 w-72 bg-background-base transition-transform duration-200 ease-out": true,
-                "translate-x-0": layout.mobileSidebar.opened(),
-                "-translate-x-full": !layout.mobileSidebar.opened(),
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <SidebarContent mobile />
-            </nav>
-          </div>
-        </Show>
-
         <main
           classList={{
             "size-full overflow-x-hidden flex flex-col items-start contain-strict border-t border-border-weak-base": true,
-            "xl:border-l xl:rounded-tl-sm": !layout.sidebar.opened(),
           }}
         >
           <Show when={!autoselecting()} fallback={<div class="size-full" />}>
-            {props.children}
+            <PageTransition>{props.children}</PageTransition>
           </Show>
         </main>
       </div>
