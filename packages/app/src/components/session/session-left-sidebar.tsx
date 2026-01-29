@@ -29,6 +29,7 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
   const language = useLanguage()
   const dialog = useDialog()
   const [mounted, setMounted] = createSignal(false)
+  const [explorerOpen, setExplorerOpen] = createSignal(true)
 
   onMount(() => {
     setTimeout(() => setMounted(true), 50)
@@ -191,11 +192,21 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
 
       {/* Explorer Section */}
       <div class="mt-2 flex-1 min-h-0 flex flex-col">
-        <Collapsible variant="ghost" class="w-full flex-1 min-h-0 flex flex-col" forceMount={false} open={true}>
+        <Collapsible
+          variant="ghost"
+          class="w-full flex-1 min-h-0 flex flex-col"
+          open={explorerOpen()}
+          onOpenChange={setExplorerOpen}
+        >
           <Collapsible.Trigger>
             <div class="flex items-center justify-between px-3 py-1.5 group cursor-pointer hover:bg-surface-base-hover rounded mx-1">
               <div class="flex items-center gap-1.5">
-                <Icon name="chevron-down" size="small" class="text-text-subtle" />
+                <Icon
+                  name="chevron-down"
+                  size="small"
+                  class="text-text-subtle transition-transform duration-200"
+                  classList={{ "-rotate-90": !explorerOpen() }}
+                />
                 <span class="text-11-medium text-text-subtle uppercase tracking-wider group-hover:text-text-weak transition-colors">
                   {language.t("sidebar.instanceTree")}
                 </span>
