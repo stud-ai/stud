@@ -1,6 +1,7 @@
-import { createEffect, createSignal, For, Match, Show, Switch, type JSX } from "solid-js"
+import { createEffect, createSignal, For, Match, Show, Switch, type JSX, createMemo } from "solid-js"
 import { Collapsible } from "./collapsible"
 import { Icon, IconProps } from "./icon"
+import { Spinner } from "./spinner"
 
 export type TriggerTitle = {
   title: string
@@ -42,20 +43,41 @@ export function BasicTool(props: BasicToolProps) {
     setOpen(value)
   }
 
+  const isRunning = createMemo(() => props.status === "running")
+  const isComplete = createMemo(() => props.status === "complete" || props.status === "success")
+  const isError = createMemo(() => props.status === "error")
+
   return (
     <Collapsible open={open()} onOpenChange={handleOpenChange}>
       <Collapsible.Trigger>
         <div data-component="tool-trigger" data-status={props.status}>
-          <div data-slot="basic-tool-tool-trigger-content">
-            <Icon name={props.icon} size="small" />
-            <div data-slot="basic-tool-tool-info">
+          <div data-slot="basic-tool-trigger-content">
+            {/* Icon with status indicator */}
+            <div data-slot="basic-tool-icon-wrapper">
+              <div data-slot="basic-tool-icon">
+                <Icon name={props.icon} size="small" />
+              </div>
+              {/* Spinner ring for running */}
+              <Show when={isRunning()}>
+                <div data-slot="basic-tool-spinner-ring" />
+              </Show>
+              {/* Status dot */}
+              <Show when={isComplete() || isError()}>
+                <div data-slot="basic-tool-status-dot" data-status={props.status}>
+                  <Icon name={isComplete() ? "check-small" : "close-small"} />
+                </div>
+              </Show>
+            </div>
+
+            {/* Content */}
+            <div data-slot="basic-tool-info">
               <Switch>
                 <Match when={isTriggerTitle(props.trigger) && props.trigger}>
                   {(trigger) => (
-                    <div data-slot="basic-tool-tool-info-structured">
-                      <div data-slot="basic-tool-tool-info-main">
+                    <div data-slot="basic-tool-info-structured">
+                      <div data-slot="basic-tool-info-main">
                         <span
-                          data-slot="basic-tool-tool-title"
+                          data-slot="basic-tool-title"
                           classList={{
                             [trigger().titleClass ?? ""]: !!trigger().titleClass,
                           }}
@@ -63,8 +85,9 @@ export function BasicTool(props: BasicToolProps) {
                           {trigger().title}
                         </span>
                         <Show when={trigger().subtitle}>
+                          <span data-slot="basic-tool-separator">→</span>
                           <span
-                            data-slot="basic-tool-tool-subtitle"
+                            data-slot="basic-tool-subtitle"
                             classList={{
                               [trigger().subtitleClass ?? ""]: !!trigger().subtitleClass,
                               clickable: !!props.onSubtitleClick,
@@ -83,7 +106,7 @@ export function BasicTool(props: BasicToolProps) {
                           <For each={trigger().args}>
                             {(arg) => (
                               <span
-                                data-slot="basic-tool-tool-arg"
+                                data-slot="basic-tool-arg"
                                 classList={{
                                   [trigger().argsClass ?? ""]: !!trigger().argsClass,
                                 }}

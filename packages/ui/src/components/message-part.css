@@ -366,12 +366,31 @@
 }
 
 [data-component="todos"] {
-  padding: 10px 12px 24px 48px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  background: var(--surface-inset-base);
+
+  [data-component="checkbox"] {
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--surface-base);
+    border: 1px solid var(--border-weaker-base);
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+
+    &:hover {
+      background: var(--surface-base-hover);
+    }
+  }
 
   [data-slot="message-part-todo-content"] {
+    font-size: var(--font-size-small);
+    color: var(--text-base);
+    transition: color 0.2s ease;
+
     &[data-completed="completed"] {
       text-decoration: line-through;
       color: var(--text-weaker);
@@ -380,20 +399,38 @@
 }
 
 [data-component="task-tools"] {
-  padding: 8px 12px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  background: var(--surface-inset-base);
 
   [data-slot="task-tool-item"] {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: var(--text-weak);
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--surface-base);
+    border: 1px solid var(--border-weaker-base);
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      transform 0.1s ease;
+
+    &:hover {
+      background: var(--surface-base-hover);
+      border-color: var(--border-weak-base);
+    }
 
     [data-slot="icon-svg"] {
       flex-shrink: 0;
-      color: var(--icon-weak);
+      width: 16px;
+      height: 16px;
+      padding: 4px;
+      border-radius: 6px;
+      background: var(--surface-inset-base);
+      color: var(--icon-base);
     }
   }
 
@@ -402,15 +439,15 @@
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-large);
-    color: var(--text-weak);
+    color: var(--text-base);
   }
 
   [data-slot="task-tool-subtitle"] {
-    font-family: var(--font-family-sans);
-    font-size: var(--font-size-small);
+    font-family: var(--font-family-mono);
+    font-size: 11px;
     font-weight: var(--font-weight-regular);
     line-height: var(--line-height-large);
-    color: var(--text-weaker);
+    color: var(--text-weak);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
