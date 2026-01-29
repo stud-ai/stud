@@ -16,6 +16,10 @@ import { Button } from "@stud/ui/button"
 
 type BridgeState = "connected" | "waiting" | "error" | "checking"
 
+// Module-level flag to track if auto-navigation has already happened this app session
+// This persists across component remounts (e.g., when user clicks Home)
+let hasAutoNavigated = false
+
 export default function Home() {
   const layout = useLayout()
   const platform = usePlatform()
@@ -27,7 +31,6 @@ export default function Home() {
   // Bridge status
   const [bridgeStatus, setBridgeStatus] = createSignal<BridgeState>("checking")
   const [connecting, setConnecting] = createSignal(false)
-  const [autoNavigated, setAutoNavigated] = createSignal(false)
   const [mounted, setMounted] = createSignal(false)
 
   const checkBridge = async () => {
@@ -57,22 +60,22 @@ export default function Home() {
     setTimeout(() => setMounted(true), 50)
   })
 
-  // Auto-navigate to the last project when connected
+  // Auto-navigate to the last project when connected (only on first app load)
   createEffect(
     on(bridgeStatus, (status) => {
       if (status !== "connected") return
-      if (autoNavigated()) return
+      if (hasAutoNavigated) return
 
       // Check if there's a last project to navigate to
       const projects = layout.projects.list()
       const lastProject = server.projects.last()
 
       if (lastProject && projects.find((p) => p.worktree === lastProject)) {
-        setAutoNavigated(true)
+        hasAutoNavigated = true
         navigate(`/${base64Encode(lastProject)}/session`)
       } else if (projects.length > 0) {
         // Navigate to the first project if we have any
-        setAutoNavigated(true)
+        hasAutoNavigated = true
         const first = projects[0]
         if (first) {
           navigate(`/${base64Encode(first.worktree)}/session`)

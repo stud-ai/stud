@@ -1,6 +1,6 @@
 import { createEffect, createMemo, Show, untrack } from "solid-js"
 import { createStore } from "solid-js/store"
-import { useLocation, useNavigate } from "@solidjs/router"
+import { useLocation, useNavigate, useParams } from "@solidjs/router"
 import { IconButton } from "@stud/ui/icon-button"
 import { Icon } from "@stud/ui/icon"
 import { Button } from "@stud/ui/button"
@@ -20,10 +20,24 @@ export function Titlebar() {
   const theme = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
+  const params = useParams()
 
   const mac = createMemo(() => platform.platform === "desktop" && platform.os === "macos")
   const windows = createMemo(() => platform.platform === "desktop" && platform.os === "windows")
   const web = createMemo(() => platform.platform === "web")
+
+  // Check if we're on a session page (has dir param)
+  const isSessionPage = createMemo(() => !!params.dir)
+
+  // Use leftSidebar on session pages, otherwise use the main sidebar
+  const sidebarOpened = createMemo(() => (isSessionPage() ? layout.leftSidebar.opened() : layout.sidebar.opened()))
+  const toggleSidebar = () => {
+    if (isSessionPage()) {
+      layout.leftSidebar.toggle()
+    } else {
+      layout.sidebar.toggle()
+    }
+  }
 
   const [history, setHistory] = createStore({
     stack: [] as string[],
@@ -175,20 +189,20 @@ export function Titlebar() {
             <Button
               variant="ghost"
               class="group/sidebar-toggle size-6 p-0"
-              onClick={layout.sidebar.toggle}
+              onClick={toggleSidebar}
               aria-label={language.t("command.sidebar.toggle")}
-              aria-expanded={layout.sidebar.opened()}
+              aria-expanded={sidebarOpened()}
             >
               <div class="relative flex items-center justify-center size-4 [&>*]:absolute [&>*]:inset-0">
                 <Icon
                   size="small"
-                  name={layout.sidebar.opened() ? "layout-left-full" : "layout-left"}
+                  name={sidebarOpened() ? "layout-left-full" : "layout-left"}
                   class="group-hover/sidebar-toggle:hidden"
                 />
                 <Icon size="small" name="layout-left-partial" class="hidden group-hover/sidebar-toggle:inline-block" />
                 <Icon
                   size="small"
-                  name={layout.sidebar.opened() ? "layout-left" : "layout-left-full"}
+                  name={sidebarOpened() ? "layout-left" : "layout-left-full"}
                   class="hidden group-active/sidebar-toggle:inline-block"
                 />
               </div>
