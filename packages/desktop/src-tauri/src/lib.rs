@@ -250,8 +250,15 @@ async fn check_server_health(url: &str, password: Option<&str>) -> bool {
 pub fn run() {
     let updater_enabled = option_env!("TAURI_SIGNING_PRIVATE_KEY").is_some();
 
-    #[cfg(all(target_os = "macos", not(debug_assertions)))]
+    // Kill any stray stud-core processes from previous runs
+    #[cfg(target_os = "macos")]
     let _ = std::process::Command::new("killall")
+        .arg("stud-core")
+        .output();
+
+    #[cfg(target_os = "linux")]
+    let _ = std::process::Command::new("pkill")
+        .arg("-f")
         .arg("stud-core")
         .output();
 

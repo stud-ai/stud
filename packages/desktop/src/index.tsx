@@ -262,7 +262,10 @@ const createPlatform = (password: Accessor<string | null>): Platform => ({
 
   restart: async () => {
     await invoke("kill_sidecar").catch(() => undefined)
-    await relaunch()
+    await relaunch().catch(() => {
+      // Fallback to page reload if relaunch fails
+      window.location.reload()
+    })
   },
 
   notify: async (title, description, href) => {

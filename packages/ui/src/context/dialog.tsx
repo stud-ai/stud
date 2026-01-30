@@ -70,15 +70,15 @@ function init() {
     let dispose: (() => void) | undefined
     let setClosing: ((closing: boolean) => void) | undefined
 
-    const node = runWithOwner(owner, () =>
-      createRoot((d: () => void) => {
-        dispose = d
-        const [closing, setClosingSignal] = createSignal(false)
+    const node = createRoot((d: () => void) => {
+      dispose = d
+      return runWithOwner(owner, () => {
+        const [closingSignal, setClosingSignal] = createSignal(false)
         setClosing = setClosingSignal
         return (
           <Kobalte
             modal
-            open={!closing()}
+            open={!closingSignal()}
             onOpenChange={(open: boolean) => {
               if (open) return
               close()
@@ -90,8 +90,8 @@ function init() {
             </Kobalte.Portal>
           </Kobalte>
         )
-      }),
-    )
+      })
+    })
 
     if (!dispose || !setClosing) return
 
@@ -133,8 +133,7 @@ export function useDialog() {
       return ctx.active
     },
     show(element: DialogElement, onClose?: () => void) {
-      const base = ctx.active?.owner ?? owner
-      ctx.show(element, base, onClose)
+      ctx.show(element, owner, onClose)
     },
     close() {
       ctx.close()
