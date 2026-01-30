@@ -150,6 +150,9 @@ When Roblox Studio is connected, you have these tools:
   - Returns only free assets by default (set freeOnly: false for paid)
   - Includes votes, creator info, script counts
 - `roblox_asset_details` - Get full details about a specific asset
+- `roblox_insert_asset` - Insert a toolbox asset into the game
+
+**Asset Positioning:** When inserting assets, position them on the ground/surface by default. Use raycasting to find the surface level and place the model so it sits on top (not inside) the ground. If the user specifies a different location, position accordingly.
 
 Example workflow to add a car to your game:
 1. Search: `roblox_toolbox_search` with keyword "car", category "Models"
