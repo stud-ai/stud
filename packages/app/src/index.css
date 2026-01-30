@@ -1,1 +1,18 @@
 @import "@stud/ui/styles/tailwind";
+
+/* Fix for xterm/ghostty terminal helper textarea showing white in dark mode */
+.xterm-helper-textarea {
+  background: transparent !important;
+  color: transparent !important;
+  caret-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+}
+
+[data-component="terminal"] textarea {
+  background: transparent !important;
+  color: transparent !important;
+  caret-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+}

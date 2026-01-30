@@ -78,9 +78,9 @@ export const Terminal = (props: TerminalProps) => {
     const resolved = resolveThemeVariant(variant, mode === "dark")
     const text = resolved["text-stronger"] ?? fallback.foreground
     const background = resolved["background-stronger"] ?? fallback.background
-    const alpha = mode === "dark" ? 0.25 : 0.2
-    const base = text.startsWith("#") ? (text as HexColor) : (fallback.foreground as HexColor)
-    const selectionBackground = withAlpha(base, alpha)
+    const alpha = mode === "dark" ? 0.35 : 0.2
+    const selectionBase = background.startsWith("#") ? (background as HexColor) : (fallback.background as HexColor)
+    const selectionBackground = withAlpha(selectionBase, alpha)
     return {
       background,
       foreground: text,
@@ -214,6 +214,15 @@ export const Terminal = (props: TerminalProps) => {
 
       t.open(container)
       container.addEventListener("pointerdown", handlePointerDown)
+
+      const textarea = t.textarea
+      if (textarea) {
+        textarea.style.background = "transparent"
+        textarea.style.color = "transparent"
+        textarea.style.caretColor = "transparent"
+        textarea.style.border = "none"
+        textarea.style.outline = "none"
+      }
 
       handleTextareaFocus = () => {
         t.options.cursorBlink = true
