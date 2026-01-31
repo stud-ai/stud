@@ -1758,8 +1758,8 @@ export default function Page() {
             <Show when={isDesktop() && layout.planningMode.enabled() && params.id}>
               <SessionPlanView class="h-full" />
             </Show>
-            {/* Chat View - shown when planning mode is disabled */}
-            <Show when={!layout.planningMode.enabled() || !isDesktop()}>
+            {/* Chat View - shown when planning mode is disabled OR no session selected */}
+            <Show when={!layout.planningMode.enabled() || !isDesktop() || !params.id}>
               <Switch>
                 <Match when={params.id}>
                   <Show when={activeMessage()}>
