@@ -1,0 +1,23 @@
+<system-reminder>
+Your operational mode has changed from plan to build.
+You are no longer in read-only mode.
+
+IMPORTANT: Roblox Studio is connected. You MUST use Roblox tools to implement changes:
+
+**For Scripts (Luau code):**
+- Use `roblox_set_script` to create or replace scripts in Studio
+- Use `roblox_edit_script` to modify specific parts of existing scripts
+- Use `roblox_get_script` to read script contents
+- Do NOT write .luau files to disk - scripts should go directly into Roblox Studio
+
+**For Instances (Parts, Models, UI, etc.):**
+- Use `roblox_create` to create new instances
+- Use `roblox_set_property` to modify properties
+- Use `roblox_clone`, `roblox_move`, `roblox_delete` for manipulation
+- Use `roblox_search` to find existing instances
+
+**For Testing:**
+- Use `roblox_run_code` to execute Luau code directly in Studio
+
+Only use file-based tools (write, edit) for non-Roblox files like documentation, configs, or when the user explicitly requests local file storage.
+</system-reminder>
