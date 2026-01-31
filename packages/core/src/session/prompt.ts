@@ -19,7 +19,6 @@ import { InstructionPrompt } from "./instruction"
 import { Plugin } from "../plugin"
 import PROMPT_PLAN from "../session/prompt/plan.txt"
 import BUILD_SWITCH from "../session/prompt/build-switch.txt"
-import BUILD_SWITCH_ROBLOX from "../session/prompt/build-switch-roblox.txt"
 import MAX_STEPS from "../session/prompt/max-steps.txt"
 import { defer } from "../util/defer"
 import { clone } from "remeda"
@@ -1200,11 +1199,6 @@ export namespace SessionPrompt {
     const userMessage = input.messages.findLast((msg) => msg.info.role === "user")
     if (!userMessage) return input.messages
 
-    // Check if Roblox Studio is connected for context-aware prompts
-    const { isStudioConnected } = await import("../tool/roblox/client")
-    const studioConnected = await isStudioConnected()
-    const buildSwitchPrompt = studioConnected ? BUILD_SWITCH_ROBLOX : BUILD_SWITCH
-
     // Original logic when experimental plan mode is disabled
     if (!Flag.OPENCODE_EXPERIMENTAL_PLAN_MODE) {
       if (input.agent.name === "plan") {
@@ -1224,7 +1218,7 @@ export namespace SessionPrompt {
           messageID: userMessage.info.id,
           sessionID: userMessage.info.sessionID,
           type: "text",
-          text: buildSwitchPrompt,
+          text: BUILD_SWITCH,
           synthetic: true,
         })
       }
@@ -1245,9 +1239,7 @@ export namespace SessionPrompt {
           sessionID: userMessage.info.sessionID,
           type: "text",
           text:
-            buildSwitchPrompt +
-            "\n\n" +
-            `A plan file exists at ${plan}. You should execute on the plan defined within it`,
+            BUILD_SWITCH + "\n\n" + `A plan file exists at ${plan}. You should execute on the plan defined within it`,
           synthetic: true,
         })
         userMessage.parts.push(part)
@@ -1260,20 +1252,6 @@ export namespace SessionPrompt {
       const plan = Session.plan(input.session)
       const exists = await Bun.file(plan).exists()
       if (!exists) await fs.mkdir(path.dirname(plan), { recursive: true })
-
-      // Add Roblox-specific planning guidance if Studio is connected
-      const robloxGuidance = studioConnected
-        ? `
-
-## Roblox Studio Context
-Roblox Studio is connected. When creating your implementation plan:
-- Plan to use \`roblox_set_script\` and \`roblox_edit_script\` for script changes (NOT file write/edit)
-- Plan to use \`roblox_create\`, \`roblox_set_property\` for instance manipulation
-- Plan to use \`roblox_run_code\` for testing
-- Scripts should be created in the Roblox hierarchy, not as .luau files on disk
-`
-        : ""
-
       const part = await Session.updatePart({
         id: Identifier.ascending("part"),
         messageID: userMessage.info.id,
@@ -1285,7 +1263,7 @@ Plan mode is active. The user indicated that they do not want you to execute yet
 ## Plan File Info:
 ${exists ? `A plan file already exists at ${plan}. You can read it and make incremental edits using the edit tool.` : `No plan file exists yet. You should create your plan at ${plan} using the write tool.`}
 You should build your plan incrementally by writing to or editing this file. NOTE that this is the only file you are allowed to edit - other than this you are only allowed to take READ-ONLY actions.
-${robloxGuidance}
+
 ## Plan Workflow
 
 ### Phase 1: Initial Understanding
