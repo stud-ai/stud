@@ -72,6 +72,33 @@ export function SessionHeader() {
             <div class="flex items-center gap-3">
               <StatusPopover />
               <div class="hidden md:flex items-center gap-3 ml-2 shrink-0">
+                <Tooltip value={language.t("sidebar.threads")} placement="bottom">
+                  <Button
+                    variant="ghost"
+                    class="group/left-sidebar-toggle size-6 p-0"
+                    onClick={() => layout.leftSidebar.toggle()}
+                    aria-label={language.t("sidebar.threads")}
+                    aria-expanded={layout.leftSidebar.opened()}
+                  >
+                    <div class="relative flex items-center justify-center size-4 [&>*]:absolute [&>*]:inset-0">
+                      <Icon
+                        size="small"
+                        name={layout.leftSidebar.opened() ? "layout-left-full" : "layout-left"}
+                        class="group-hover/left-sidebar-toggle:hidden"
+                      />
+                      <Icon
+                        size="small"
+                        name="layout-left-partial"
+                        class="hidden group-hover/left-sidebar-toggle:inline-block"
+                      />
+                      <Icon
+                        size="small"
+                        name={layout.leftSidebar.opened() ? "layout-left" : "layout-left-full"}
+                        class="hidden group-active/left-sidebar-toggle:inline-block"
+                      />
+                    </div>
+                  </Button>
+                </Tooltip>
                 <Tooltip value={language.t("planningMode.toggle")} placement="bottom">
                   <Button
                     variant="ghost"
