@@ -12,7 +12,6 @@ import { DialogConnectionHelp } from "@/components/dialog-connection-help"
 import { useServer } from "@/context/server"
 import { useLanguage } from "@/context/language"
 import { showToast } from "@stud/ui/toast"
-import { Button } from "@stud/ui/button"
 
 type BridgeState = "connected" | "waiting" | "error" | "checking"
 
@@ -151,121 +150,149 @@ export default function Home() {
   }
 
   return (
-    <div class="h-full w-full flex items-center justify-center">
+    <div class="h-full w-full flex items-center justify-center home-bg overflow-hidden relative">
+      {/* Floating background blobs */}
+      <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div
+          class="absolute w-[500px] h-[500px] rounded-full blur-[100px] mix-blend-screen animate-float"
+          style={{
+            top: "-10%",
+            left: "20%",
+            background: "rgba(63, 63, 70, 0.1)",
+          }}
+        />
+        <div
+          class="absolute w-[400px] h-[400px] rounded-full blur-[80px] mix-blend-screen animate-float"
+          style={{
+            bottom: "-10%",
+            right: "20%",
+            background: "rgba(63, 63, 70, 0.1)",
+            "animation-delay": "-2s",
+          }}
+        />
+      </div>
+
+      {/* Main content */}
       <div
-        class="flex flex-col items-center max-w-lg w-full px-6 transition-all duration-500 ease-out"
+        class="flex flex-col items-center max-w-2xl w-full px-6 z-10 gap-10 transition-all duration-500 ease-out"
         classList={{
           "opacity-0 translate-y-4": !visible(),
           "opacity-100 translate-y-0": visible(),
         }}
       >
-        {/* Logo */}
-        <div class="flex flex-col items-center mb-6">
-          <Logo class="scale-150" />
-          <p
-            class="mt-6 text-14-regular text-text-weak transition-opacity duration-500 delay-100"
-            classList={{
-              "opacity-0": !visible(),
-              "opacity-100": visible(),
-            }}
+        {/* Logo and Title Section */}
+        <div class="text-center space-y-6">
+          <div class="flex flex-col items-center gap-4">
+            {/* Logo with hover effect */}
+            <div class="relative group cursor-default">
+              <div class="absolute inset-0 bg-white/5 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div class="relative transform group-hover:scale-105 transition-transform duration-300">
+                <Logo class="scale-[2]" />
+              </div>
+            </div>
+
+            <div class="space-y-2 mt-4">
+              <h1 class="text-5xl font-bold tracking-tight text-white">Stud</h1>
+              <p class="text-lg text-zinc-400 font-medium">{language.t("home.tagline")}</p>
+            </div>
+          </div>
+
+          {/* Connection status badge */}
+          <button
+            type="button"
+            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 backdrop-blur-sm shadow-lg hover:border-zinc-700 transition-colors"
+            onClick={() => dialog.show(() => <DialogSelectServer />)}
           >
-            {language.t("home.tagline")}
-          </p>
-          <div
-            class="transition-opacity duration-500 delay-150"
-            classList={{
-              "opacity-0": !visible(),
-              "opacity-100": visible(),
-            }}
-          >
-            <Button
-              size="large"
-              variant="ghost"
-              class="mt-2 text-12-regular text-text-weak"
-              onClick={() => dialog.show(() => <DialogSelectServer />)}
-            >
-              <div
+            <span class="relative flex h-2 w-2">
+              <span
                 classList={{
-                  "size-2 rounded-full transition-colors duration-300": true,
-                  "bg-icon-success-base": server.healthy() === true,
-                  "bg-icon-critical-base": server.healthy() === false,
-                  "bg-border-weak-base": server.healthy() === undefined,
+                  "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75": true,
+                  "bg-green-400": server.healthy() === true,
+                  "bg-red-400": server.healthy() === false,
+                  "bg-zinc-400": server.healthy() === undefined,
                 }}
               />
-              {server.name}
-            </Button>
-          </div>
+              <span
+                classList={{
+                  "relative inline-flex rounded-full h-2 w-2": true,
+                  "bg-green-500": server.healthy() === true,
+                  "bg-red-500": server.healthy() === false,
+                  "bg-zinc-500": server.healthy() === undefined,
+                }}
+              />
+            </span>
+            <span class="text-xs font-mono text-zinc-400">{server.name}</span>
+          </button>
         </div>
 
-        {/* Connection Options */}
-        <div
-          class="flex flex-col gap-4 w-full transition-all duration-500 delay-200"
-          classList={{
-            "opacity-0 translate-y-2": !visible(),
-            "opacity-100 translate-y-0": visible(),
-          }}
-        >
+        {/* Action Cards */}
+        <div class="w-full space-y-4">
           {/* Primary CTA - Connect to Studio */}
           <button
             type="button"
-            class="w-full p-6 rounded-lg border-2 border-border-primary-base bg-surface-base-weak hover:bg-surface-base-active active:scale-[0.98] transition-all duration-150 text-left group disabled:opacity-50"
+            class="group relative w-full text-left outline-none focus:outline-none disabled:opacity-50"
             onClick={connectToStudio}
             disabled={connecting()}
           >
-            <div class="flex items-center gap-4">
-              <div class="size-12 rounded-lg bg-surface-primary-weak flex items-center justify-center group-hover:scale-110 transition-transform duration-150">
-                <Icon name="window-cursor" size="large" class="text-icon-primary-base" />
-              </div>
-              <div class="flex-1">
-                <div class="text-16-medium text-text-strong group-hover:text-text-primary transition-colors duration-150">
-                  {language.t("home.connectToStudio")}
+            <div class="main-action-glow" />
+            <div class="relative glass-card rounded-2xl p-6 transition-all duration-300 group-hover:bg-zinc-800/50 group-active:scale-[0.99]">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-6">
+                  <div class="h-14 w-14 rounded-xl bg-zinc-900 flex items-center justify-center border border-zinc-800 group-hover:border-zinc-600 transition-colors shadow-inner">
+                    <Icon name="window-cursor" size="large" class="text-white" />
+                  </div>
+                  <div class="space-y-1">
+                    <h2 class="text-xl font-semibold text-white group-hover:text-white/90">
+                      {language.t("home.connectToStudio")}
+                    </h2>
+                    <p class="text-sm text-zinc-400 group-hover:text-zinc-300">
+                      {language.t("home.connectToStudio.description")}
+                    </p>
+                  </div>
                 </div>
-                <div class="text-13-regular text-text-weak">{language.t("home.connectToStudio.description")}</div>
+                <div class="pr-2 transform transition-transform duration-300 group-hover:translate-x-1">
+                  <Icon name="arrow-right" size="normal" class="text-zinc-500 group-hover:text-white" />
+                </div>
               </div>
-              <Icon
-                name="arrow-right"
-                size="normal"
-                class="text-text-muted group-hover:text-icon-primary-base group-hover:translate-x-1 transition-all duration-150"
-              />
             </div>
           </button>
 
-          {/* Secondary Options */}
-          <div
-            class="grid grid-cols-2 gap-4 transition-all duration-500 delay-300"
-            classList={{
-              "opacity-0 translate-y-2": !visible(),
-              "opacity-100 translate-y-0": visible(),
-            }}
-          >
+          {/* Secondary Options Grid */}
+          <div class="grid grid-cols-2 gap-4">
+            {/* Open .rbxl File */}
             <button
               type="button"
-              class="p-4 rounded-lg border border-border-weak-base bg-surface-base-weak hover:bg-surface-base-active hover:border-border-base active:scale-[0.98] transition-all duration-150 text-left group"
+              class="group glass-card rounded-xl p-5 text-left transition-all duration-300 hover:bg-zinc-800/50 active:scale-[0.98]"
               onClick={openRobloxFile}
             >
-              <div class="flex items-center gap-3">
-                <div class="size-10 rounded-lg bg-surface-base-active flex items-center justify-center group-hover:scale-110 transition-transform duration-150">
-                  <Icon name="folder" size="normal" class="text-text-weak" />
+              <div class="flex flex-col gap-4">
+                <div class="h-10 w-10 rounded-lg bg-zinc-900/50 flex items-center justify-center border border-zinc-800/50 group-hover:border-zinc-700">
+                  <Icon name="folder" size="normal" class="text-zinc-400 group-hover:text-white transition-colors" />
                 </div>
-                <div class="flex-1">
-                  <div class="text-14-medium text-text-strong">{language.t("home.openRobloxFile")}</div>
-                  <div class="text-12-regular text-text-weak">{language.t("home.openRobloxFile.description")}</div>
+                <div>
+                  <h3 class="font-medium text-white mb-1">{language.t("home.openRobloxFile")}</h3>
+                  <p class="text-xs text-zinc-500 group-hover:text-zinc-400">
+                    {language.t("home.openRobloxFile.description")}
+                  </p>
                 </div>
               </div>
             </button>
 
+            {/* Connect via Rojo */}
             <button
               type="button"
-              class="p-4 rounded-lg border border-border-weak-base bg-surface-base-weak hover:bg-surface-base-active hover:border-border-base active:scale-[0.98] transition-all duration-150 text-left group"
+              class="group glass-card rounded-xl p-5 text-left transition-all duration-300 hover:bg-zinc-800/50 active:scale-[0.98]"
               onClick={connectViaRojo}
             >
-              <div class="flex items-center gap-3">
-                <div class="size-10 rounded-lg bg-surface-base-active flex items-center justify-center group-hover:scale-110 transition-transform duration-150">
-                  <Icon name="code" size="normal" class="text-text-weak" />
+              <div class="flex flex-col gap-4">
+                <div class="h-10 w-10 rounded-lg bg-zinc-900/50 flex items-center justify-center border border-zinc-800/50 group-hover:border-zinc-700">
+                  <Icon name="code" size="normal" class="text-zinc-400 group-hover:text-white transition-colors" />
                 </div>
-                <div class="flex-1">
-                  <div class="text-14-medium text-text-strong">{language.t("home.connectViaRojo")}</div>
-                  <div class="text-12-regular text-text-weak">{language.t("home.connectViaRojo.description")}</div>
+                <div>
+                  <h3 class="font-medium text-white mb-1">{language.t("home.connectViaRojo")}</h3>
+                  <p class="text-xs text-zinc-500 group-hover:text-zinc-400">
+                    {language.t("home.connectViaRojo.description")}
+                  </p>
                 </div>
               </div>
             </button>
@@ -273,48 +300,44 @@ export default function Home() {
         </div>
 
         {/* Bridge Status */}
-        <div
-          class="flex justify-center mt-6 transition-opacity duration-500 delay-[400ms]"
-          classList={{
-            "opacity-0": !visible(),
-            "opacity-100": visible(),
-          }}
-        >
-          <div class="flex items-center gap-2 text-12-regular text-text-weak">
-            <div
-              classList={{
-                "size-2 rounded-full transition-colors duration-300": true,
-                "bg-icon-success-base animate-pulse": bridgeStatus() === "connected",
-                "bg-icon-warning-base animate-pulse": bridgeStatus() === "waiting",
-                "bg-icon-critical-base": bridgeStatus() === "error",
-                "bg-border-weak-base animate-pulse": bridgeStatus() === "checking",
-              }}
-            />
-            <Switch>
-              <Match when={bridgeStatus() === "connected"}>{language.t("bridge.connected")}</Match>
-              <Match when={bridgeStatus() === "waiting"}>
-                <span>{language.t("bridge.waiting")}</span>
-                <button
-                  type="button"
-                  class="text-text-interactive-base hover:text-text-interactive-hover underline underline-offset-2 ml-1 hover:no-underline transition-colors duration-150"
-                  onClick={() => dialog.show(() => <DialogConnectionHelp />)}
-                >
-                  {language.t("bridge.notConnecting")}
-                </button>
-              </Match>
-              <Match when={bridgeStatus() === "error"}>
-                <span>{language.t("bridge.notRunning")}</span>
-                <button
-                  type="button"
-                  class="text-text-interactive-base hover:text-text-interactive-hover underline underline-offset-2 ml-1 hover:no-underline transition-colors duration-150"
-                  onClick={() => dialog.show(() => <DialogConnectionHelp />)}
-                >
-                  {language.t("bridge.notConnecting")}
-                </button>
-              </Match>
-              <Match when={bridgeStatus() === "checking"}>{language.t("bridge.checking")}</Match>
-            </Switch>
-          </div>
+        <div class="flex items-center gap-2 text-sm text-zinc-400">
+          <div
+            classList={{
+              "h-2 w-2 rounded-full transition-colors duration-300": true,
+              "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]": bridgeStatus() === "connected",
+              "bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.6)]": bridgeStatus() === "waiting",
+              "bg-red-500": bridgeStatus() === "error",
+              "bg-zinc-500 animate-pulse": bridgeStatus() === "checking",
+            }}
+          />
+          <Switch>
+            <Match when={bridgeStatus() === "connected"}>
+              <span>{language.t("bridge.connected")}</span>
+            </Match>
+            <Match when={bridgeStatus() === "waiting"}>
+              <span>{language.t("bridge.waiting")}</span>
+              <button
+                type="button"
+                class="text-zinc-300 hover:text-white underline underline-offset-2 hover:no-underline transition-colors duration-150"
+                onClick={() => dialog.show(() => <DialogConnectionHelp />)}
+              >
+                {language.t("bridge.notConnecting")}
+              </button>
+            </Match>
+            <Match when={bridgeStatus() === "error"}>
+              <span>{language.t("bridge.notRunning")}</span>
+              <button
+                type="button"
+                class="text-zinc-300 hover:text-white underline underline-offset-2 hover:no-underline transition-colors duration-150"
+                onClick={() => dialog.show(() => <DialogConnectionHelp />)}
+              >
+                {language.t("bridge.notConnecting")}
+              </button>
+            </Match>
+            <Match when={bridgeStatus() === "checking"}>
+              <span>{language.t("bridge.checking")}</span>
+            </Match>
+          </Switch>
         </div>
       </div>
     </div>

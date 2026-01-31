@@ -16,3 +16,55 @@
   border: none !important;
   outline: none !important;
 }
+
+/* Home page glass card styling */
+.glass-card {
+  background: rgba(24, 24, 27, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(39, 39, 42, 0.5);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Floating animation for background blobs */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Home page background */
+.home-bg {
+  background-color: var(--background-stronger, #050505);
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(40, 40, 40, 0.4) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(30, 30, 30, 0.3) 0%, transparent 30%);
+}
+
+/* Main action glow effect */
+.main-action-glow {
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  border-radius: 1rem;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.group:hover .main-action-glow {
+  opacity: 1;
+}
