@@ -25,6 +25,7 @@ import {
   ImageAttachmentPart,
   AgentPart,
   FileAttachmentPart,
+  InstanceAttachmentPart,
 } from "@/context/prompt"
 import { useLayout } from "@/context/layout"
 import { useSDK } from "@/context/sdk"
@@ -58,6 +59,9 @@ import { createOpencodeClient, type Message, type Part } from "@stud/sdk/v2/clie
 import { Binary } from "@stud/util/binary"
 import { showToast } from "@stud/ui/toast"
 import { base64Encode } from "@stud/util/encode"
+import { useInstance } from "@/context/instance"
+import { studioRequest } from "@/utils/studio"
+import { InstanceIcon } from "@stud/ui/instance-icon"
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/gif", "image/webp"]
 const ACCEPTED_FILE_TYPES = [...ACCEPTED_IMAGE_TYPES, "application/pdf"]
@@ -122,6 +126,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   const platform = usePlatform()
   const local = useLocal()
   const files = useFile()
+  const instance = useInstance()
   const prompt = usePrompt()
   const commentCount = createMemo(() => prompt.context.items().filter((item) => !!item.comment?.trim()).length)
   const layout = useLayout()
@@ -277,6 +282,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       if (part.type === "text") return { ...part }
       if (part.type === "image") return { ...part }
       if (part.type === "agent") return { ...part }
+      if (part.type === "instance") return { ...part }
       return {
         ...part,
         selection: part.selection ? { ...part.selection } : undefined,
@@ -445,7 +451,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
 
   type AtOption =
     | { type: "agent"; name: string; display: string }
-    | { type: "file"; path: string; display: string; recent?: boolean }
+    | { type: "instance"; path: string; name: string; className: string; display: string; recent?: boolean }
 
   const agentList = createMemo(() =>
     sync.data.agent
@@ -458,13 +464,21 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     if (option.type === "agent") {
       addPart({ type: "agent", name: option.name, content: "@" + option.name, start: 0, end: 0 })
     } else {
-      addPart({ type: "file", path: option.path, content: "@" + option.path, start: 0, end: 0 })
+      addPart({
+        type: "instance",
+        path: option.path,
+        name: option.name,
+        className: option.className,
+        content: "@" + option.name,
+        start: 0,
+        end: 0,
+      })
     }
   }
 
   const atKey = (x: AtOption | undefined) => {
     if (!x) return ""
-    return x.type === "agent" ? `agent:${x.name}` : `file:${x.path}`
+    return x.type === "agent" ? `agent:${x.name}` : `instance:${x.path}`
   }
 
   const {
@@ -476,21 +490,48 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   } = useFilteredList<AtOption>({
     items: async (query) => {
       const agents = agentList()
-      const open = recent()
-      const seen = new Set(open)
-      const pinned: AtOption[] = open.map((path) => ({ type: "file", path, display: path, recent: true }))
-      const paths = await files.searchFilesAndDirectories(query)
-      const fileOptions: AtOption[] = paths
-        .filter((path) => !seen.has(path))
-        .map((path) => ({ type: "file", path, display: path }))
-      return [...agents, ...pinned, ...fileOptions]
+
+      // Search instances instead of files
+      const searchResult = await studioRequest<Array<{ path: string; name: string; className: string }>>(
+        "/instance/search",
+        { root: "game", name: query || "", limit: 15 },
+      )
+
+      // Get currently selected instance as "recent" option
+      const selected = instance.selected()
+      const recentInstances: AtOption[] = selected
+        ? [
+            {
+              type: "instance",
+              path: selected.path,
+              name: selected.name,
+              className: selected.className,
+              display: selected.name,
+              recent: true,
+            },
+          ]
+        : []
+
+      const instanceOptions: AtOption[] = searchResult.success
+        ? searchResult.data
+            .filter((inst) => inst.path !== selected?.path)
+            .map((inst) => ({
+              type: "instance",
+              path: inst.path,
+              name: inst.name,
+              className: inst.className,
+              display: inst.name,
+            }))
+        : []
+
+      return [...agents, ...recentInstances, ...instanceOptions]
     },
     key: atKey,
-    filterKeys: ["display"],
+    filterKeys: ["display", "name"],
     groupBy: (item) => {
       if (item.type === "agent") return "agent"
       if (item.recent) return "recent"
-      return "file"
+      return "instance"
     },
     sortGroupsBy: (a, b) => {
       const rank = (category: string) => {
@@ -566,12 +607,17 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     onSelect: handleSlashSelect,
   })
 
-  const createPill = (part: FileAttachmentPart | AgentPart) => {
+  const createPill = (part: FileAttachmentPart | AgentPart | InstanceAttachmentPart) => {
     const pill = document.createElement("span")
     pill.textContent = part.content
     pill.setAttribute("data-type", part.type)
     if (part.type === "file") pill.setAttribute("data-path", part.path)
     if (part.type === "agent") pill.setAttribute("data-name", part.name)
+    if (part.type === "instance") {
+      pill.setAttribute("data-path", part.path)
+      pill.setAttribute("data-class", part.className)
+      pill.setAttribute("data-name", part.name)
+    }
     pill.setAttribute("contenteditable", "false")
     pill.style.userSelect = "text"
     pill.style.cursor = "default"
@@ -597,6 +643,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       const el = node as HTMLElement
       if (el.dataset.type === "file") return true
       if (el.dataset.type === "agent") return true
+      if (el.dataset.type === "instance") return true
       return el.tagName === "BR"
     })
 
@@ -607,7 +654,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
         editorRef.appendChild(createTextFragment(part.content))
         continue
       }
-      if (part.type === "file" || part.type === "agent") {
+      if (part.type === "file" || part.type === "agent" || part.type === "instance") {
         editorRef.appendChild(createPill(part))
       }
     }
@@ -730,6 +777,20 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       position += content.length
     }
 
+    const pushInstance = (el: HTMLElement) => {
+      const content = el.textContent ?? ""
+      parts.push({
+        type: "instance",
+        path: el.dataset.path!,
+        name: el.dataset.name || content.replace("@", ""),
+        className: el.dataset.class!,
+        content,
+        start: position,
+        end: position + content.length,
+      })
+      position += content.length
+    }
+
     const visit = (node: Node) => {
       if (node.nodeType === Node.TEXT_NODE) {
         buffer += node.textContent ?? ""
@@ -746,6 +807,11 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       if (el.dataset.type === "agent") {
         flushText()
         pushAgent(el)
+        return
+      }
+      if (el.dataset.type === "instance") {
+        flushText()
+        pushInstance(el)
         return
       }
       if (el.tagName === "BR") {
@@ -1307,6 +1373,9 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
 
     const fileAttachments = currentPrompt.filter((part) => part.type === "file") as FileAttachmentPart[]
     const agentAttachments = currentPrompt.filter((part) => part.type === "agent") as AgentPart[]
+    const instanceAttachments = currentPrompt.filter(
+      (part) => part.type === "instance",
+    ) as InstanceAttachmentPart[]
 
     const fileAttachmentParts = fileAttachments.map((attachment) => {
       const absolute = toAbsolutePath(attachment.path)
@@ -1341,6 +1410,37 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
         end: attachment.end,
       },
     }))
+
+    // Process instance attachments - fetch script source for scripts, include path info for others
+    const instanceAttachmentParts = await Promise.all(
+      instanceAttachments.map(async (attachment) => {
+        const isScript = ["Script", "LocalScript", "ModuleScript"].includes(attachment.className)
+        let scriptSource: string | undefined
+
+        if (isScript) {
+          const result = await studioRequest<{ source: string }>("/script/get", {
+            path: attachment.path,
+          })
+          if (result.success) {
+            scriptSource = result.data.source
+          }
+        }
+
+        // Format instance context for the LLM
+        let contextText = `<instance path="${attachment.path}" class="${attachment.className}">\n`
+        if (scriptSource) {
+          contextText += `<script>\n${scriptSource}\n</script>\n`
+        }
+        contextText += `</instance>`
+
+        return {
+          id: Identifier.ascending("part"),
+          type: "text" as const,
+          text: contextText,
+          synthetic: true,
+        }
+      }),
+    )
 
     const usedUrls = new Set(fileAttachmentParts.map((part) => part.url))
 
@@ -1428,6 +1528,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       ...fileAttachmentParts,
       ...contextParts,
       ...agentAttachmentParts,
+      ...instanceAttachmentParts,
       ...imageAttachmentParts,
     ]
 
@@ -1646,22 +1747,17 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                         when={item.type === "agent"}
                         fallback={
                           <>
-                            <FileIcon
-                              node={{ path: (item as { type: "file"; path: string }).path, type: "file" }}
+                            <InstanceIcon
+                              className={(item as { className: string }).className}
                               class="shrink-0 size-4"
                             />
-                            <div class="flex items-center text-14-regular min-w-0">
-                              <span class="text-text-weak whitespace-nowrap truncate min-w-0">
-                                {(() => {
-                                  const path = (item as { type: "file"; path: string }).path
-                                  return path.endsWith("/") ? path : getDirectory(path)
-                                })()}
+                            <div class="flex flex-col text-14-regular min-w-0">
+                              <span class="text-text-strong whitespace-nowrap truncate">
+                                {(item as { name: string }).name}
                               </span>
-                              <Show when={!(item as { type: "file"; path: string }).path.endsWith("/")}>
-                                <span class="text-text-strong whitespace-nowrap">
-                                  {getFilename((item as { type: "file"; path: string }).path)}
-                                </span>
-                              </Show>
+                              <span class="text-text-subtle text-12-regular whitespace-nowrap truncate">
+                                {(item as { path: string }).path}
+                              </span>
                             </div>
                           </>
                         }
