@@ -23,7 +23,7 @@ export function ImagePreview(props: ImagePreviewProps) {
             />
           </div>
           <div data-slot="image-preview-body">
-            <img src={props.src} alt={props.alt ?? i18n.t("ui.imagePreview.alt")} data-slot="image-preview-image" />
+            <img src={props.src} alt={props.alt ?? i18n.t("ui.imagePreview.alt")} loading="lazy" decoding="async" data-slot="image-preview-image" />
           </div>
         </Kobalte.Content>
       </div>

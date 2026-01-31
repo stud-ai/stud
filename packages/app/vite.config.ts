@@ -11,5 +11,14 @@ export default defineConfig({
   build: {
     target: "esnext",
     // sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "syntax-highlighting": ["shiki", "marked-shiki"],
+          terminal: ["ghostty-web"],
+          math: ["katex"],
+        },
+      },
+    },
   },
 })
