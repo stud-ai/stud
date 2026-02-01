@@ -228,6 +228,8 @@ function createGlobalSync() {
   const booting = new Map<string, Promise<void>>()
   const sessionLoads = new Map<string, Promise<void>>()
   const sessionMeta = new Map<string, { limit: number }>()
+  // Track recently deleted sessions to prevent resurrection during race conditions
+  const deletedSessions = new Set<string>()
 
   const sessionRecentWindow = 4 * 60 * 60 * 1000
   const sessionRecentLimit = 50
@@ -409,9 +411,10 @@ function createGlobalSync() {
 
         // Preserve child sessions and any root sessions that were added via events
         // during the API fetch (race condition protection)
-        const children = store.session.filter((s) => !!s.parentID)
+        // Filter out sessions that were recently deleted to prevent resurrection
+        const children = store.session.filter((s) => !!s.parentID && !deletedSessions.has(s.id))
         const existingRootIds = new Set(nonArchived.map((s) => s.id))
-        const eventAddedRoots = store.session.filter((s) => !s.parentID && !existingRootIds.has(s.id))
+        const eventAddedRoots = store.session.filter((s) => !s.parentID && !existingRootIds.has(s.id) && !deletedSessions.has(s.id))
         const sessions = trimSessions([...nonArchived, ...eventAddedRoots, ...children], { limit, permission: store.permission })
 
         // Store total session count (used for "load more" pagination)
@@ -636,6 +639,8 @@ function createGlobalSync() {
       }
       case "session.created": {
         const info = event.properties.info
+        // Remove from deleted set in case ID is somehow reused
+        deletedSessions.delete(info.id)
         const result = Binary.search(store.session, info.id, (s) => s.id)
         if (result.found) {
           setStore("session", result.index, reconcile(info))
@@ -685,6 +690,8 @@ function createGlobalSync() {
       }
       case "session.deleted": {
         const sessionID = event.properties.info.id
+        // Track deleted sessions to prevent resurrection during loadSessions race condition
+        deletedSessions.add(sessionID)
         const result = Binary.search(store.session, sessionID, (s) => s.id)
         if (result.found) {
           setStore(
