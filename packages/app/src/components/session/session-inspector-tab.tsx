@@ -11,6 +11,73 @@ import { useFile } from "@/context/file"
 import { studioRequest } from "@/utils/studio"
 
 const SCRIPT_CLASSES = ["Script", "LocalScript", "ModuleScript"]
+const MODEL_CLASSES = ["Model", "Folder"]
+const PART_CLASSES = ["Part", "MeshPart", "UnionOperation", "WedgePart", "SpawnLocation", "Seat", "VehicleSeat", "TrussPart", "CornerWedgePart"]
+
+// Script analysis types
+interface ScriptAnalysis {
+  functions: string[]
+  requires: string[]
+  services: string[]
+  eventConnections: number
+  lineCount: number
+}
+
+// Parse script source for analysis
+function analyzeScript(source: string): ScriptAnalysis {
+  const functions: string[] = []
+  const requires: string[] = []
+  const services: string[] = []
+  let eventConnections = 0
+
+  // Match function declarations: function name() and local function name()
+  const functionRegex = /(?:local\s+)?function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/g
+  let match
+  while ((match = functionRegex.exec(source)) !== null) {
+    if (!functions.includes(match[1])) {
+      functions.push(match[1])
+    }
+  }
+
+  // Match method-style functions: function Class:method() and Class.method = function()
+  const methodRegex = /function\s+([a-zA-Z_][a-zA-Z0-9_]*)[.:]+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/g
+  while ((match = methodRegex.exec(source)) !== null) {
+    const methodName = `${match[1]}:${match[2]}`
+    if (!functions.includes(methodName)) {
+      functions.push(methodName)
+    }
+  }
+
+  // Match require statements
+  const requireRegex = /require\s*\(\s*([^)]+)\s*\)/g
+  while ((match = requireRegex.exec(source)) !== null) {
+    const reqPath = match[1].trim()
+    if (!requires.includes(reqPath)) {
+      requires.push(reqPath)
+    }
+  }
+
+  // Match GetService calls
+  const serviceRegex = /GetService\s*\(\s*["']([^"']+)["']\s*\)/g
+  while ((match = serviceRegex.exec(source)) !== null) {
+    if (!services.includes(match[1])) {
+      services.push(match[1])
+    }
+  }
+
+  // Count event connections
+  const connectMatches = source.match(/[.:]Connect\s*\(/g)
+  eventConnections = connectMatches?.length ?? 0
+
+  // Also count :Once connections
+  const onceMatches = source.match(/[.:]Once\s*\(/g)
+  eventConnections += onceMatches?.length ?? 0
+
+  // Line count
+  const lineCount = source.split("\n").length
+
+  return { functions, requires, services, eventConnections, lineCount }
+}
 
 function isScript(className: string) {
   return SCRIPT_CLASSES.includes(className)
@@ -76,6 +143,316 @@ function categorizeProperties(properties: PropertyInfo[]): Record<string, Proper
   return categorized
 }
 
+// Script Analysis Section component
+function ScriptAnalysisSection(props: { analysis: ScriptAnalysis }) {
+  const hasFunctions = () => props.analysis.functions.length > 0
+  const hasRequires = () => props.analysis.requires.length > 0
+  const hasServices = () => props.analysis.services.length > 0
+  const hasConnections = () => props.analysis.eventConnections > 0
+
+  const hasAnyData = () => hasFunctions() || hasRequires() || hasServices() || hasConnections()
+
+  return (
+    <Show when={hasAnyData()}>
+      <div class="border-b border-border-base">
+        <Collapsible defaultOpen class="border-b border-border-weak-base last:border-b-0">
+          <Collapsible.Trigger class="w-full">
+            <div class="flex items-center gap-2 py-2 px-4 hover:bg-surface-base-hover transition-colors">
+              <Icon
+                name="chevron-right"
+                size="small"
+                class="text-icon-subtle transition-transform duration-200 group-data-[state=open]:rotate-90"
+              />
+              <span class="text-11-medium text-text-subtle uppercase tracking-wider">Analysis</span>
+              <span class="text-10-regular text-text-weak ml-auto bg-surface-base px-1.5 py-0.5 rounded-full">
+                {props.analysis.lineCount} lines
+              </span>
+            </div>
+          </Collapsible.Trigger>
+          <Collapsible.Content>
+            <div class="flex flex-col gap-3 px-4 pb-3">
+              {/* Functions */}
+              <Show when={hasFunctions()}>
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-1.5">
+                    <Icon name="code" size="small" class="text-icon-subtle" />
+                    <span class="text-11-medium text-text-subtle">Functions ({props.analysis.functions.length})</span>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5 pl-5">
+                    <For each={props.analysis.functions.slice(0, 10)}>
+                      {(fn) => (
+                        <span class="text-10-regular text-text-base bg-surface-base px-2 py-0.5 rounded font-mono">
+                          {fn}()
+                        </span>
+                      )}
+                    </For>
+                    <Show when={props.analysis.functions.length > 10}>
+                      <span class="text-10-regular text-text-weak px-1">
+                        +{props.analysis.functions.length - 10} more
+                      </span>
+                    </Show>
+                  </div>
+                </div>
+              </Show>
+
+              {/* Requires */}
+              <Show when={hasRequires()}>
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-1.5">
+                    <Icon name="folder" size="small" class="text-icon-subtle" />
+                    <span class="text-11-medium text-text-subtle">Requires ({props.analysis.requires.length})</span>
+                  </div>
+                  <div class="flex flex-col gap-0.5 pl-5">
+                    <For each={props.analysis.requires.slice(0, 5)}>
+                      {(req) => (
+                        <span class="text-10-regular text-text-base font-mono truncate" title={req}>
+                          {req}
+                        </span>
+                      )}
+                    </For>
+                    <Show when={props.analysis.requires.length > 5}>
+                      <span class="text-10-regular text-text-weak">
+                        +{props.analysis.requires.length - 5} more
+                      </span>
+                    </Show>
+                  </div>
+                </div>
+              </Show>
+
+              {/* Services */}
+              <Show when={hasServices()}>
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-1.5">
+                    <Icon name="cube" size="small" class="text-icon-subtle" />
+                    <span class="text-11-medium text-text-subtle">Services ({props.analysis.services.length})</span>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5 pl-5">
+                    <For each={props.analysis.services}>
+                      {(service) => (
+                        <span class="text-10-regular text-text-base bg-surface-base px-2 py-0.5 rounded">
+                          {service}
+                        </span>
+                      )}
+                    </For>
+                  </div>
+                </div>
+              </Show>
+
+              {/* Event Connections */}
+              <Show when={hasConnections()}>
+                <div class="flex items-center gap-1.5">
+                  <Icon name="play" size="small" class="text-icon-subtle" />
+                  <span class="text-11-medium text-text-subtle">Event Connections</span>
+                  <span class="text-10-regular text-text-base bg-surface-base px-2 py-0.5 rounded ml-auto">
+                    {props.analysis.eventConnections}
+                  </span>
+                </div>
+              </Show>
+            </div>
+          </Collapsible.Content>
+        </Collapsible>
+      </div>
+    </Show>
+  )
+}
+
+// Part Visual Summary component
+function PartSummaryCard(props: { properties: PropertyInfo[] }) {
+  const getProp = (name: string) => props.properties.find((p) => p.name === name)?.value
+
+  const size = () => {
+    const sizeVal = getProp("Size")
+    if (!sizeVal) return null
+    // Parse Vector3 string like "4, 1, 2"
+    const match = sizeVal.match(/([\d.]+),\s*([\d.]+),\s*([\d.]+)/)
+    if (!match) return null
+    return { x: parseFloat(match[1]), y: parseFloat(match[2]), z: parseFloat(match[3]) }
+  }
+
+  const position = () => {
+    const posVal = getProp("Position")
+    if (!posVal) return null
+    const match = posVal.match(/([-\d.]+),\s*([-\d.]+),\s*([-\d.]+)/)
+    if (!match) return null
+    return { x: parseFloat(match[1]), y: parseFloat(match[2]), z: parseFloat(match[3]) }
+  }
+
+  const color = () => {
+    const colorVal = getProp("Color") ?? getProp("BrickColor")
+    if (!colorVal) return null
+    // Try to parse Color3 format
+    const match = colorVal.match(/([\d.]+),\s*([\d.]+),\s*([\d.]+)/)
+    if (match) {
+      const r = Math.round(parseFloat(match[1]) * 255)
+      const g = Math.round(parseFloat(match[2]) * 255)
+      const b = Math.round(parseFloat(match[3]) * 255)
+      return `rgb(${r}, ${g}, ${b})`
+    }
+    return null
+  }
+
+  const material = () => getProp("Material")?.replace("Enum.Material.", "")
+  const isAnchored = () => getProp("Anchored") === "true"
+  const canCollide = () => getProp("CanCollide") === "true"
+  const mass = () => getProp("Mass")
+  const volume = () => getProp("Volume")
+
+  return (
+    <div class="px-4 py-3 border-b border-border-base">
+      <div class="bg-surface-base rounded-lg p-3">
+        {/* Size display */}
+        <Show when={size()}>
+          {(s) => (
+            <div class="flex items-center gap-2 mb-3">
+              <Icon name="cube" size="small" class="text-icon-subtle" />
+              <span class="text-13-medium text-text-strong font-mono">
+                {s().x.toFixed(1)} × {s().y.toFixed(1)} × {s().z.toFixed(1)}
+              </span>
+              <span class="text-10-regular text-text-weak">studs</span>
+            </div>
+          )}
+        </Show>
+
+        {/* Position */}
+        <Show when={position()}>
+          {(p) => (
+            <div class="flex items-center gap-2 mb-3">
+              <Icon name="cube" size="small" class="text-icon-subtle" />
+              <span class="text-11-regular text-text-base font-mono">
+                ({p().x.toFixed(1)}, {p().y.toFixed(1)}, {p().z.toFixed(1)})
+              </span>
+            </div>
+          )}
+        </Show>
+
+        {/* Color and Material row */}
+        <div class="flex items-center gap-3 mb-3">
+          <Show when={color()}>
+            {(c) => (
+              <div class="flex items-center gap-1.5">
+                <div class="size-5 rounded border border-border-base" style={{ "background-color": c() }} />
+                <span class="text-10-regular text-text-subtle">Color</span>
+              </div>
+            )}
+          </Show>
+          <Show when={material()}>
+            {(m) => (
+              <div class="flex items-center gap-1.5">
+                <Icon name="photo" size="small" class="text-icon-subtle" />
+                <span class="text-11-regular text-text-base">{m()}</span>
+              </div>
+            )}
+          </Show>
+        </div>
+
+        {/* Badges */}
+        <div class="flex flex-wrap gap-1.5">
+          <Show when={isAnchored()}>
+            <span class="text-10-medium text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded">Anchored</span>
+          </Show>
+          <Show when={!isAnchored()}>
+            <span class="text-10-medium text-text-weak bg-surface-raised-base px-2 py-0.5 rounded">Unanchored</span>
+          </Show>
+          <Show when={canCollide()}>
+            <span class="text-10-medium text-green-400 bg-green-400/10 px-2 py-0.5 rounded">CanCollide</span>
+          </Show>
+          <Show when={mass()}>
+            {(m) => <span class="text-10-regular text-text-subtle bg-surface-raised-base px-2 py-0.5 rounded">{m()} mass</span>}
+          </Show>
+          <Show when={volume()}>
+            {(v) => <span class="text-10-regular text-text-subtle bg-surface-raised-base px-2 py-0.5 rounded">{v()} vol</span>}
+          </Show>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Model/Container Statistics component
+function ModelStatisticsSection(props: { properties: PropertyInfo[]; className: string }) {
+  const getProp = (name: string) => props.properties.find((p) => p.name === name)?.value
+
+  const childrenCount = () => {
+    const count = getProp("ChildrenCount")
+    return count ? parseInt(count) : 0
+  }
+
+  const descendantsCount = () => {
+    const count = getProp("DescendantsCount")
+    return count ? parseInt(count) : 0
+  }
+
+  const breakdown = () => {
+    const bd = getProp("ChildrenBreakdown")
+    if (!bd) return []
+    return bd.split(", ").map((item) => {
+      const [className, count] = item.split(": ")
+      return { className, count: parseInt(count) }
+    })
+  }
+
+  const primaryPart = () => getProp("PrimaryPart")
+  const pivot = () => getProp("Pivot")
+
+  return (
+    <div class="px-4 py-3 border-b border-border-base">
+      <div class="bg-surface-base rounded-lg p-3">
+        {/* Counts */}
+        <div class="flex items-center gap-4 mb-3">
+          <div class="flex items-center gap-1.5">
+            <Icon name="folder" size="small" class="text-icon-subtle" />
+            <span class="text-13-medium text-text-strong">{childrenCount()}</span>
+            <span class="text-11-regular text-text-subtle">children</span>
+          </div>
+          <Show when={descendantsCount() > childrenCount()}>
+            <div class="flex items-center gap-1.5">
+              <span class="text-13-medium text-text-base">{descendantsCount()}</span>
+              <span class="text-11-regular text-text-subtle">total</span>
+            </div>
+          </Show>
+        </div>
+
+        {/* Breakdown by type */}
+        <Show when={breakdown().length > 0}>
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            <For each={breakdown().slice(0, 6)}>
+              {(item) => (
+                <div class="flex items-center gap-1 bg-surface-raised-base px-2 py-1 rounded">
+                  <InstanceIcon className={item.className} class="size-3.5" />
+                  <span class="text-10-regular text-text-base">{item.count}</span>
+                </div>
+              )}
+            </For>
+            <Show when={breakdown().length > 6}>
+              <span class="text-10-regular text-text-weak px-1 py-1">+{breakdown().length - 6} more types</span>
+            </Show>
+          </div>
+        </Show>
+
+        {/* Model-specific info */}
+        <Show when={props.className === "Model"}>
+          <div class="flex flex-wrap gap-2">
+            <Show when={primaryPart() && primaryPart() !== "None"}>
+              <div class="flex items-center gap-1.5">
+                <Icon name="cube" size="small" class="text-icon-subtle" />
+                <span class="text-10-regular text-text-subtle">PrimaryPart:</span>
+                <span class="text-10-medium text-text-base">{primaryPart()}</span>
+              </div>
+            </Show>
+            <Show when={pivot()}>
+              <div class="flex items-center gap-1.5">
+                <Icon name="cube" size="small" class="text-icon-subtle" />
+                <span class="text-10-regular text-text-subtle">Pivot:</span>
+                <span class="text-10-regular text-text-base font-mono">{pivot()}</span>
+              </div>
+            </Show>
+          </div>
+        </Show>
+      </div>
+    </div>
+  )
+}
+
 function PropertyRow(props: { prop: PropertyInfo }) {
   const isColor = () => props.prop.type === "Color3" || props.prop.type === "BrickColor"
 
@@ -97,23 +474,25 @@ function PropertyRow(props: { prop: PropertyInfo }) {
   )
 }
 
-function InstanceProperties(props: { path: string }) {
-  const [properties] = createResource(
-    () => props.path,
+function InstanceProperties(props: { path: string; properties?: PropertyInfo[] }) {
+  const [fetchedProperties] = createResource(
+    () => (props.properties ? null : props.path),
     async (path) => {
+      if (!path) return []
       const result = await studioRequest<PropertyInfo[]>("/instance/properties", { path })
       if (result.success) return result.data
       return []
     },
   )
 
-  const categorized = createMemo(() => categorizeProperties(properties() ?? []))
+  const properties = createMemo(() => props.properties ?? fetchedProperties() ?? [])
+  const categorized = createMemo(() => categorizeProperties(properties()))
   const categoryOrder = ["Data", "Transform", "Appearance", "Behavior", "Other"]
 
   return (
     <div class="flex flex-col">
       <Show
-        when={!properties.loading}
+        when={props.properties || !fetchedProperties.loading}
         fallback={
           <div class="flex items-center gap-2 px-4 py-3 text-12-regular text-text-weak">
             <div class="size-4 border-2 border-border-base border-t-text-subtle rounded-full animate-spin" />
@@ -122,7 +501,7 @@ function InstanceProperties(props: { path: string }) {
         }
       >
         <Show
-          when={properties()?.length}
+          when={properties().length}
           fallback={
             <div class="px-4 py-3 text-12-regular text-text-weak flex items-center gap-2">
               <Icon name="help" size="small" class="text-icon-subtle" />
@@ -215,6 +594,13 @@ function ScriptPreview(props: {
     return c.split("\n").length
   })
 
+  // Analyze script source
+  const analysis = createMemo(() => {
+    const source = contents()
+    if (!source) return null
+    return analyzeScript(source)
+  })
+
   createEffect(() => {
     contents()
     setCacheKey((k) => k + 1)
@@ -246,6 +632,12 @@ function ScriptPreview(props: {
           aria-label="Close inspector"
         />
       </div>
+
+      {/* Script Analysis Section */}
+      <Show when={analysis()}>
+        {(a) => <ScriptAnalysisSection analysis={a()} />}
+      </Show>
+
       <div class="flex-1 min-h-0 overflow-auto">
         <Show
           when={!isLoading() && contents()}
@@ -279,12 +671,25 @@ function InstanceInspector() {
   const instance = useInstance()
   const selection = createMemo(() => instance.inspected())
 
+  // Fetch properties at the top level to share with summary components
+  const [properties] = createResource(
+    () => selection()?.path,
+    async (path) => {
+      if (!path) return []
+      const result = await studioRequest<PropertyInfo[]>("/instance/properties", { path })
+      if (result.success) return result.data
+      return []
+    },
+  )
+
   const setPrompt = (text: string) => {
     prompt.set([{ type: "text", content: text, start: 0, end: text.length }], text.length)
   }
 
   // Context-aware actions based on class type
   const isScriptClass = () => SCRIPT_CLASSES.includes(selection()?.className ?? "")
+  const isPartClass = () => PART_CLASSES.includes(selection()?.className ?? "")
+  const isContainerClass = () => MODEL_CLASSES.includes(selection()?.className ?? "")
   const isModelClass = () => ["Model", "Folder", "Part", "MeshPart", "UnionOperation"].includes(selection()?.className ?? "")
   const isGuiClass = () => ["ScreenGui", "Frame", "TextLabel", "TextButton", "ImageLabel", "ImageButton", "ScrollingFrame"].includes(selection()?.className ?? "")
   const isServiceClass = () => ["Workspace", "ReplicatedStorage", "ServerStorage", "StarterGui", "StarterPlayer", "Lighting", "SoundService"].includes(selection()?.className ?? "")
@@ -535,9 +940,19 @@ function InstanceInspector() {
 
             {/* Properties */}
             <div class="flex-1 min-h-0 overflow-auto">
+              {/* Part Visual Summary */}
+              <Show when={isPartClass() && properties()}>
+                {(props) => <PartSummaryCard properties={props()} />}
+              </Show>
+
+              {/* Model/Container Statistics */}
+              <Show when={isContainerClass() && properties()}>
+                {(props) => <ModelStatisticsSection properties={props()} className={item().className} />}
+              </Show>
+
               <div class="py-2">
                 <div class="text-11-medium text-text-subtle uppercase tracking-wider px-4 mb-2">Properties</div>
-                <InstanceProperties path={item().path} />
+                <InstanceProperties path={item().path} properties={properties()} />
               </div>
             </div>
           </>

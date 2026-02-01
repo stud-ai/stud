@@ -647,37 +647,205 @@ handlers["/instance/properties"] = function(data)
 	if not instance then
 		error("Instance not found: " .. data.path)
 	end
-	
+
 	local props = {}
 	local commonProps = {"Name", "ClassName", "Parent"}
-	
-	if instance:IsA("BasePart") then
-		local partProps = {"Position", "Size", "CFrame", "Anchored", "CanCollide", "Transparency", "BrickColor", "Material"}
-		for _, p in ipairs(partProps) do
-			table.insert(commonProps, p)
-		end
-	end
-	
-	if instance:IsA("GuiObject") then
-		local guiProps = {"Position", "Size", "Visible", "BackgroundColor3", "BackgroundTransparency"}
-		for _, p in ipairs(guiProps) do
-			table.insert(commonProps, p)
-		end
-	end
-	
-	for _, propName in ipairs(commonProps) do
-		local success, value = pcall(function()
-			return instance[propName]
-		end)
-		if success then
+
+	-- Helper to safely add a property
+	local function addProp(propName, customValue, customType)
+		if customValue ~= nil then
 			table.insert(props, {
 				name = propName,
-				value = tostring(value),
-				type = typeof(value),
+				value = tostring(customValue),
+				type = customType or typeof(customValue),
 			})
+		else
+			local success, value = pcall(function()
+				return instance[propName]
+			end)
+			if success and value ~= nil then
+				table.insert(props, {
+					name = propName,
+					value = tostring(value),
+					type = typeof(value),
+				})
+			end
 		end
 	end
-	
+
+	-- Add common properties
+	for _, propName in ipairs(commonProps) do
+		addProp(propName)
+	end
+
+	-- Model/Folder specific properties
+	if instance:IsA("Model") or instance:IsA("Folder") then
+		local children = instance:GetChildren()
+		local descendants = instance:GetDescendants()
+		addProp("ChildrenCount", #children, "number")
+		addProp("DescendantsCount", #descendants, "number")
+
+		-- Count by type
+		local typeCounts = {}
+		for _, child in ipairs(children) do
+			local className = child.ClassName
+			typeCounts[className] = (typeCounts[className] or 0) + 1
+		end
+
+		-- Format as readable string
+		local typeStrings = {}
+		for className, count in pairs(typeCounts) do
+			table.insert(typeStrings, className .. ": " .. count)
+		end
+		if #typeStrings > 0 then
+			addProp("ChildrenBreakdown", table.concat(typeStrings, ", "), "string")
+		end
+
+		-- Model-specific
+		if instance:IsA("Model") then
+			local primaryPart = instance.PrimaryPart
+			addProp("PrimaryPart", primaryPart and primaryPart.Name or "None", "string")
+
+			local success, pivot = pcall(function()
+				return instance:GetPivot()
+			end)
+			if success then
+				addProp("Pivot", tostring(pivot.Position), "Vector3")
+			end
+		end
+	end
+
+	-- BasePart specific properties
+	if instance:IsA("BasePart") then
+		local partProps = {"Position", "Size", "CFrame", "Anchored", "CanCollide", "Transparency", "BrickColor", "Material", "Color", "Reflectance", "CanTouch", "CanQuery", "Massless"}
+		for _, p in ipairs(partProps) do
+			addProp(p)
+		end
+
+		-- Computed properties
+		local success, mass = pcall(function()
+			return instance:GetMass()
+		end)
+		if success then
+			addProp("Mass", string.format("%.2f", mass), "number")
+		end
+
+		-- Assembly info
+		local assemblySuccess, assemblyMass = pcall(function()
+			return instance.AssemblyMass
+		end)
+		if assemblySuccess then
+			addProp("AssemblyMass", string.format("%.2f", assemblyMass), "number")
+		end
+
+		local rootSuccess, rootPart = pcall(function()
+			return instance.AssemblyRootPart
+		end)
+		if rootSuccess and rootPart then
+			addProp("AssemblyRootPart", rootPart.Name, "string")
+		end
+
+		-- Volume (calculated from size)
+		local size = instance.Size
+		local volume = size.X * size.Y * size.Z
+		addProp("Volume", string.format("%.2f", volume), "number")
+
+		-- Count connected constraints/welds
+		local constraints = {}
+		for _, child in ipairs(instance:GetChildren()) do
+			if child:IsA("Constraint") or child:IsA("JointInstance") then
+				table.insert(constraints, child.ClassName)
+			end
+		end
+		if #constraints > 0 then
+			addProp("Connections", table.concat(constraints, ", "), "string")
+		end
+	end
+
+	-- GuiObject specific properties
+	if instance:IsA("GuiObject") then
+		local guiProps = {"Position", "Size", "Visible", "BackgroundColor3", "BackgroundTransparency", "ZIndex", "LayoutOrder", "AnchorPoint", "Rotation"}
+		for _, p in ipairs(guiProps) do
+			addProp(p)
+		end
+
+		-- Absolute properties
+		local absPos = instance.AbsolutePosition
+		local absSize = instance.AbsoluteSize
+		addProp("AbsolutePosition", string.format("%.0f, %.0f", absPos.X, absPos.Y), "Vector2")
+		addProp("AbsoluteSize", string.format("%.0f, %.0f", absSize.X, absSize.Y), "Vector2")
+
+		-- Text properties for text elements
+		if instance:IsA("TextLabel") or instance:IsA("TextButton") or instance:IsA("TextBox") then
+			addProp("Text")
+			addProp("TextColor3")
+			addProp("TextSize")
+			addProp("Font")
+			addProp("TextScaled")
+			addProp("RichText")
+		end
+
+		-- Image properties
+		if instance:IsA("ImageLabel") or instance:IsA("ImageButton") then
+			addProp("Image")
+			addProp("ImageColor3")
+			addProp("ImageTransparency")
+			addProp("ScaleType")
+		end
+	end
+
+	-- Script specific properties
+	if instance:IsA("LuaSourceContainer") then
+		if instance:IsA("Script") or instance:IsA("LocalScript") then
+			addProp("Enabled")
+			addProp("RunContext")
+		end
+
+		-- Get line count from source
+		local sourceSuccess, source = pcall(function()
+			return ScriptEditorService:GetEditorSource(instance) or instance.Source
+		end)
+		if sourceSuccess and source then
+			local lineCount = 1
+			for _ in string.gmatch(source, "\n") do
+				lineCount = lineCount + 1
+			end
+			addProp("LineCount", lineCount, "number")
+		end
+	end
+
+	-- Sound specific properties
+	if instance:IsA("Sound") then
+		addProp("SoundId")
+		addProp("Volume")
+		addProp("PlaybackSpeed")
+		addProp("Playing")
+		addProp("Looped")
+		addProp("TimeLength")
+		addProp("TimePosition")
+	end
+
+	-- Light specific properties
+	if instance:IsA("Light") then
+		addProp("Enabled")
+		addProp("Color")
+		addProp("Brightness")
+		addProp("Range")
+		addProp("Shadows")
+	end
+
+	-- Humanoid specific properties
+	if instance:IsA("Humanoid") then
+		addProp("Health")
+		addProp("MaxHealth")
+		addProp("WalkSpeed")
+		addProp("JumpPower")
+		addProp("JumpHeight")
+		addProp("HipHeight")
+		addProp("DisplayName")
+		addProp("DisplayDistanceType")
+	end
+
 	return props
 end
 
