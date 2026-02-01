@@ -159,13 +159,14 @@ function InstanceTreeNode(props: InstanceTreeNodeProps) {
     filePath: props.node.filePath,
   })
 
-  // Single-click: only highlight in Explorer, sync with Studio
+  // Single-click: highlight in Explorer, show in Inspector, sync with Studio
   const handleSingleClick = (e: MouseEvent) => {
     // Prevent double-click from also triggering single-click logic
     if (e.detail === 2) return
 
     const selection = getSelection()
     instance.setHighlighted(selection)
+    instance.setInspected(selection)
     studioRequest("/selection/set", { paths: [props.node.path] })
   }
 

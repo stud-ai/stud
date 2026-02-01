@@ -365,7 +365,7 @@ function InstanceInspector() {
               <Icon name="sliders" class="text-icon-subtle" />
             </div>
             <div class="text-13-regular text-text-weak max-w-48">
-              Double-click an instance in the Explorer to inspect it
+              Select an instance in the Explorer to inspect it
             </div>
           </div>
         }
