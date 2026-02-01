@@ -915,6 +915,7 @@ ToolRegistry.register({
         {...props}
         icon="glasses"
         status={props.status}
+        compact
         trigger={{
           title: i18n.t("ui.tool.read"),
           subtitle: props.input.filePath ? getFilename(props.input.filePath) : "",
@@ -934,6 +935,7 @@ ToolRegistry.register({
         {...props}
         icon="bullet-list"
         status={props.status}
+        compact
         trigger={{ title: i18n.t("ui.tool.list"), subtitle: getDirectory(props.input.path || "/") }}
       >
         <Show when={props.output}>
@@ -957,6 +959,7 @@ ToolRegistry.register({
         {...props}
         icon="magnifying-glass-menu"
         status={props.status}
+        compact
         trigger={{
           title: i18n.t("ui.tool.glob"),
           subtitle: getDirectory(props.input.path || "/"),
@@ -987,6 +990,7 @@ ToolRegistry.register({
         {...props}
         icon="magnifying-glass-menu"
         status={props.status}
+        compact
         trigger={{
           title: i18n.t("ui.tool.grep"),
           subtitle: getDirectory(props.input.path || "/"),
@@ -2069,7 +2073,7 @@ ToolRegistry.register({
         subtitle={path()}
         status={status()}
         meta={<Show when={label()}>{(text) => <span data-slot="action-card-status">{text()}</span>}</Show>}
-        defaultOpen={true}
+        defaultOpen={false}
       >
         <Show when={props.output}>
           {(output) => (
@@ -2097,7 +2101,7 @@ ToolRegistry.register({
         subtitle={path()}
         status={status()}
         meta={<Show when={label()}>{(text) => <span data-slot="action-card-status">{text()}</span>}</Show>}
-        defaultOpen={true}
+        defaultOpen={false}
       >
         <Show when={props.output}>
           {(output) => (
@@ -2132,7 +2136,7 @@ ToolRegistry.register({
         subtitle={subtitle()}
         status={status()}
         meta={<Show when={label()}>{(text) => <span data-slot="action-card-status">{text()}</span>}</Show>}
-        defaultOpen={true}
+        defaultOpen={false}
       >
         <Show when={props.output}>
           {(output) => (
@@ -2158,7 +2162,7 @@ ToolRegistry.register({
         title="Studio selection"
         status={status()}
         meta={<Show when={label()}>{(text) => <span data-slot="action-card-status">{text()}</span>}</Show>}
-        defaultOpen={true}
+        defaultOpen={false}
       >
         <Show when={props.output}>
           {(output) => (
@@ -2419,6 +2423,7 @@ function PickerPrompt(props: { request: PickerRequest }) {
   const i18n = useI18n()
   const items = createMemo(() => props.request.items)
   const recommended = createMemo(() => props.request.recommended ?? [])
+  const selectionRange = createMemo(() => props.request.selectionRange)
 
   const [selections, setSelections] = createSignal<PickerSelection>([])
 
@@ -2441,15 +2446,6 @@ function PickerPrompt(props: { request: PickerRequest }) {
     })
   }
 
-  function quickAdd() {
-    // Use recommended items or select all if no recommendations
-    const toSelect = recommended().length > 0 ? recommended() : items().map((item) => item.id)
-    data.replyToPicker?.({
-      requestID: props.request.id,
-      selections: toSelect,
-    })
-  }
-
   function reject() {
     data.rejectPicker?.({
       requestID: props.request.id,
@@ -2463,6 +2459,17 @@ function PickerPrompt(props: { request: PickerRequest }) {
   function isRecommended(id: string | number) {
     return recommended().includes(id)
   }
+
+  const canSubmit = createMemo(() => {
+    const count = selections().length
+    const range = selectionRange()
+    if (count === 0) return false
+    if (range) {
+      if (range.min !== undefined && count < range.min) return false
+      if (range.max !== undefined && count > range.max) return false
+    }
+    return true
+  })
 
   return (
     <div data-component="picker-prompt">
@@ -2511,10 +2518,7 @@ function PickerPrompt(props: { request: PickerRequest }) {
         <Button variant="ghost" size="small" onClick={reject}>
           {i18n.t("ui.common.dismiss")}
         </Button>
-        <Button variant="secondary" size="small" onClick={quickAdd}>
-          Quick Add {recommended().length > 0 ? `(${recommended().length})` : "(All)"}
-        </Button>
-        <Button variant="primary" size="small" onClick={submit} disabled={selections().length === 0}>
+        <Button variant="primary" size="small" onClick={submit} disabled={!canSubmit()}>
           {i18n.t("ui.common.submit")} ({selections().length})
         </Button>
       </div>

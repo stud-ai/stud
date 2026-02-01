@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createResource, createSignal, For, Show } from "solid-js"
 import { Dynamic } from "solid-js/web"
-import { Icon } from "@stud/ui/icon"
+import { Icon, type IconProps } from "@stud/ui/icon"
 import { IconButton } from "@stud/ui/icon-button"
 import { InstanceIcon } from "@stud/ui/instance-icon"
 import { Collapsible } from "@stud/ui/collapsible"
@@ -30,29 +30,29 @@ const PROPERTY_CATEGORIES: Record<string, string[]> = {
   Data: ["Name", "Parent", "ClassName", "Archivable"],
 }
 
-function getPropertyIcon(type: string): string {
+function getPropertyIcon(type: string): IconProps["name"] {
   switch (type.toLowerCase()) {
     case "string":
-      return "text"
+      return "code-lines"
     case "number":
     case "float":
     case "int":
-      return "hash"
+      return "dash"
     case "boolean":
     case "bool":
-      return "toggle-left"
+      return "check"
     case "vector3":
     case "vector2":
-      return "box"
+      return "cube"
     case "color3":
     case "brickcolor":
-      return "palette"
+      return "photo"
     case "cframe":
-      return "move"
+      return "cube"
     case "enum":
-      return "list"
+      return "bullet-list"
     default:
-      return "circle"
+      return "dot-grid"
   }
 }
 
@@ -125,7 +125,7 @@ function InstanceProperties(props: { path: string }) {
           when={properties()?.length}
           fallback={
             <div class="px-4 py-3 text-12-regular text-text-weak flex items-center gap-2">
-              <Icon name="info" size="small" class="text-icon-subtle" />
+              <Icon name="help" size="small" class="text-icon-subtle" />
               No properties available
             </div>
           }
@@ -283,19 +283,70 @@ function InstanceInspector() {
     prompt.set([{ type: "text", content: text, start: 0, end: text.length }], text.length)
   }
 
-  const addScript = () => {
-    const target = selection()?.path ?? "the selected instance"
-    setPrompt(`Add a script to ${target} that handles its behavior.`)
+  // Context-aware actions based on class type
+  const isScriptClass = () => SCRIPT_CLASSES.includes(selection()?.className ?? "")
+  const isModelClass = () => ["Model", "Folder", "Part", "MeshPart", "UnionOperation"].includes(selection()?.className ?? "")
+  const isGuiClass = () => ["ScreenGui", "Frame", "TextLabel", "TextButton", "ImageLabel", "ImageButton", "ScrollingFrame"].includes(selection()?.className ?? "")
+  const isServiceClass = () => ["Workspace", "ReplicatedStorage", "ServerStorage", "StarterGui", "StarterPlayer", "Lighting", "SoundService"].includes(selection()?.className ?? "")
+
+  // Script-specific actions
+  const editScript = () => {
+    const target = selection()?.path ?? "the script"
+    setPrompt(`Edit the code in ${target}.`)
   }
 
-  const insertModel = () => {
+  const documentScript = () => {
+    const target = selection()?.path ?? "the script"
+    setPrompt(`Add documentation comments to ${target}.`)
+  }
+
+  const debugScript = () => {
+    const target = selection()?.path ?? "the script"
+    setPrompt(`Debug and fix any issues in ${target}.`)
+  }
+
+  // Model/Part actions
+  const modifyModel = () => {
+    const target = selection()?.path ?? "the model"
+    setPrompt(`Modify ${target} to improve its appearance or behavior.`)
+  }
+
+  const cloneInstance = () => {
+    const target = selection()?.path ?? "the instance"
+    setPrompt(`Clone ${target} and position the copy nearby.`)
+  }
+
+  const insertChild = () => {
     const target = selection()?.path ?? "game.Workspace"
     setPrompt(`Search the toolbox and insert a model into ${target}.`)
   }
 
-  const editProps = () => {
+  // GUI actions
+  const styleGui = () => {
+    const target = selection()?.path ?? "the GUI"
+    setPrompt(`Improve the styling and appearance of ${target}.`)
+  }
+
+  const addGuiScript = () => {
+    const target = selection()?.path ?? "the GUI"
+    setPrompt(`Add interactivity to ${target} with a LocalScript.`)
+  }
+
+  // Service actions
+  const organizeService = () => {
+    const target = selection()?.path ?? "the service"
+    setPrompt(`Help organize the contents of ${target}.`)
+  }
+
+  // General actions
+  const editProperties = () => {
     const target = selection()?.path ?? "the selected instance"
     setPrompt(`Update properties on ${target}.`)
+  }
+
+  const deleteInstance = () => {
+    const target = selection()?.path ?? "the selected instance"
+    setPrompt(`Delete ${target} from the game.`)
   }
 
   const pathSegments = createMemo(() => {
@@ -360,40 +411,125 @@ function InstanceInspector() {
               </div>
             </div>
 
-            {/* Quick Actions */}
+            {/* Context-Aware Actions */}
             <div class="px-4 py-3 border-b border-border-weak-base">
-              <div class="text-11-medium text-text-subtle uppercase tracking-wider mb-2">Quick Actions</div>
-              <div class="grid grid-cols-3 gap-2">
+              <div class="text-11-medium text-text-subtle uppercase tracking-wider mb-2">Actions</div>
+              <div class="flex flex-wrap gap-2">
+                {/* Script-specific actions */}
+                <Show when={isScriptClass()}>
+                  <button
+                    type="button"
+                    onClick={editScript}
+                    class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
+                  >
+                    <Icon name="pencil-line" size="small" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
+                    <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">Edit Code</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={documentScript}
+                    class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
+                  >
+                    <Icon name="checklist" size="small" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
+                    <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">Document</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={debugScript}
+                    class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
+                  >
+                    <Icon name="magnifying-glass" size="small" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
+                    <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">Debug</span>
+                  </button>
+                </Show>
+
+                {/* Model/Part actions */}
+                <Show when={isModelClass()}>
+                  <button
+                    type="button"
+                    onClick={modifyModel}
+                    class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
+                  >
+                    <Icon name="pencil-line" size="small" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
+                    <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">Modify</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cloneInstance}
+                    class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
+                  >
+                    <Icon name="copy" size="small" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
+                    <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">Clone</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={insertChild}
+                    class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
+                  >
+                    <Icon name="plus" size="small" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
+                    <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">Insert</span>
+                  </button>
+                </Show>
+
+                {/* GUI actions */}
+                <Show when={isGuiClass()}>
+                  <button
+                    type="button"
+                    onClick={styleGui}
+                    class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
+                  >
+                    <Icon name="photo" size="small" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
+                    <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">Style</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={addGuiScript}
+                    class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
+                  >
+                    <Icon name="code" size="small" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
+                    <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">Add Script</span>
+                  </button>
+                </Show>
+
+                {/* Service actions */}
+                <Show when={isServiceClass()}>
+                  <button
+                    type="button"
+                    onClick={organizeService}
+                    class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
+                  >
+                    <Icon name="folder" size="small" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
+                    <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">Organize</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={insertChild}
+                    class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
+                  >
+                    <Icon name="plus" size="small" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
+                    <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">Insert</span>
+                  </button>
+                </Show>
+
+                {/* Common actions for all types */}
                 <button
                   type="button"
-                  onClick={addScript}
-                  class="flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
+                  onClick={editProperties}
+                  class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
                 >
-                  <Icon name="file-code" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
-                  <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">
-                    Add Script
-                  </span>
+                  <Icon name="sliders" size="small" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
+                  <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">Properties</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={insertModel}
-                  class="flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
-                >
-                  <Icon name="box" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
-                  <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">
-                    Insert Model
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={editProps}
-                  class="flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg bg-surface-base hover:bg-surface-base-hover active:scale-95 transition-all group"
-                >
-                  <Icon name="settings" class="text-icon-subtle group-hover:text-icon-base transition-colors" />
-                  <span class="text-11-medium text-text-weak group-hover:text-text-base transition-colors">
-                    Edit Props
-                  </span>
-                </button>
+                <Show when={!isServiceClass()}>
+                  <button
+                    type="button"
+                    onClick={deleteInstance}
+                    class="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-surface-base hover:bg-red-500/10 active:scale-95 transition-all group"
+                  >
+                    <Icon name="trash" size="small" class="text-icon-subtle group-hover:text-red-400 transition-colors" />
+                    <span class="text-11-medium text-text-weak group-hover:text-red-400 transition-colors">Delete</span>
+                  </button>
+                </Show>
               </div>
             </div>
 

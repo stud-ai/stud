@@ -182,6 +182,13 @@ export const RobloxToolboxSearchTool = Tool.define<
     freeOnly: z.ZodOptional<z.ZodBoolean>
     limit: z.ZodOptional<z.ZodNumber>
     recommended: z.ZodOptional<z.ZodArray<z.ZodNumber>>
+    selectionHint: z.ZodOptional<
+      z.ZodObject<{
+        min: z.ZodOptional<z.ZodNumber>
+        max: z.ZodOptional<z.ZodNumber>
+        aiPickCount: z.ZodOptional<z.ZodNumber>
+      }>
+    >
   }>,
   { keyword: string; category: string; resultCount: number; assets: ToolboxAsset[]; selectedAssets: ToolboxAsset[] }
 >("roblox_toolbox_search", {
@@ -214,7 +221,15 @@ Example: Search "car" in Models category to find free car models.`,
       .describe("Asset category: Models, Audio, Decals, Meshes, Plugins, Images, Videos, Animations (default: Models)"),
     freeOnly: z.boolean().optional().describe("Only return free assets (default: true)"),
     limit: z.number().min(1).max(30).optional().describe("Maximum results (1-30, default: 10)"),
-    recommended: z.array(z.number()).optional().describe("Your recommended asset IDs from the results for Quick Add"),
+    recommended: z.array(z.number()).optional().describe("Your recommended asset IDs from the results for AI Pick"),
+    selectionHint: z
+      .object({
+        min: z.number().optional().describe("Minimum assets the user should select"),
+        max: z.number().optional().describe("Maximum assets the user should select"),
+        aiPickCount: z.number().optional().describe("How many assets AI will auto-pick (defaults to recommended.length)"),
+      })
+      .optional()
+      .describe("Hints for asset selection quantity"),
   }),
   async execute(params, ctx) {
     const category = (params.category as AssetCategoryName) || "Models"
@@ -326,6 +341,11 @@ Example: Search "car" in Models category to find free car models.`,
         title: `Select ${category.toLowerCase()} for "${params.keyword}"`,
         items: pickerItems,
         recommended: params.recommended,
+        selectionRange: {
+          min: params.selectionHint?.min ?? 0,
+          max: params.selectionHint?.max,
+          aiPickCount: params.selectionHint?.aiPickCount ?? params.recommended?.length ?? 0,
+        },
         multiple: true,
         tool: ctx.callID ? { messageID: ctx.messageID, callID: ctx.callID } : undefined,
       })

@@ -31,6 +31,14 @@ export namespace Picker {
         .array(z.union([z.string(), z.number()]))
         .optional()
         .describe("AI-recommended item IDs"),
+      selectionRange: z
+        .object({
+          min: z.number().min(0).optional().describe("Minimum items to select"),
+          max: z.number().optional().describe("Maximum items to select"),
+          aiPickCount: z.number().optional().describe("How many items AI will auto-pick"),
+        })
+        .optional()
+        .describe("Selection constraints and AI pick count"),
       multiple: z.boolean().optional().describe("Allow selecting multiple items (default: true)"),
       tool: z
         .object({
@@ -93,6 +101,11 @@ export namespace Picker {
     title: string
     items: Item[]
     recommended?: (string | number)[]
+    selectionRange?: {
+      min?: number
+      max?: number
+      aiPickCount?: number
+    }
     multiple?: boolean
     tool?: { messageID: string; callID: string }
   }): Promise<Selection> {
@@ -108,6 +121,7 @@ export namespace Picker {
         title: input.title,
         items: input.items,
         recommended: input.recommended,
+        selectionRange: input.selectionRange,
         multiple: input.multiple ?? true,
         tool: input.tool,
       }
