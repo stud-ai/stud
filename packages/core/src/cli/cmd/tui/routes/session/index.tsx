@@ -1433,6 +1433,94 @@ function ToolPart(props: { last: boolean; part: ToolPart; message: AssistantMess
         <Match when={props.part.tool === "question"}>
           <Question {...toolprops} />
         </Match>
+        {/* Roblox Instance Tools */}
+        <Match when={props.part.tool === "roblox_get_children"}>
+          <RobloxGetChildren {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_get_properties"}>
+          <RobloxGetProperties {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_set_property"}>
+          <RobloxSetProperty {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_create"}>
+          <RobloxCreate {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_delete"}>
+          <RobloxDelete {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_clone"}>
+          <RobloxClone {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_search"}>
+          <RobloxSearch {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_get_selection"}>
+          <RobloxGetSelection {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_run_code"}>
+          <RobloxRunCode {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_move"}>
+          <RobloxMove {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_bulk_create"}>
+          <RobloxBulkCreate {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_bulk_delete"}>
+          <RobloxBulkDelete {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_bulk_set_property"}>
+          <RobloxBulkSetProperty {...toolprops} />
+        </Match>
+        {/* Roblox Script Tools */}
+        <Match when={props.part.tool === "roblox_get_script"}>
+          <RobloxGetScript {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_set_script"}>
+          <RobloxSetScript {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_edit_script"}>
+          <RobloxEditScript {...toolprops} />
+        </Match>
+        {/* Roblox Cloud API Tools */}
+        <Match when={props.part.tool === "roblox_universe_info"}>
+          <RobloxUniverseInfo {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_datastore_list"}>
+          <RobloxDatastoreList {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_datastore_get"}>
+          <RobloxDatastoreGet {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_datastore_set"}>
+          <RobloxDatastoreSet {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_publish_place"}>
+          <RobloxPublishPlace {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_ordered_datastore_list"}>
+          <RobloxOrderedDatastoreList {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_ordered_datastore_get"}>
+          <RobloxOrderedDatastoreGet {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_ordered_datastore_set"}>
+          <RobloxOrderedDatastoreSet {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_ordered_datastore_increment"}>
+          <RobloxOrderedDatastoreIncrement {...toolprops} />
+        </Match>
+        {/* Roblox Toolbox Tools */}
+        <Match when={props.part.tool === "roblox_toolbox_search"}>
+          <RobloxToolboxSearch {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_asset_details"}>
+          <RobloxAssetDetails {...toolprops} />
+        </Match>
+        <Match when={props.part.tool === "roblox_insert_asset"}>
+          <RobloxInsertAsset {...toolprops} />
+        </Match>
         <Match when={true}>
           <GenericTool {...toolprops} />
         </Match>
@@ -1453,6 +1541,277 @@ function GenericTool(props: ToolProps<any>) {
   return (
     <InlineTool icon="⚙" pending="Writing command..." complete={true} part={props.part}>
       {props.tool} {input(props.input)}
+    </InlineTool>
+  )
+}
+
+// =====================
+// Roblox Instance Tools
+// =====================
+
+type RobloxToolProps = {
+  input: Record<string, any>
+  metadata: Record<string, any>
+  permission: Record<string, any>
+  tool: string
+  output?: string
+  part: ToolPart
+}
+
+function RobloxGetChildren(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="◆" pending="Getting children..." complete={props.input.path} part={props.part}>
+      Get Children "{props.input.path}"
+      <Show when={props.input.recursive}> (recursive)</Show>
+    </InlineTool>
+  )
+}
+
+function RobloxGetProperties(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="◆" pending="Getting properties..." complete={props.input.path} part={props.part}>
+      Get Properties "{props.input.path}"
+    </InlineTool>
+  )
+}
+
+function RobloxSetProperty(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="◆" pending="Setting property..." complete={props.input.path} part={props.part}>
+      Set Property {props.input.property} on "{props.input.path}"
+    </InlineTool>
+  )
+}
+
+function RobloxCreate(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="◆" pending="Creating instance..." complete={props.input.className} part={props.part}>
+      Create {props.input.className} in "{props.input.parent}"
+      <Show when={props.input.name}> as "{props.input.name}"</Show>
+    </InlineTool>
+  )
+}
+
+function RobloxDelete(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="◆" pending="Deleting instance..." complete={props.input.path} part={props.part}>
+      Delete "{props.input.path}"
+    </InlineTool>
+  )
+}
+
+function RobloxClone(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="◆" pending="Cloning instance..." complete={props.input.path} part={props.part}>
+      Clone "{props.input.path}"
+      <Show when={props.input.parent}> to "{props.input.parent}"</Show>
+    </InlineTool>
+  )
+}
+
+function RobloxSearch(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="◆" pending="Searching instances..." complete={props.metadata.count !== undefined} part={props.part}>
+      Search instances
+      <Show when={props.input.name}> name="{props.input.name}"</Show>
+      <Show when={props.input.className}> class={props.input.className}</Show>
+      <Show when={props.metadata.count !== undefined}> ({props.metadata.count} found)</Show>
+    </InlineTool>
+  )
+}
+
+function RobloxGetSelection(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="◆" pending="Getting selection..." complete={props.metadata.count !== undefined} part={props.part}>
+      Get Selection
+      <Show when={props.metadata.count !== undefined}> ({props.metadata.count} selected)</Show>
+    </InlineTool>
+  )
+}
+
+function RobloxRunCode(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="◆" pending="Running code..." complete={props.metadata.executed !== undefined} part={props.part}>
+      Run Code
+    </InlineTool>
+  )
+}
+
+function RobloxMove(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="◆" pending="Moving instance..." complete={props.input.path} part={props.part}>
+      Move "{props.input.path}" to "{props.input.newParent}"
+    </InlineTool>
+  )
+}
+
+function RobloxBulkCreate(props: RobloxToolProps) {
+  const count = () => props.input.instances?.length ?? 0
+  return (
+    <InlineTool icon="◆" pending="Creating instances..." complete={props.metadata.count !== undefined} part={props.part}>
+      Bulk Create
+      <Show when={props.metadata.count !== undefined}> ({props.metadata.count} instances)</Show>
+      <Show when={props.metadata.count === undefined && count() > 0}> ({count()} instances)</Show>
+    </InlineTool>
+  )
+}
+
+function RobloxBulkDelete(props: RobloxToolProps) {
+  const count = () => props.input.paths?.length ?? 0
+  return (
+    <InlineTool icon="◆" pending="Deleting instances..." complete={props.metadata.count !== undefined} part={props.part}>
+      Bulk Delete
+      <Show when={props.metadata.count !== undefined}> ({props.metadata.count} instances)</Show>
+      <Show when={props.metadata.count === undefined && count() > 0}> ({count()} instances)</Show>
+    </InlineTool>
+  )
+}
+
+function RobloxBulkSetProperty(props: RobloxToolProps) {
+  const count = () => props.input.operations?.length ?? 0
+  return (
+    <InlineTool icon="◆" pending="Setting properties..." complete={props.metadata.count !== undefined} part={props.part}>
+      Bulk Set Properties
+      <Show when={props.metadata.count !== undefined}> ({props.metadata.count} operations)</Show>
+      <Show when={props.metadata.count === undefined && count() > 0}> ({count()} operations)</Show>
+    </InlineTool>
+  )
+}
+
+// ===================
+// Roblox Script Tools
+// ===================
+
+function RobloxGetScript(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="→" pending="Reading script..." complete={props.input.path} part={props.part}>
+      Read Script {normalizePath(props.input.path)}
+    </InlineTool>
+  )
+}
+
+function RobloxSetScript(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="→" pending="Writing script..." complete={props.input.path} part={props.part}>
+      Write Script {normalizePath(props.input.path)}
+    </InlineTool>
+  )
+}
+
+function RobloxEditScript(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="→" pending="Editing script..." complete={props.input.path} part={props.part}>
+      Edit Script {normalizePath(props.input.path)}
+    </InlineTool>
+  )
+}
+
+// ======================
+// Roblox Cloud API Tools
+// ======================
+
+function RobloxUniverseInfo(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="☁" pending="Getting universe info..." complete={props.metadata.universeId} part={props.part}>
+      Universe Info
+      <Show when={props.metadata.universeId}> ({props.metadata.universeId})</Show>
+    </InlineTool>
+  )
+}
+
+function RobloxDatastoreList(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="☁" pending="Listing datastores..." complete={props.metadata.universeId} part={props.part}>
+      List DataStores
+      <Show when={props.input.prefix}> prefix="{props.input.prefix}"</Show>
+    </InlineTool>
+  )
+}
+
+function RobloxDatastoreGet(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="☁" pending="Reading datastore..." complete={props.input.key} part={props.part}>
+      DataStore Get "{props.input.datastoreName}" key="{props.input.key}"
+    </InlineTool>
+  )
+}
+
+function RobloxDatastoreSet(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="☁" pending="Writing datastore..." complete={props.input.key} part={props.part}>
+      DataStore Set "{props.input.datastoreName}" key="{props.input.key}"
+    </InlineTool>
+  )
+}
+
+function RobloxPublishPlace(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="☁" pending="Publishing place..." complete={props.input.placeId} part={props.part}>
+      Publish Place {props.input.placeId}
+      <Show when={props.input.versionType}> ({props.input.versionType})</Show>
+    </InlineTool>
+  )
+}
+
+function RobloxOrderedDatastoreList(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="☁" pending="Listing ordered datastore..." complete={props.input.datastoreName} part={props.part}>
+      OrderedDataStore List "{props.input.datastoreName}"
+    </InlineTool>
+  )
+}
+
+function RobloxOrderedDatastoreGet(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="☁" pending="Reading ordered datastore..." complete={props.input.entryId} part={props.part}>
+      OrderedDataStore Get "{props.input.datastoreName}" entry="{props.input.entryId}"
+    </InlineTool>
+  )
+}
+
+function RobloxOrderedDatastoreSet(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="☁" pending="Writing ordered datastore..." complete={props.input.entryId} part={props.part}>
+      OrderedDataStore Set "{props.input.datastoreName}" entry="{props.input.entryId}"
+    </InlineTool>
+  )
+}
+
+function RobloxOrderedDatastoreIncrement(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="☁" pending="Incrementing value..." complete={props.input.entryId} part={props.part}>
+      OrderedDataStore Increment "{props.input.datastoreName}" entry="{props.input.entryId}" by {props.input.increment}
+    </InlineTool>
+  )
+}
+
+// ====================
+// Roblox Toolbox Tools
+// ====================
+
+function RobloxToolboxSearch(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="✱" pending="Searching toolbox..." complete={props.input.keyword} part={props.part}>
+      Toolbox Search "{props.input.keyword}"
+      <Show when={props.input.category}> in {props.input.category}</Show>
+      <Show when={props.metadata.resultCount !== undefined}> ({props.metadata.resultCount} results)</Show>
+    </InlineTool>
+  )
+}
+
+function RobloxAssetDetails(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="✱" pending="Getting asset details..." complete={props.input.assetId} part={props.part}>
+      Asset Details {props.input.assetId}
+    </InlineTool>
+  )
+}
+
+function RobloxInsertAsset(props: RobloxToolProps) {
+  return (
+    <InlineTool icon="✱" pending="Inserting asset..." complete={props.input.assetId} part={props.part}>
+      Insert Asset {props.input.assetId}
+      <Show when={props.input.parent}> into "{props.input.parent}"</Show>
     </InlineTool>
   )
 }
