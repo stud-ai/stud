@@ -1,28 +1,225 @@
-import {
-  Beaker,
-  Check,
-  CircleCheck,
-  GitCommitHorizontal,
-  ShieldCheck,
-} from "lucide-react";
+"use client";
 
-const qaRows = [
-  "Entitlements: SAML group sync updates roles across services",
-  "Billing: proration + FX rounding reconcile on invoice run",
-  "Idempotency: payment webhook retry is side‑effect free",
-  "Approvals: high‑value discount requires dual sign‑off",
+import {
+  Box,
+  Code,
+  Database,
+  Search,
+} from "lucide-react";
+import { useState } from "react";
+
+type FeatureKey = "scripts" | "instances" | "datastore" | "toolbox";
+
+const features = [
+  {
+    key: "scripts" as FeatureKey,
+    icon: Code,
+    title: "Script Editing",
+    description: "Read, write, and edit Luau scripts directly in Roblox Studio instances.",
+  },
+  {
+    key: "instances" as FeatureKey,
+    icon: Box,
+    title: "Instance Manipulation",
+    description: "Create, move, delete, and modify any instance in the game hierarchy.",
+  },
+  {
+    key: "datastore" as FeatureKey,
+    icon: Database,
+    title: "DataStore Access",
+    description: "Query and update DataStores for testing and debugging player data.",
+  },
+  {
+    key: "toolbox" as FeatureKey,
+    icon: Search,
+    title: "Toolbox Search",
+    description: "Find and insert models, plugins, and assets from the Roblox Toolbox.",
+  },
 ];
 
+// Real Roblox assets with actual thumbnail URLs from the Roblox API
+const toolboxAssets = [
+  { id: 7136915607, name: "Low Poly Tree Pack", type: "Model", creator: "NatureAssets", verified: true, thumbnail: "https://t2.rbxcdn.com/180DAY-94d8a00d83f26f36de332fbba2223f3c" },
+  { id: 6899470737, name: "Stylized Oak Tree", type: "Model", creator: "TreeMaster3D", verified: true, thumbnail: "https://t4.rbxcdn.com/180DAY-3acb0f0da8433cb97bb84fe70301c78f" },
+  { id: 6439306858, name: "Pine Tree Low Poly", type: "Model", creator: "ForestPack", verified: true, thumbnail: "https://t2.rbxcdn.com/180DAY-c241e6748c4c05ea93e73916de6c0cec" },
+  { id: 6557596986, name: "Cartoon Tree Set", type: "Model", creator: "ToonWorld", verified: false, thumbnail: "https://t7.rbxcdn.com/180DAY-dde6e11e92c0fe4e2179eb39843d0ec4" },
+  { id: 5767839048, name: "Simple Tree Model", type: "Model", creator: "EasyBuild", verified: true, thumbnail: "https://t6.rbxcdn.com/180DAY-cc85115bb7b1a4f5a82e977de51e9c53" },
+];
+
+const demos: Record<FeatureKey, React.ReactNode> = {
+  scripts: (
+    <div className="bg-secondary rounded-md border p-4 shadow-sm">
+      <div className="flex items-center gap-2 mb-3">
+        <Code className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-foreground text-xs font-medium">Script Editor</span>
+      </div>
+      <div className="border-border bg-tertiary rounded-sm border font-mono text-sm">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">Get Script &quot;ServerScriptService.Main&quot;</span>
+          </div>
+          <span className="text-xs text-muted-foreground">847 lines</span>
+        </div>
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">Edit Script &quot;ReplicatedStorage.Config&quot;</span>
+          </div>
+          <span className="text-xs text-muted-foreground">+18 -4</span>
+        </div>
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">Create Script &quot;Workspace.NewHandler&quot;</span>
+          </div>
+          <span className="text-xs text-muted-foreground">created</span>
+        </div>
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">~</span>
+            <span className="text-muted-foreground">Editing script...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  ),
+  instances: (
+    <div className="bg-secondary rounded-md border p-4 shadow-sm">
+      <div className="flex items-center gap-2 mb-3">
+        <Box className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-foreground text-xs font-medium">Instance Tools</span>
+      </div>
+      <div className="border-border bg-tertiary rounded-sm border font-mono text-sm">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">Get Children &quot;game.Workspace&quot;</span>
+          </div>
+          <span className="text-xs text-muted-foreground">47 instances</span>
+        </div>
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">Create Part in Workspace</span>
+          </div>
+          <span className="text-xs text-muted-foreground">created</span>
+        </div>
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">Set Property &quot;Part.Color&quot;</span>
+          </div>
+          <span className="text-xs text-muted-foreground">updated</span>
+        </div>
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">~</span>
+            <span className="text-muted-foreground">Cloning instance...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  ),
+  datastore: (
+    <div className="bg-secondary rounded-md border p-4 shadow-sm">
+      <div className="flex items-center gap-2 mb-3">
+        <Database className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-foreground text-xs font-medium">DataStore Operations</span>
+      </div>
+      <div className="border-border bg-tertiary rounded-sm border font-mono text-sm">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">Get DataStore &quot;PlayerData&quot;</span>
+          </div>
+          <span className="text-xs text-muted-foreground">connected</span>
+        </div>
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">Get Key &quot;user_12345&quot;</span>
+          </div>
+          <span className="text-xs text-muted-foreground">retrieved</span>
+        </div>
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">Update Key &quot;user_12345.coins&quot;</span>
+          </div>
+          <span className="text-xs text-muted-foreground">saved</span>
+        </div>
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">~</span>
+            <span className="text-muted-foreground">Listing keys...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  ),
+  toolbox: null, // Will render custom picker
+};
+
 export default function QASection() {
+  const [activeFeature, setActiveFeature] = useState<FeatureKey>("toolbox");
+  const [selectedAsset, setSelectedAsset] = useState<number>(7136915607);
+  const [hoveredAsset, setHoveredAsset] = useState<number | null>(null);
+
+  const renderToolboxPicker = () => (
+    <div className="bg-secondary rounded-md border p-4 shadow-sm">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-foreground text-sm font-medium">Search Toolbox</span>
+        <span className="text-muted-foreground text-xs">esc</span>
+      </div>
+      <div className="mb-3">
+        <div className="bg-tertiary border border-border rounded px-3 py-1.5 text-sm text-foreground font-mono">
+          low poly tree<span className="animate-pulse">|</span>
+        </div>
+      </div>
+      <div className="space-y-0.5 max-h-[160px] overflow-y-auto">
+        {toolboxAssets.map((asset) => {
+          const isActive = hoveredAsset === asset.id || (hoveredAsset === null && selectedAsset === asset.id);
+          return (
+            <div
+              key={asset.id}
+              className={`flex items-center gap-3 px-2 py-1.5 cursor-pointer rounded-sm transition-colors ${
+                isActive ? "bg-[#58a6ff]" : ""
+              }`}
+              onClick={() => setSelectedAsset(asset.id)}
+              onMouseEnter={() => setHoveredAsset(asset.id)}
+              onMouseLeave={() => setHoveredAsset(null)}
+            >
+              <img src={asset.thumbnail} alt={asset.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className={`text-sm font-medium truncate ${isActive ? "text-white" : "text-foreground"}`}>
+                  {selectedAsset === asset.id && <span className="mr-1">●</span>}
+                  {asset.name}
+                </div>
+                <div className={`text-xs truncate ${isActive ? "text-white/70" : "text-muted-foreground"}`}>
+                  {asset.type} | {asset.creator}{asset.verified ? " ✓" : ""}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+        <span>↑↓ navigate</span>
+        <span>enter select</span>
+      </div>
+    </div>
+  );
+
   return (
     <section className="mx-auto w-full max-w-7xl py-16">
       <div className="mb-8">
         <h2 className="font-base text-2xl tracking-tight md:text-3xl">
-          Autonomous QA on every commit
+          Built for Roblox developers
         </h2>
         <p className="text-muted-foreground mt-2 max-w-3xl text-sm">
-          Continuous, code-aware simulations that run on each change and
-          validate customer workflows before merge.
+          27+ specialized tools for Roblox Studio. Edit scripts, manipulate
+          instances, query DataStores, and search the Toolbox.
         </p>
       </div>
       <div className="grid grid-cols-12 items-stretch gap-12 md:gap-14 lg:gap-16">
@@ -47,108 +244,45 @@ export default function QASection() {
               </div>
               <div className="relative flex h-full w-full items-center justify-center">
                 <div className="w-[92%] md:w-[86%] lg:w-[78%]">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="bg-background/95 supports-[backdrop-filter]:bg-background/80 inline-flex items-center gap-3 rounded-md border p-3 shadow backdrop-blur">
-                      <GitCommitHorizontal className="text-muted-foreground h-4 w-4" />
-                      <div className="text-foreground text-sm">
-                        New commit validated • 4 simulations passed
-                      </div>
-                    </div>
-                    <div className="bg-secondary w-full rounded-md border p-4 shadow-sm md:p-5">
-                      <div className="flex items-center gap-2">
-                        <div className="bg-foreground flex h-5 w-5 items-center justify-center rounded-full">
-                          <Check
-                            className="h-3 w-3 text-[#c3efc9]"
-                            strokeWidth={3}
-                          />
-                        </div>
-                        <span className="text-foreground text-xs font-medium">
-                          Testing ›
-                        </span>
-                        <span className="text-muted-foreground text-xs">
-                          Simulations complete
-                        </span>
-                      </div>
-                      <div className="border-border bg-tertiary mt-4 divide-y rounded-sm border">
-                        {qaRows.map((row) => (
-                          <div
-                            key={row}
-                            className="flex items-center justify-between px-3 py-2"
-                          >
-                            <div className="mr-2 flex min-w-0 flex-1 items-center gap-2">
-                              <div className="mt-0.5 flex-shrink-0 self-start">
-                                <span className="inline-flex size-4 items-center justify-center rounded-full bg-[#38af4b]">
-                                  <Check className="h-2.5 w-2.5 text-white" />
-                                </span>
-                              </div>
-                              <div className="min-w-0">
-                                <div className="truncate text-sm">{row}</div>
-                              </div>
-                            </div>
-                            <div className="ml-2 flex w-1/4 min-w-0 flex-shrink-0 items-center justify-end self-center">
-                              <span className="rounded-full bg-[#38af4b]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#299039]">
-                                Pass
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  {activeFeature === "toolbox" ? renderToolboxPicker() : demos[activeFeature]}
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div className="col-span-12 flex flex-col lg:col-span-6">
-          <ul className="space-y-6">
-            <li className="flex items-start gap-3 py-3">
-              <Beaker className="text-muted-foreground mt-0.5 h-5 w-5" />
-              <div>
-                <div className="text-sm font-medium">
-                  Generate test scenarios automatically
-                </div>
-                <div className="text-muted-foreground text-sm">
-                  AI builds scenarios from PRDs, diffs, and tickets.
-                </div>
-              </div>
-            </li>
-            <li className="flex items-start gap-3 py-3">
-              <ShieldCheck className="text-muted-foreground mt-0.5 h-5 w-5" />
-              <div>
-                <div className="text-sm font-medium">Prevent regressions</div>
-                <div className="text-muted-foreground text-sm">
-                  Simulations proactively verify the most impactful areas of
-                  your software.
-                </div>
-              </div>
-            </li>
-            <li className="flex items-start gap-3 py-3">
-              <CircleCheck className="text-muted-foreground mt-0.5 h-5 w-5" />
-              <div>
-                <div className="text-sm font-medium">Ship with confidence</div>
-                <div className="text-muted-foreground text-sm">
-                  Pass/fail gates and RCA on failures keep master stable.
-                </div>
-              </div>
-            </li>
-            <li className="flex items-start gap-3 py-3">
-              <GitCommitHorizontal className="text-muted-foreground mt-0.5 h-5 w-5" />
-              <div>
-                <div className="text-sm font-medium">
-                  Plug into CI &amp; PR Workflows
-                </div>
-                <div className="text-muted-foreground text-sm">
-                  Insights and approvals appear in code review and pipelines.
-                </div>
-              </div>
-            </li>
+          <ul className="space-y-2">
+            {features.map((feature) => {
+              const Icon = feature.icon;
+              const isActive = activeFeature === feature.key;
+              return (
+                <li
+                  key={feature.key}
+                  onClick={() => setActiveFeature(feature.key)}
+                  className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors ${
+                    isActive
+                      ? "bg-primary/10 border border-primary/20"
+                      : "hover:bg-muted/50"
+                  }`}
+                >
+                  <Icon className={`mt-0.5 h-5 w-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                  <div>
+                    <div className={`text-sm font-medium ${isActive ? "text-primary" : ""}`}>
+                      {feature.title}
+                    </div>
+                    <div className="text-muted-foreground text-sm">
+                      {feature.description}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
           <a
             className="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium tracking-tight transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6 mt-auto w-fit"
-            href="/platform/code-simulations"
+            href="/docs/roblox"
           >
-            See how it works
+            Roblox integration guide
           </a>
         </div>
       </div>

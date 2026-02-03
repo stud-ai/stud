@@ -1,39 +1,39 @@
-import {Activity, Brain, GitBranch, Layers, Search, Workflow} from "lucide-react";
+import {Code, FileSearch, History, Layers, Plug, Terminal} from "lucide-react";
 
 const contextItems = [
   {
-    title: "Code understanding",
+    title: "LSP Integration",
     description:
-      "Deep and accurate codebase understanding with semantic graphs.",
-    icon: Brain,
+      "Full language server support for intelligent code navigation and diagnostics.",
+    icon: Code,
   },
   {
-    title: "Runtime telemetry",
-    description: "Connects to logs, metrics, and traces for real context.",
-    icon: Activity,
+    title: "MCP Protocol",
+    description: "Extensible Model Context Protocol support for custom tool integrations.",
+    icon: Plug,
   },
   {
-    title: "Form‑fit workflows",
-    description: "Customizable support and triage flows with approvals.",
-    icon: Workflow,
+    title: "Session Management",
+    description: "Resume sessions, track token usage, and manage conversation history.",
+    icon: History,
   },
   {
-    title: "Integrates everywhere",
+    title: "Subagent System",
     description:
-      "All code SCMs, 50+ ticketing systems, MCP clients, and more.",
-    icon: GitBranch,
-  },
-  {
-    title: "Deep Research",
-    description:
-      "Agentic research that explores complex spaces and synthesizes answers.",
-    icon: Search,
-  },
-  {
-    title: "Multi‑repo at scale",
-    description:
-      "Supports large monorepos and many repos — scales to billions of LOC.",
+      "Delegate complex tasks to background agents that work in parallel.",
     icon: Layers,
+  },
+  {
+    title: "Smart File Handling",
+    description:
+      "Glob patterns, regex search, and intelligent file reading with context limits.",
+    icon: FileSearch,
+  },
+  {
+    title: "Terminal Native",
+    description:
+      "A beautiful TUI that feels at home in your terminal workflow.",
+    icon: Terminal,
   },
 ];
 
@@ -42,11 +42,10 @@ export default function ContextSection() {
     <section className="mx-auto w-full max-w-7xl py-16">
       <div className="mb-12">
         <h2 className="font-base text-2xl tracking-tight md:text-3xl">
-          Wide and deep context awareness
+          Powerful capabilities under the hood
         </h2>
         <p className="text-muted-foreground mt-2 max-w-3xl">
-          PlayerZero is purpose-built to deeply understand large software
-          systems.
+          Modern AI with deep tooling integration for a seamless development experience.
         </p>
       </div>
       <div className="grid grid-cols-1 gap-x-12 gap-y-10 md:grid-cols-3">

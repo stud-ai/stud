@@ -1,4 +1,7 @@
-import {Check, GitBranch, GitMerge, Minus, Plus} from "lucide-react";
+"use client";
+
+import {Terminal} from "lucide-react";
+import { useState } from "react";
 
 const mosaicCellsHtml = `
   <div class="aspect-square border border-white/10 dark:border-white/5" style="background-color:rgba(255, 255, 255, 0.04528848571159285);backdrop-filter:blur(8.18649562328028px);-webkit-backdrop-filter:blur(8.18649562328028px);transition:background-color 0.3s ease"></div>
@@ -83,26 +86,65 @@ const mosaicCellsHtml = `
   <div class="aspect-square border border-white/10 dark:border-white/5" style="background-color:rgba(255, 255, 255, 0.11265687475871607);backdrop-filter:blur(4.566103035744163px);-webkit-backdrop-filter:blur(4.566103035744163px);transition:background-color 0.3s ease"></div>
 `;
 
-const testRows = [
-  "Happy path: Authenticated user can update billing information",
-  "Edge case: large file upload works",
-  "Edge case: AUD invoices are properly converted to USD",
-  "Security: Viewer permsisions fail when trying to edit billing information",
-];
+const toolRowsByTab = {
+  roblox: [
+    { icon: "◆", text: 'Get Children "game.Workspace"', pending: "Getting children...", status: "complete", result: "47 instances" },
+    { icon: "◆", text: 'Get Script "ServerScriptService.Main"', pending: "Getting script...", status: "complete", result: "source retrieved" },
+    { icon: "◆", text: "Edit Script", pending: "Editing script...", status: "complete", result: "+18 -4 lines" },
+    { icon: "◆", text: 'Insert From Toolbox "low poly tree"', pending: "Inserting asset...", status: "pending", result: null },
+  ],
+  general: [
+    { icon: "→", text: "Read src/server/PlayerData.lua", pending: "Reading file...", status: "complete", result: "847 lines" },
+    { icon: "✱", text: 'Grep "handlePlayerJoin"', pending: "Searching content...", status: "complete", result: "12 matches" },
+    { icon: "←", text: "Edit src/server/PlayerData.lua", pending: "Preparing edit...", status: "complete", result: "+24 -8 lines" },
+    { icon: "$", text: "rojo build -o game.rbxl", pending: "Running command...", status: "pending", result: null },
+  ],
+  scripts: [
+    { icon: "→", text: "Read src/client/init.lua", pending: "Reading file...", status: "complete", result: "234 lines" },
+    { icon: "→", text: "Read src/shared/Types.lua", pending: "Reading file...", status: "complete", result: "89 lines" },
+    { icon: "←", text: "Write src/client/PlayerController.lua", pending: "Writing file...", status: "complete", result: "156 lines" },
+    { icon: "←", text: "Edit src/shared/Config.lua", pending: "Preparing edit...", status: "pending", result: null },
+  ],
+};
 
-const logoRow = [
-  {alt: "Zuora", src: "/assets/zuora-wordmark.svg", className: "max-h-6"},
-  {alt: "Cayuse", src: "/assets/cayuse-logo-black.png", className: "max-h-6"},
-  {alt: "Key Data", src: "/assets/keydata.svg", className: "max-h-6"},
-  {
-    alt: "Georgia-Pacific",
-    src: "/assets/georgia-pacific-trim.svg",
-    className: "max-h-6",
+const tabDescriptions = {
+  roblox: {
+    heading: (
+      <>
+        AI coding assistant with{" "}
+        <span className="text-foreground">deep Roblox Studio integration</span>.
+        Edit scripts, manipulate instances, and query DataStores.
+        All from your terminal.
+      </>
+    ),
   },
-  {alt: "Lightbeam", src: "/assets/lightbeam.png", className: "max-h-[52px]"},
-];
+  general: {
+    heading: (
+      <>
+        <span className="text-foreground">Read, write, and edit</span> any file in your codebase.
+        Search with glob patterns. Execute shell commands.
+        AI-powered coding assistant.
+      </>
+    ),
+  },
+  scripts: {
+    heading: (
+      <>
+        <span className="text-foreground">Generate Luau scripts</span> for your Roblox game.
+        Create client controllers, server handlers, and shared modules.
+        Context-aware code generation.
+      </>
+    ),
+  },
+};
+
+type TabType = "roblox" | "general" | "scripts";
 
 export default function HeroPanel() {
+  const [activeTab, setActiveTab] = useState<TabType>("roblox");
+  const toolRows = toolRowsByTab[activeTab];
+  const description = tabDescriptions[activeTab];
+
   return (
     <section className="mx-auto w-full max-w-7xl">
       <div className="border-border bg-background grid grid-cols-4 overflow-hidden rounded-md border lg:grid-cols-8">
@@ -110,7 +152,7 @@ export default function HeroPanel() {
           <div className="bg-background relative aspect-[16/9] overflow-hidden sm:aspect-[26/9]">
             <div className="absolute inset-0 opacity-40 dark:opacity-30">
               <img
-                alt="Subway"
+                alt="Forest"
                 className="object-cover"
                 src="/assets/redwoods-2.png"
                 style={{
@@ -147,106 +189,51 @@ export default function HeroPanel() {
                       transform: "translateY(0px)",
                     }}
                   >
-                    <div className="flex items-center gap-2">
-                      <div className="bg-foreground flex h-5 w-5 items-center justify-center rounded-full">
-                        <Check className="h-3 w-3 text-[#c3efc9]" strokeWidth={3} />
-                      </div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Terminal className="h-4 w-4 text-muted-foreground" />
                       <span className="text-foreground text-xs font-medium">
-                        Testing ›
+                        Stud
                       </span>
                       <span className="text-muted-foreground text-xs">
-                        Simulations complete
+                        4.2k tokens · $0.03
                       </span>
                     </div>
-                    <div className="border-border bg-tertiary mt-4 divide-y rounded-sm border">
-                      {testRows.map((row) => (
+                    <div className="border-border bg-tertiary rounded-sm border font-mono">
+                      {toolRows.map((row, i) => (
                         <div
-                          key={row}
-                          className="flex h-10 items-center justify-between px-3 py-2"
+                          key={row.text}
+                          className={`flex h-10 items-center justify-between px-3 py-2 ${i < toolRows.length - 1 ? "border-b border-border" : ""}`}
                         >
                           <div className="mr-2 flex min-w-0 flex-1 items-center gap-2">
-                            <div className="mt-0.5 flex-shrink-0 self-start">
-                              <span className="inline-flex size-4 items-center justify-center rounded-full bg-[#38af4b]">
-                                <Check className="h-2.5 w-2.5 text-white" />
-                              </span>
-                            </div>
-                            <div className="min-w-0">
-                              <div className="truncate text-sm text-muted-foreground line-through">
-                                {row}
-                              </div>
-                            </div>
+                            {row.status === "pending" ? (
+                              <>
+                                <span className="text-muted-foreground">~</span>
+                                <div className="min-w-0 truncate text-sm text-muted-foreground">
+                                  {row.pending}
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <span className="text-muted-foreground">
+                                  {row.icon}
+                                </span>
+                                <div className="min-w-0 truncate text-sm text-muted-foreground">
+                                  {row.text}
+                                </div>
+                              </>
+                            )}
                           </div>
-                          <div className="ml-2 flex w-1/4 min-w-0 flex-shrink-0 items-center justify-end self-center">
-                            <span className="rounded-full bg-[#38af4b]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#299039]">
-                              Pass
+                          {row.status === "complete" && (
+                            <span className="ml-2 flex-shrink-0 text-xs text-muted-foreground hidden sm:inline">
+                              {row.result}
                             </span>
-                          </div>
+                          )}
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
-                <div className="mx-auto mt-3 w-[92%] md:w-[86%] lg:w-[78%]">
-                  <div className="bg-tertiary/50 inline-flex w-full items-center justify-between gap-3 rounded-full border px-4 py-2.5 backdrop-blur-sm">
-                    <div className="flex min-w-0 flex-1 items-center gap-3">
-                      <GitBranch className="text-muted-foreground h-4 w-4 flex-shrink-0" />
-                      <span className="text-foreground truncate text-sm font-medium">
-                        Billing Permission Layer Fix{" "}
-                        <span className="text-muted-foreground">
-                          (2 files)
-                        </span>
-                      </span>
-                      <div className="ml-auto flex flex-shrink-0 items-center gap-2">
-                        <div className="flex items-center gap-1 rounded bg-[#38af4b]/10 px-1.5 py-0.5">
-                          <Plus className="h-3 w-3 text-[#299039]" strokeWidth={2.5} />
-                          <span className="text-xs font-medium text-[#299039]">
-                            198
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1 rounded bg-[#ef445a]/10 px-1.5 py-0.5">
-                          <Minus className="h-3 w-3 text-[#dc2243]" strokeWidth={2.5} />
-                          <span className="text-xs font-medium text-[#dc2243]">
-                            42
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <button className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:hover:bg-primary inline-flex flex-shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50">
-                      <GitMerge className="h-3.5 w-3.5" />
-                      Merge
-                    </button>
-                  </div>
-                </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-span-4 lg:col-span-8">
-          <div className="bg-background border-border relative border-t">
-            <div
-              className="divide-border/60 relative grid grid-cols-5 divide-x-2"
-              style={{minHeight: "128px"}}
-            >
-              {logoRow.map((logo, index) => (
-                <div
-                  key={logo.alt}
-                  className="flex h-32 items-center justify-center"
-                  style={{
-                    opacity: index === 0 ? 0.7862 : 1,
-                    transform:
-                      index === 0 ? "translateY(-2.1382px)" : "translateY(0px)",
-                  }}
-                >
-                  <div className="flex h-full w-full items-center justify-center p-12">
-                    <img
-                      alt={logo.alt}
-                      className={`${logo.className} w-auto object-contain opacity-80 brightness-0 grayscale dark:invert`}
-                      src={logo.src}
-                    />
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -270,34 +257,43 @@ export default function HeroPanel() {
                 <div className="grid h-full grid-rows-6 tracking-tight">
                   <div className="flex-1 outline-none row-span-4 p-6 md:p-8">
                     <p className="font-base text-muted-foreground text-xl leading-relaxed md:text-3xl">
-                      <img
-                        alt="Nylas"
-                        className="mx-1.5 inline h-[1.5rem] w-auto align-middle brightness-0 grayscale md:h-[1.5rem] dark:invert"
-                        src="/assets/nylas.png"
-                      />
-                      auto‑triages every customer issue 4x faster.&nbsp;
-                      <img
-                        alt="Zuora"
-                        className="mx-1.5 inline h-[1.15rem] w-auto align-middle brightness-0 grayscale md:h-[1.3rem] dark:invert"
-                        src="/assets/zuora-wordmark.svg"
-                      />
-                      generates technical RCAs for every issue within minutes of
-                      ticket creation.
+                      {description.heading}
                     </p>
                   </div>
                   <div className="row-span-2 flex flex-row items-center gap-4 px-6 py-4">
                     <h2 className="text-muted-foreground text-base font-medium">
-                      How PlayerZero helps
+                      How developers use Stud
                     </h2>
                     <div className="bg-muted text-muted-foreground inline-flex w-fit items-center justify-center rounded-lg p-1 border-border h-12 border">
-                      <button className="bg-background text-foreground border-border inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border px-5 py-2.5 text-base font-medium">
-                        L3 Support
+                      <button
+                        onClick={() => setActiveTab("roblox")}
+                        className={`inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md px-5 py-2.5 text-base font-medium transition-colors ${
+                          activeTab === "roblox"
+                            ? "bg-background text-foreground border-border border"
+                            : "border border-transparent text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        Roblox
                       </button>
-                      <button className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-5 py-2.5 text-base font-medium text-muted-foreground">
-                        QA
+                      <button
+                        onClick={() => setActiveTab("general")}
+                        className={`inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md px-5 py-2.5 text-base font-medium transition-colors ${
+                          activeTab === "general"
+                            ? "bg-background text-foreground border-border border"
+                            : "border border-transparent text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        General
                       </button>
-                      <button className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-transparent px-5 py-2.5 text-base font-medium text-muted-foreground">
-                        Dev
+                      <button
+                        onClick={() => setActiveTab("scripts")}
+                        className={`inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md px-5 py-2.5 text-base font-medium transition-colors ${
+                          activeTab === "scripts"
+                            ? "bg-background text-foreground border-border border"
+                            : "border border-transparent text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        Scripts
                       </button>
                     </div>
                   </div>
@@ -308,16 +304,16 @@ export default function HeroPanel() {
               <div className="row-span-5 flex flex-col gap-3">
                 <h3 className="text-base font-semibold">Get started in minutes</h3>
                 <p className="text-muted-foreground text-sm">
-                  Talk to an expert and see how PlayerZero can supercharge your
-                  support, QA, and developer workflows.
+                  Install Stud and start coding with AI assistance.
+                  Connect to your favorite LLM provider and build faster.
                 </p>
               </div>
               <div className="row-span-1 flex items-end">
                 <a
                   className="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium tracking-tight transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6"
-                  href="/request-demo"
+                  href="/docs/getting-started"
                 >
-                  Book a demo
+                  Get Started
                 </a>
               </div>
             </aside>

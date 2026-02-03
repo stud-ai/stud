@@ -1,74 +1,91 @@
-import {
-  Activity,
-  ArrowRightLeft,
-  Check,
-  CornerDownRight,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+"use client";
 
-const codeTableHtml = `
-  <table type="modify" class="m-0 w-full border-separate border-spacing-0 overflow-x-auto border-0 font-mono outline-none [--code-added:#38af4b] [--code-removed:#e65532] text-xs">
-    <tbody class="box-border w-full">
-      <tr class="h-1"></tr>
-      <tr class="bg-muted text-muted-foreground h-6 font-mono">
-        <td></td>
-        <td class="opacity-50 select-none">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ellipsis-vertical mx-auto size-3" aria-hidden="true"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-        </td>
-        <td><span class="sticky left-2 px-0 italic opacity-50">1 lines</span></td>
-      </tr>
-      <tr class="h-1"></tr>
-      <tr data-line-new="2" data-line-old="2" data-line-kind="normal" class="box-border h-5 min-h-5 border-none whitespace-pre-wrap">
-        <td class="w-1 border-l-[3px] border-transparent"></td>
-        <td class="px-2 text-center text-xs tabular-nums opacity-50 select-none">2</td>
-        <td class="pr-6 whitespace-nowrap"><span><span class=""><span class="token keyword">export</span> <span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">charge</span><span class="token punctuation">(</span>total<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">,</span> rate<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">)</span> <span class="token punctuation">{</span></span></span></td>
-      </tr>
-      <tr data-line-new="3" data-line-old="3" data-line-kind="normal" class="box-border h-5 min-h-5 border-none whitespace-pre-wrap">
-        <td class="w-1 border-l-[3px] border-transparent"></td>
-        <td class="px-2 text-center text-xs tabular-nums opacity-50 select-none">3</td>
-        <td class="pr-6 whitespace-nowrap"><span><span class="">  <span class="token keyword">const</span> amount <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">round</span><span class="token punctuation">(</span>total <span class="token operator">*</span> rate </span><span class="bg-[var(--code-added)]/20"><span class="token operator">*</span> <span class="token number">100</span></span><span class=""><span class="token punctuation">)</span> </span><span class="bg-[var(--code-added)]/20"><span class="token operator">/</span> <span class="token number">100</span></span></span></td>
-      </tr>
-      <tr data-line-new="4" data-line-kind="insert" class="box-border h-5 min-h-5 border-none whitespace-pre-wrap bg-[var(--code-added)]/10">
-        <td class="w-1 border-l-[3px] border-[color:var(--code-added)]/60"></td>
-        <td class="px-2 text-center text-xs tabular-nums opacity-50 select-none">4</td>
-        <td class="pr-6 whitespace-nowrap"><ins><span class="">  <span class="token keyword">const</span> idKey <span class="token operator">=</span> request<span class="token punctuation">.</span>headers<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'Idempotency-Key'</span><span class="token punctuation">)</span>   <span class="token comment">// Ensure idempotency for retry semantics</span></span></ins></td>
-      </tr>
-      <tr data-line-new="5" data-line-kind="insert" class="box-border h-5 min-h-5 border-none whitespace-pre-wrap bg-[var(--code-added)]/10">
-        <td class="w-1 border-l-[3px] border-[color:var(--code-added)]/60"></td>
-        <td class="px-2 text-center text-xs tabular-nums opacity-50 select-none">5</td>
-        <td class="pr-6 whitespace-nowrap"><ins><span class="">  <span class="token keyword">if</span> <span class="token punctuation">(</span>idKey<span class="token punctuation">)</span> <span class="token keyword">await</span> idempotencyCache<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>idKey<span class="token punctuation">,</span> amount<span class="token punctuation">)</span></span></ins></td>
-      </tr>
-      <tr data-line-new="6" data-line-old="4" data-line-kind="normal" class="box-border h-5 min-h-5 border-none whitespace-pre-wrap">
-        <td class="w-1 border-l-[3px] border-transparent"></td>
-        <td class="px-2 text-center text-xs tabular-nums opacity-50 select-none">6</td>
-        <td class="pr-6 whitespace-nowrap"><span><span class=""></span></span></td>
-      </tr>
-      <tr data-line-new="7" data-line-old="5" data-line-kind="normal" class="box-border h-5 min-h-5 border-none whitespace-pre-wrap">
-        <td class="w-1 border-l-[3px] border-transparent"></td>
-        <td class="px-2 text-center text-xs tabular-nums opacity-50 select-none">7</td>
-        <td class="pr-6 whitespace-nowrap"><span><span class="">  <span class="token keyword">await</span> payments<span class="token punctuation">.</span><span class="token function">charge</span><span class="token punctuation">(</span><span class="token punctuation">{</span> amount <span class="token punctuation">}</span><span class="token punctuation">)</span></span></span></td>
-      </tr>
-      <tr data-line-new="8" data-line-old="6" data-line-kind="normal" class="box-border h-5 min-h-5 border-none whitespace-pre-wrap">
-        <td class="w-1 border-l-[3px] border-transparent"></td>
-        <td class="px-2 text-center text-xs tabular-nums opacity-50 select-none">8</td>
-        <td class="pr-6 whitespace-nowrap"><span><span class=""><span class="token punctuation">}</span></span></span></td>
-      </tr>
-    </tbody>
-  </table>
-`;
+import {
+  FileText,
+  Layers,
+  Search,
+  Terminal,
+} from "lucide-react";
+import { useState } from "react";
+
+type FeatureKey = "readwrite" | "globgrep" | "bash" | "subagent";
+
+const features = [
+  {
+    key: "readwrite" as FeatureKey,
+    icon: FileText,
+    title: "Read & Write",
+    description: "Read any file, write new code, and make precise edits with full context awareness.",
+  },
+  {
+    key: "globgrep" as FeatureKey,
+    icon: Search,
+    title: "Glob & Grep",
+    description: "Find files by pattern and search content across your entire codebase instantly.",
+  },
+  {
+    key: "bash" as FeatureKey,
+    icon: Terminal,
+    title: "Bash Execution",
+    description: "Run any shell command with intelligent output handling and permission controls.",
+  },
+  {
+    key: "subagent" as FeatureKey,
+    icon: Layers,
+    title: "Subagent Delegation",
+    description: "Spawn background agents for parallel tasks and complex workflows.",
+  },
+];
+
+const demos: Record<FeatureKey, { rows: Array<{ icon: string; text: string; pending: string; status: string; result: string | null }> }> = {
+  readwrite: {
+    rows: [
+      { icon: "→", text: "Read src/server/PlayerData.lua", pending: "Reading file...", status: "done", result: "847 lines" },
+      { icon: "→", text: "Read src/shared/Config.lua", pending: "Reading file...", status: "done", result: "124 lines" },
+      { icon: "←", text: "Write src/server/DataManager.lua", pending: "Writing file...", status: "done", result: "256 lines" },
+      { icon: "←", text: "Edit src/server/PlayerData.lua", pending: "Editing file...", status: "pending", result: null },
+    ],
+  },
+  globgrep: {
+    rows: [
+      { icon: "✱", text: 'Glob "**/*.lua"', pending: "Finding files...", status: "done", result: "47 files" },
+      { icon: "✱", text: 'Grep "PlayerData"', pending: "Searching content...", status: "done", result: "23 matches" },
+      { icon: "✱", text: 'Glob "src/server/**/*.lua"', pending: "Finding files...", status: "done", result: "12 files" },
+      { icon: "✱", text: 'Grep "function.*Player"', pending: "Searching content...", status: "pending", result: null },
+    ],
+  },
+  bash: {
+    rows: [
+      { icon: "$", text: "rojo build -o game.rbxl", pending: "Running command...", status: "done", result: "exit 0" },
+      { icon: "$", text: "selene src/", pending: "Running linter...", status: "done", result: "0 warnings" },
+      { icon: "$", text: "npm run build", pending: "Building project...", status: "done", result: "exit 0" },
+      { icon: "$", text: "git status", pending: "Running command...", status: "pending", result: null },
+    ],
+  },
+  subagent: {
+    rows: [
+      { icon: "◉", text: 'Explore Task "find auth code"', pending: "Delegating...", status: "done", result: "3 files" },
+      { icon: "◉", text: 'Plan Task "refactor system"', pending: "Planning...", status: "done", result: "8 steps" },
+      { icon: "◉", text: 'Bash Task "run tests"', pending: "Executing...", status: "done", result: "passed" },
+      { icon: "◉", text: 'Explore Task "find usages"', pending: "Delegating...", status: "pending", result: null },
+    ],
+  },
+};
 
 export default function SupportSection() {
+  const [activeFeature, setActiveFeature] = useState<FeatureKey>("readwrite");
+  const currentDemo = demos[activeFeature];
+
   return (
     <div id="first-product-section">
       <section className="mx-auto w-full max-w-7xl py-16">
         <div className="mb-8">
           <h2 className="font-base text-2xl tracking-tight md:text-3xl">
-            An always-on AI support engineer
+            Powerful tools at your fingertips
           </h2>
           <p className="text-muted-foreground mt-2 max-w-3xl text-sm">
-            An AI support engineer that can triage, RCA, and fix customer
-            problems autonomously.
+            Read, write, edit, and search your codebase with natural language.
+            Execute commands and delegate complex tasks to subagents.
           </p>
         </div>
         <div className="grid grid-cols-12 items-stretch gap-12 md:gap-14 lg:gap-16">
@@ -93,80 +110,42 @@ export default function SupportSection() {
                 </div>
                 <div className="relative flex h-full w-full items-center justify-center">
                   <div className="w-[92%] md:w-[86%] lg:w-[78%]">
-                    <div
-                      className="bg-secondary rounded-md border p-2 shadow-sm md:p-3"
-                      style={{opacity: 1, transform: "translateY(0px)"}}
-                    >
-                      <div className="bg-secondary/50 text-foreground rounded-sm p-1.5 text-[13px] leading-tight">
-                        <div className="flex items-start gap-1.5">
-                          <img
-                            alt="User"
-                            className="mt-0.5 h-4 w-4 flex-none rounded-full object-cover"
-                            src="/assets/avatar.jpg"
-                          />
-                          <div className="font-medium">
-                            Contract renewal failed with FX rounding error on
-                            checkout.
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div
-                      className="bg-secondary mt-3 rounded-md border p-3 shadow-sm"
-                      style={{opacity: 1, transform: "translateY(0px)"}}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="bg-foreground flex h-5 w-5 items-center justify-center rounded-full">
-                          <Check className="h-3 w-3 text-[#c3efc9]" strokeWidth={3} />
-                        </div>
-                        <span className="text-foreground text-xs font-medium">
-                          Triage ›
-                        </span>
-                        <span className="text-muted-foreground text-xs">
-                          Triaged as technical issue
-                        </span>
-                      </div>
-                      <div
-                        className="mt-3 flex items-center justify-between"
-                        style={{opacity: 1, transform: "translateY(0px)"}}
-                      >
+                    <div className="bg-secondary rounded-md border p-4 shadow-sm">
+                      <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <CornerDownRight className="text-muted-foreground/60 ml-2.5 h-3.5 w-3.5" />
-                          <span className="text-foreground text-xs font-medium">
-                            Approval required
-                          </span>
-                          <span className="text-foreground inline-flex items-center gap-1 text-xs font-medium">
-                            <Check className="h-3.5 w-3.5 text-[#237230]" strokeWidth={3} />
-                            Approved
-                          </span>
+                          <Terminal className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="text-foreground text-xs font-medium">Stud</span>
                         </div>
-                        <span className="text-muted-foreground text-[10px]">
-                          maria@pear.com
+                        <span className="text-muted-foreground text-xs font-mono">
+                          2.1k tokens · $0.02
                         </span>
                       </div>
-                    </div>
-
-                    <div
-                      className="bg-secondary mt-3 rounded-md border p-3 shadow-sm"
-                      style={{opacity: 1, transform: "translateY(0px)"}}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="bg-foreground flex h-5 w-5 items-center justify-center rounded-full">
-                          <Check className="h-3 w-3 text-[#c3efc9]" strokeWidth={3} />
-                        </div>
-                        <span className="text-foreground text-xs font-medium">
-                          Fixing ›
-                        </span>
-                        <span className="text-muted-foreground text-xs">
-                          Patch prepared
-                        </span>
-                      </div>
-                      <div className="bg-secondary/50 mt-2 ml-8 overflow-hidden rounded-sm border">
-                        <div
-                          className="h-40 overflow-auto"
-                          dangerouslySetInnerHTML={{__html: codeTableHtml}}
-                        />
+                      <div className="border-border bg-tertiary rounded-sm border font-mono text-sm">
+                        {currentDemo.rows.map((row, i) => (
+                          <div
+                            key={row.text}
+                            className={`flex items-center justify-between px-3 py-2 ${i < currentDemo.rows.length - 1 ? "border-b border-border" : ""}`}
+                          >
+                            <div className="mr-2 flex min-w-0 flex-1 items-center gap-2">
+                              {row.status === "pending" ? (
+                                <>
+                                  <span className="text-muted-foreground">~</span>
+                                  <span className="text-muted-foreground">{row.pending}</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="text-muted-foreground">{row.icon}</span>
+                                  <span className="text-muted-foreground">{row.text}</span>
+                                </>
+                              )}
+                            </div>
+                            {row.status === "done" && (
+                              <span className="ml-2 flex-shrink-0 text-xs text-muted-foreground">
+                                {row.result}
+                              </span>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -176,60 +155,38 @@ export default function SupportSection() {
           </div>
 
           <div className="col-span-12 flex flex-col lg:col-span-6">
-            <ul className="space-y-6">
-              <li className="flex items-start gap-3 py-3">
-                <Activity className="text-muted-foreground mt-0.5 h-5 w-5" />
-                <div>
-                  <div className="text-sm font-medium">
-                    Scale customers without scaling headcount
-                  </div>
-                  <div className="text-muted-foreground text-sm">
-                    Autonomously triages with full context, deflects L1/L2, and
-                    handles L3 in minutes—24/7.
-                  </div>
-                </div>
-              </li>
-              <li className="flex items-start gap-3 py-3">
-                <ShieldCheck className="text-muted-foreground mt-0.5 h-5 w-5" />
-                <div>
-                  <div className="text-sm font-medium">
-                    Operate with governance
-                  </div>
-                  <div className="text-muted-foreground text-sm">
-                    Approvals, diffs, and an audit trail keep fixes safe and
-                    compliant.
-                  </div>
-                </div>
-              </li>
-              <li className="flex items-start gap-3 py-3">
-                <Sparkles className="text-muted-foreground mt-0.5 h-5 w-5" />
-                <div>
-                  <div className="text-sm font-medium">Evolving agents</div>
-                  <div className="text-muted-foreground text-sm">
-                    Constantly learns your flow and the institutional knowledge
-                    embedded in your process and software.
-                  </div>
-                </div>
-              </li>
-              <li className="flex items-start gap-3 py-3">
-                <ArrowRightLeft className="text-muted-foreground mt-0.5 h-5 w-5" />
-                <div>
-                  <div className="text-sm font-medium">
-                    Perfect handoffs for faster resolution
-                  </div>
-                  <div className="text-muted-foreground text-sm">
-                    Delivers full context with proposed fixes and RCA so
-                    developers don't have to context switch and can ship fixes
-                    faster.
-                  </div>
-                </div>
-              </li>
+            <ul className="space-y-2">
+              {features.map((feature) => {
+                const Icon = feature.icon;
+                const isActive = activeFeature === feature.key;
+                return (
+                  <li
+                    key={feature.key}
+                    onClick={() => setActiveFeature(feature.key)}
+                    className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors ${
+                      isActive
+                        ? "bg-primary/10 border border-primary/20"
+                        : "hover:bg-muted/50"
+                    }`}
+                  >
+                    <Icon className={`mt-0.5 h-5 w-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                    <div>
+                      <div className={`text-sm font-medium ${isActive ? "text-primary" : ""}`}>
+                        {feature.title}
+                      </div>
+                      <div className="text-muted-foreground text-sm">
+                        {feature.description}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
             <a
               className="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium tracking-tight transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6 mt-auto w-fit"
-              href="/platform/agentic-debugging"
+              href="/docs/tools"
             >
-              Our product
+              Explore tools
             </a>
           </div>
         </div>

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PlayerZero",
-  description: "AI Support and QA agents that triage and test every ticket.",
+  title: "Stud",
+  description: "AI coding assistant with deep Roblox Studio integration.",
 };
 
 export default function RootLayout({

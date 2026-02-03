@@ -7,51 +7,53 @@ export default function SiteFooter() {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
           <div className="flex flex-col gap-2.5">
             <h3 className="text-foreground text-xs font-semibold tracking-wide uppercase">
-              Platform
+              Product
             </h3>
             <nav className="flex flex-col gap-2">
               <a
                 className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/platform/agentic-debugging"
+                href="/docs"
               >
-                Agentic debugging
+                Documentation
               </a>
               <a
                 className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/platform/code-simulations"
+                href="/docs/roblox"
               >
-                Code simulations
+                Roblox Integration
               </a>
               <a
                 className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/enterprise"
+                href="/docs/tools"
               >
-                Enterprise
+                Tools Reference
               </a>
             </nav>
           </div>
           <div className="flex flex-col gap-2.5">
             <h3 className="text-foreground text-xs font-semibold tracking-wide uppercase">
-              Company
+              Community
             </h3>
             <nav className="flex flex-col gap-2">
               <a
                 className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/resources"
+                href="https://github.com/improdead/stud"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Resources
+                GitHub
               </a>
               <a
                 className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/about-us"
+                href="/changelog"
               >
-                About us
+                Changelog
               </a>
               <a
                 className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/careers"
+                href="/contributing"
               >
-                Careers
+                Contributing
               </a>
             </nav>
           </div>
@@ -72,18 +74,6 @@ export default function SiteFooter() {
               >
                 Privacy policy
               </a>
-              <a
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/legal/acceptable-use-policy"
-              >
-                Acceptable use policy
-              </a>
-              <a
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/report-ai-impact"
-              >
-                Report AI concerns
-              </a>
             </nav>
           </div>
         </div>
@@ -92,7 +82,7 @@ export default function SiteFooter() {
             <Logo className="text-foreground h-4 w-auto" />
           </a>
           <p className="text-muted-foreground text-sm">
-            © 2026 PlayerZero, Inc. ✓ SOC 2 Type II &amp; HIPAA Certified
+            © 2026 Stud. Open Source AI Coding Assistant.
           </p>
         </div>
       </div>
