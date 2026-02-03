@@ -5,6 +5,10 @@ import {
   Layers,
   Search,
   Terminal,
+  Folder,
+  FolderOpen,
+  File,
+  ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -37,44 +41,179 @@ const features = [
   },
 ];
 
-const demos: Record<FeatureKey, { rows: Array<{ icon: string; text: string; pending: string; status: string; result: string | null }> }> = {
-  readwrite: {
-    rows: [
-      { icon: "→", text: "Read src/server/PlayerData.lua", pending: "Reading file...", status: "done", result: "847 lines" },
-      { icon: "→", text: "Read src/shared/Config.lua", pending: "Reading file...", status: "done", result: "124 lines" },
-      { icon: "←", text: "Write src/server/DataManager.lua", pending: "Writing file...", status: "done", result: "256 lines" },
-      { icon: "←", text: "Edit src/server/PlayerData.lua", pending: "Editing file...", status: "pending", result: null },
-    ],
-  },
-  globgrep: {
-    rows: [
-      { icon: "✱", text: 'Glob "**/*.lua"', pending: "Finding files...", status: "done", result: "47 files" },
-      { icon: "✱", text: 'Grep "PlayerData"', pending: "Searching content...", status: "done", result: "23 matches" },
-      { icon: "✱", text: 'Glob "src/server/**/*.lua"', pending: "Finding files...", status: "done", result: "12 files" },
-      { icon: "✱", text: 'Grep "function.*Player"', pending: "Searching content...", status: "pending", result: null },
-    ],
-  },
-  bash: {
-    rows: [
-      { icon: "$", text: "rojo build -o game.rbxl", pending: "Running command...", status: "done", result: "exit 0" },
-      { icon: "$", text: "selene src/", pending: "Running linter...", status: "done", result: "0 warnings" },
-      { icon: "$", text: "npm run build", pending: "Building project...", status: "done", result: "exit 0" },
-      { icon: "$", text: "git status", pending: "Running command...", status: "pending", result: null },
-    ],
-  },
-  subagent: {
-    rows: [
-      { icon: "◉", text: 'Explore Task "find auth code"', pending: "Delegating...", status: "done", result: "3 files" },
-      { icon: "◉", text: 'Plan Task "refactor system"', pending: "Planning...", status: "done", result: "8 steps" },
-      { icon: "◉", text: 'Bash Task "run tests"', pending: "Executing...", status: "done", result: "passed" },
-      { icon: "◉", text: 'Explore Task "find usages"', pending: "Delegating...", status: "pending", result: null },
-    ],
-  },
-};
-
 export default function SupportSection() {
   const [activeFeature, setActiveFeature] = useState<FeatureKey>("readwrite");
-  const currentDemo = demos[activeFeature];
+
+  const renderReadWriteDemo = () => (
+    <div className="bg-secondary rounded-md border p-4 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+          <span className="text-foreground text-xs font-medium">src/server/PlayerData.lua</span>
+        </div>
+        <span className="text-xs text-muted-foreground">847 lines</span>
+      </div>
+      <div className="bg-tertiary rounded border border-border overflow-hidden font-mono text-xs">
+        <div className="flex border-b border-border">
+          <div className="w-8 text-right pr-2 py-0.5 text-muted-foreground/50 select-none bg-muted/30">1</div>
+          <div className="px-2 py-0.5"><span className="text-[#ff7b72]">local</span> <span className="text-foreground">Players</span> <span className="text-muted-foreground">=</span> <span className="text-foreground">game</span><span className="text-muted-foreground">:</span><span className="text-[#d2a8ff]">GetService</span><span className="text-muted-foreground">(</span><span className="text-[#a5d6ff]">&quot;Players&quot;</span><span className="text-muted-foreground">)</span></div>
+        </div>
+        <div className="flex border-b border-border">
+          <div className="w-8 text-right pr-2 py-0.5 text-muted-foreground/50 select-none bg-muted/30">2</div>
+          <div className="px-2 py-0.5"><span className="text-[#ff7b72]">local</span> <span className="text-foreground">ReplicatedStorage</span> <span className="text-muted-foreground">=</span> <span className="text-foreground">game</span><span className="text-muted-foreground">:</span><span className="text-[#d2a8ff]">GetService</span><span className="text-muted-foreground">(</span><span className="text-[#a5d6ff]">&quot;ReplicatedStorage&quot;</span><span className="text-muted-foreground">)</span></div>
+        </div>
+        <div className="flex border-b border-border bg-[#3fb950]/10">
+          <div className="w-8 text-right pr-2 py-0.5 text-[#3fb950]/70 select-none bg-[#3fb950]/10">3</div>
+          <div className="px-2 py-0.5 text-[#3fb950]">+ <span className="text-[#ff7b72]">local</span> DataStoreService = game:GetService(&quot;DataStoreService&quot;)</div>
+        </div>
+        <div className="flex border-b border-border">
+          <div className="w-8 text-right pr-2 py-0.5 text-muted-foreground/50 select-none bg-muted/30">4</div>
+          <div className="px-2 py-0.5 text-muted-foreground"></div>
+        </div>
+        <div className="flex">
+          <div className="w-8 text-right pr-2 py-0.5 text-muted-foreground/50 select-none bg-muted/30">5</div>
+          <div className="px-2 py-0.5"><span className="text-[#ff7b72]">local function</span> <span className="text-[#d2a8ff]">onPlayerAdded</span><span className="text-muted-foreground">(</span><span className="text-[#ffa657]">player</span><span className="text-muted-foreground">)</span></div>
+        </div>
+      </div>
+      <div className="mt-3 flex items-center justify-between">
+        <span className="text-xs text-[#3fb950]">+1 line added</span>
+        <span className="text-xs text-muted-foreground">Luau</span>
+      </div>
+    </div>
+  );
+
+  const renderGlobGrepDemo = () => (
+    <div className="bg-secondary rounded-md border p-4 shadow-sm">
+      <div className="flex items-center gap-2 mb-3">
+        <Search className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-foreground text-xs font-medium">Grep &quot;PlayerData&quot;</span>
+        <span className="text-xs text-muted-foreground ml-auto">23 matches</span>
+      </div>
+      <div className="bg-tertiary rounded border border-border overflow-hidden font-mono text-xs space-y-0">
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-border hover:bg-muted/50">
+          <File className="h-3 w-3 text-[#58a6ff] flex-shrink-0" />
+          <span className="text-[#58a6ff]">src/server/</span>
+          <span className="text-foreground font-medium">PlayerData.lua</span>
+          <span className="text-muted-foreground ml-auto">:12</span>
+        </div>
+        <div className="px-3 py-1.5 border-b border-border bg-muted/30">
+          <span className="text-muted-foreground">local </span>
+          <span className="bg-[#58a6ff]/30 text-foreground px-0.5 rounded">PlayerData</span>
+          <span className="text-muted-foreground"> = require(script.Parent.</span>
+          <span className="bg-[#58a6ff]/30 text-foreground px-0.5 rounded">PlayerData</span>
+          <span className="text-muted-foreground">)</span>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-border hover:bg-muted/50">
+          <File className="h-3 w-3 text-[#58a6ff] flex-shrink-0" />
+          <span className="text-[#58a6ff]">src/client/</span>
+          <span className="text-foreground font-medium">DataSync.lua</span>
+          <span className="text-muted-foreground ml-auto">:47</span>
+        </div>
+        <div className="px-3 py-1.5 border-b border-border bg-muted/30">
+          <span className="text-muted-foreground">function DataSync:get</span>
+          <span className="bg-[#58a6ff]/30 text-foreground px-0.5 rounded">PlayerData</span>
+          <span className="text-muted-foreground">(userId)</span>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-2 hover:bg-muted/50">
+          <File className="h-3 w-3 text-[#58a6ff] flex-shrink-0" />
+          <span className="text-[#58a6ff]">src/shared/</span>
+          <span className="text-foreground font-medium">Types.lua</span>
+          <span className="text-muted-foreground ml-auto">:8</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderBashDemo = () => (
+    <div className="bg-secondary rounded-md border p-4 shadow-sm">
+      <div className="flex items-center gap-2 mb-3">
+        <Terminal className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-foreground text-xs font-medium">Terminal</span>
+      </div>
+      <div className="bg-[#0d1117] rounded border border-border overflow-hidden font-mono text-xs">
+        <div className="px-3 py-2 border-b border-border/50">
+          <span className="text-[#8b949e]">$</span>
+          <span className="text-foreground ml-2">rojo build -o game.rbxl</span>
+        </div>
+        <div className="px-3 py-2 text-[#8b949e] border-b border-border/50">
+          <div>Building project...</div>
+          <div className="text-[#3fb950]">✓ Built game.rbxl (2.4 MB)</div>
+        </div>
+        <div className="px-3 py-2 border-b border-border/50">
+          <span className="text-[#8b949e]">$</span>
+          <span className="text-foreground ml-2">selene src/</span>
+        </div>
+        <div className="px-3 py-2 text-[#8b949e] border-b border-border/50">
+          <div className="text-[#3fb950]">✓ No issues found in 47 files</div>
+        </div>
+        <div className="px-3 py-2">
+          <span className="text-[#8b949e]">$</span>
+          <span className="text-foreground ml-2">npm run test</span>
+          <span className="animate-pulse ml-1">▋</span>
+        </div>
+      </div>
+      <div className="mt-3 flex items-center gap-3 text-xs">
+        <span className="text-[#3fb950]">● 2 completed</span>
+        <span className="text-[#d29922]">● 1 running</span>
+      </div>
+    </div>
+  );
+
+  const renderSubagentDemo = () => (
+    <div className="bg-secondary rounded-md border p-4 shadow-sm">
+      <div className="flex items-center gap-2 mb-3">
+        <Layers className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-foreground text-xs font-medium">Active Agents</span>
+        <span className="text-xs text-muted-foreground ml-auto">3 running</span>
+      </div>
+      <div className="space-y-2">
+        <div className="bg-tertiary rounded border border-border p-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#3fb950] animate-pulse"></div>
+              <span className="text-xs font-medium text-foreground">Explore Agent</span>
+            </div>
+            <span className="text-xs text-muted-foreground">12s</span>
+          </div>
+          <div className="text-xs text-muted-foreground mb-2">&quot;Find all authentication-related code&quot;</div>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-[#58a6ff]">◆ Found 7 files</span>
+            <span className="text-muted-foreground">→ Reading auth.lua</span>
+          </div>
+        </div>
+        <div className="bg-tertiary rounded border border-border p-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#3fb950] animate-pulse"></div>
+              <span className="text-xs font-medium text-foreground">Plan Agent</span>
+            </div>
+            <span className="text-xs text-muted-foreground">8s</span>
+          </div>
+          <div className="text-xs text-muted-foreground mb-2">&quot;Design refactor for DataStore system&quot;</div>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-[#d29922]">~ Planning step 4/8</span>
+          </div>
+        </div>
+        <div className="bg-tertiary rounded border border-[#3fb950]/30 p-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#3fb950]"></div>
+              <span className="text-xs font-medium text-foreground">Bash Agent</span>
+            </div>
+            <span className="text-xs text-[#3fb950]">done</span>
+          </div>
+          <div className="text-xs text-muted-foreground">&quot;Run test suite&quot; → <span className="text-[#3fb950]">47/47 passed</span></div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const demos: Record<FeatureKey, React.ReactNode> = {
+    readwrite: renderReadWriteDemo(),
+    globgrep: renderGlobGrepDemo(),
+    bash: renderBashDemo(),
+    subagent: renderSubagentDemo(),
+  };
 
   return (
     <div id="first-product-section">
@@ -110,44 +249,7 @@ export default function SupportSection() {
                 </div>
                 <div className="relative flex h-full w-full items-center justify-center">
                   <div className="w-[92%] md:w-[86%] lg:w-[78%]">
-                    <div className="bg-secondary rounded-md border p-4 shadow-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <Terminal className="h-3.5 w-3.5 text-muted-foreground" />
-                          <span className="text-foreground text-xs font-medium">Stud</span>
-                        </div>
-                        <span className="text-muted-foreground text-xs font-mono">
-                          2.1k tokens · $0.02
-                        </span>
-                      </div>
-                      <div className="border-border bg-tertiary rounded-sm border font-mono text-sm">
-                        {currentDemo.rows.map((row, i) => (
-                          <div
-                            key={row.text}
-                            className={`flex items-center justify-between px-3 py-2 ${i < currentDemo.rows.length - 1 ? "border-b border-border" : ""}`}
-                          >
-                            <div className="mr-2 flex min-w-0 flex-1 items-center gap-2">
-                              {row.status === "pending" ? (
-                                <>
-                                  <span className="text-muted-foreground">~</span>
-                                  <span className="text-muted-foreground">{row.pending}</span>
-                                </>
-                              ) : (
-                                <>
-                                  <span className="text-muted-foreground">{row.icon}</span>
-                                  <span className="text-muted-foreground">{row.text}</span>
-                                </>
-                              )}
-                            </div>
-                            {row.status === "done" && (
-                              <span className="ml-2 flex-shrink-0 text-xs text-muted-foreground">
-                                {row.result}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    {demos[activeFeature]}
                   </div>
                 </div>
               </div>

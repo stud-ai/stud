@@ -5,6 +5,10 @@ import {
   Code,
   Database,
   Search,
+  ChevronRight,
+  ChevronDown,
+  FileCode,
+  Folder,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -46,125 +50,173 @@ const toolboxAssets = [
   { id: 5767839048, name: "Simple Tree Model", type: "Model", creator: "EasyBuild", verified: true, thumbnail: "https://t6.rbxcdn.com/180DAY-cc85115bb7b1a4f5a82e977de51e9c53" },
 ];
 
-const demos: Record<FeatureKey, React.ReactNode> = {
-  scripts: (
+export default function QASection() {
+  const [activeFeature, setActiveFeature] = useState<FeatureKey>("scripts");
+  const [selectedAsset, setSelectedAsset] = useState<number>(7136915607);
+  const [hoveredAsset, setHoveredAsset] = useState<number | null>(null);
+
+  const renderScriptsDemo = () => (
     <div className="bg-secondary rounded-md border p-4 shadow-sm">
-      <div className="flex items-center gap-2 mb-3">
-        <Code className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="text-foreground text-xs font-medium">Script Editor</span>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Code className="h-3.5 w-3.5 text-[#58a6ff]" />
+          <span className="text-foreground text-xs font-medium">ServerScriptService.Main</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#58a6ff]/20 text-[#58a6ff]">Luau</span>
+        </div>
       </div>
-      <div className="border-border bg-tertiary rounded-sm border font-mono text-sm">
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
-            <span className="text-muted-foreground">Get Script &quot;ServerScriptService.Main&quot;</span>
+      <div className="bg-[#0d1117] rounded border border-border overflow-hidden font-mono text-xs">
+        <div className="flex border-b border-border/30">
+          <div className="w-7 text-right pr-2 py-1 text-[#484f58] select-none">1</div>
+          <div className="px-2 py-1 flex-1">
+            <span className="text-[#ff7b72]">local</span>
+            <span className="text-[#c9d1d9]"> Players = game:</span>
+            <span className="text-[#d2a8ff]">GetService</span>
+            <span className="text-[#c9d1d9]">(</span>
+            <span className="text-[#a5d6ff]">&quot;Players&quot;</span>
+            <span className="text-[#c9d1d9]">)</span>
           </div>
-          <span className="text-xs text-muted-foreground">847 lines</span>
         </div>
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
-            <span className="text-muted-foreground">Edit Script &quot;ReplicatedStorage.Config&quot;</span>
+        <div className="flex border-b border-border/30">
+          <div className="w-7 text-right pr-2 py-1 text-[#484f58] select-none">2</div>
+          <div className="px-2 py-1 flex-1">
+            <span className="text-[#ff7b72]">local</span>
+            <span className="text-[#c9d1d9]"> RunService = game:</span>
+            <span className="text-[#d2a8ff]">GetService</span>
+            <span className="text-[#c9d1d9]">(</span>
+            <span className="text-[#a5d6ff]">&quot;RunService&quot;</span>
+            <span className="text-[#c9d1d9]">)</span>
           </div>
-          <span className="text-xs text-muted-foreground">+18 -4</span>
         </div>
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
-            <span className="text-muted-foreground">Create Script &quot;Workspace.NewHandler&quot;</span>
-          </div>
-          <span className="text-xs text-muted-foreground">created</span>
+        <div className="flex border-b border-border/30">
+          <div className="w-7 text-right pr-2 py-1 text-[#484f58] select-none">3</div>
+          <div className="px-2 py-1 flex-1"></div>
         </div>
-        <div className="flex items-center justify-between px-3 py-2">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">~</span>
-            <span className="text-muted-foreground">Editing script...</span>
+        <div className="flex border-b border-border/30">
+          <div className="w-7 text-right pr-2 py-1 text-[#484f58] select-none">4</div>
+          <div className="px-2 py-1 flex-1">
+            <span className="text-[#8b949e]">-- Initialize player data on join</span>
           </div>
+        </div>
+        <div className="flex">
+          <div className="w-7 text-right pr-2 py-1 text-[#484f58] select-none">5</div>
+          <div className="px-2 py-1 flex-1">
+            <span className="text-[#ff7b72]">local function</span>
+            <span className="text-[#d2a8ff]"> onPlayerAdded</span>
+            <span className="text-[#c9d1d9]">(</span>
+            <span className="text-[#ffa657]">player</span>
+            <span className="text-[#c9d1d9]">)</span>
+          </div>
+        </div>
+      </div>
+      <div className="mt-3 flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">847 lines</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[#3fb950]">● Synced</span>
         </div>
       </div>
     </div>
-  ),
-  instances: (
+  );
+
+  const renderInstancesDemo = () => (
     <div className="bg-secondary rounded-md border p-4 shadow-sm">
       <div className="flex items-center gap-2 mb-3">
         <Box className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="text-foreground text-xs font-medium">Instance Tools</span>
+        <span className="text-foreground text-xs font-medium">Explorer</span>
       </div>
-      <div className="border-border bg-tertiary rounded-sm border font-mono text-sm">
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
-            <span className="text-muted-foreground">Get Children &quot;game.Workspace&quot;</span>
-          </div>
-          <span className="text-xs text-muted-foreground">47 instances</span>
+      <div className="bg-tertiary rounded border border-border overflow-hidden font-mono text-xs">
+        <div className="flex items-center gap-1 px-2 py-1.5 border-b border-border hover:bg-muted/30">
+          <ChevronDown className="h-3 w-3 text-muted-foreground" />
+          <span className="text-[#f0b832]">⬢</span>
+          <span className="text-foreground">game</span>
         </div>
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
-            <span className="text-muted-foreground">Create Part in Workspace</span>
-          </div>
-          <span className="text-xs text-muted-foreground">created</span>
+        <div className="flex items-center gap-1 px-2 py-1.5 border-b border-border hover:bg-muted/30 pl-4">
+          <ChevronDown className="h-3 w-3 text-muted-foreground" />
+          <Folder className="h-3 w-3 text-[#8b949e]" />
+          <span className="text-foreground">Workspace</span>
+          <span className="text-muted-foreground ml-auto">47</span>
         </div>
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
-            <span className="text-muted-foreground">Set Property &quot;Part.Color&quot;</span>
-          </div>
-          <span className="text-xs text-muted-foreground">updated</span>
+        <div className="flex items-center gap-1 px-2 py-1.5 border-b border-border bg-[#58a6ff]/10 pl-8">
+          <ChevronRight className="h-3 w-3 text-muted-foreground" />
+          <Box className="h-3 w-3 text-[#8b949e]" />
+          <span className="text-[#58a6ff] font-medium">SpawnLocation</span>
+          <span className="text-[#58a6ff] ml-auto text-[10px]">selected</span>
         </div>
-        <div className="flex items-center justify-between px-3 py-2">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">~</span>
-            <span className="text-muted-foreground">Cloning instance...</span>
-          </div>
+        <div className="flex items-center gap-1 px-2 py-1.5 border-b border-border hover:bg-muted/30 pl-8">
+          <ChevronRight className="h-3 w-3 text-muted-foreground" />
+          <Box className="h-3 w-3 text-[#8b949e]" />
+          <span className="text-foreground">Baseplate</span>
+        </div>
+        <div className="flex items-center gap-1 px-2 py-1.5 border-b border-border hover:bg-muted/30 pl-8">
+          <ChevronDown className="h-3 w-3 text-muted-foreground" />
+          <Folder className="h-3 w-3 text-[#8b949e]" />
+          <span className="text-foreground">Map</span>
+          <span className="text-muted-foreground ml-auto">12</span>
+        </div>
+        <div className="flex items-center gap-1 px-2 py-1.5 hover:bg-muted/30 pl-4">
+          <ChevronRight className="h-3 w-3 text-muted-foreground" />
+          <Folder className="h-3 w-3 text-[#8b949e]" />
+          <span className="text-foreground">ServerScriptService</span>
         </div>
       </div>
-    </div>
-  ),
-  datastore: (
-    <div className="bg-secondary rounded-md border p-4 shadow-sm">
-      <div className="flex items-center gap-2 mb-3">
-        <Database className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="text-foreground text-xs font-medium">DataStore Operations</span>
-      </div>
-      <div className="border-border bg-tertiary rounded-sm border font-mono text-sm">
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
-            <span className="text-muted-foreground">Get DataStore &quot;PlayerData&quot;</span>
-          </div>
-          <span className="text-xs text-muted-foreground">connected</span>
-        </div>
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
-            <span className="text-muted-foreground">Get Key &quot;user_12345&quot;</span>
-          </div>
-          <span className="text-xs text-muted-foreground">retrieved</span>
-        </div>
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
-            <span className="text-muted-foreground">Update Key &quot;user_12345.coins&quot;</span>
-          </div>
-          <span className="text-xs text-muted-foreground">saved</span>
-        </div>
-        <div className="flex items-center justify-between px-3 py-2">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">~</span>
-            <span className="text-muted-foreground">Listing keys...</span>
-          </div>
-        </div>
+      <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+        <span>◆ Get Children</span>
+        <span>◆ Set Property</span>
+        <span>◆ Clone</span>
       </div>
     </div>
-  ),
-  toolbox: null, // Will render custom picker
-};
+  );
 
-export default function QASection() {
-  const [activeFeature, setActiveFeature] = useState<FeatureKey>("toolbox");
-  const [selectedAsset, setSelectedAsset] = useState<number>(7136915607);
-  const [hoveredAsset, setHoveredAsset] = useState<number | null>(null);
+  const renderDatastoreDemo = () => (
+    <div className="bg-secondary rounded-md border p-4 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Database className="h-3.5 w-3.5 text-[#a371f7]" />
+          <span className="text-foreground text-xs font-medium">PlayerData</span>
+        </div>
+        <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#a371f7]/20 text-[#a371f7]">DataStore</span>
+      </div>
+      <div className="bg-[#0d1117] rounded border border-border overflow-hidden font-mono text-xs">
+        <div className="px-3 py-2 border-b border-border/30 text-[#8b949e]">
+          key: <span className="text-[#a5d6ff]">&quot;user_12345&quot;</span>
+        </div>
+        <div className="px-3 py-2">
+          <div className="text-[#c9d1d9]">{"{"}</div>
+          <div className="pl-4">
+            <span className="text-[#7ee787]">&quot;coins&quot;</span>
+            <span className="text-[#c9d1d9]">: </span>
+            <span className="text-[#79c0ff]">2450</span>
+            <span className="text-[#c9d1d9]">,</span>
+          </div>
+          <div className="pl-4">
+            <span className="text-[#7ee787]">&quot;level&quot;</span>
+            <span className="text-[#c9d1d9]">: </span>
+            <span className="text-[#79c0ff]">24</span>
+            <span className="text-[#c9d1d9]">,</span>
+          </div>
+          <div className="pl-4">
+            <span className="text-[#7ee787]">&quot;inventory&quot;</span>
+            <span className="text-[#c9d1d9]">: [</span>
+            <span className="text-[#a5d6ff]">&quot;sword&quot;</span>
+            <span className="text-[#c9d1d9]">, </span>
+            <span className="text-[#a5d6ff]">&quot;shield&quot;</span>
+            <span className="text-[#c9d1d9]">],</span>
+          </div>
+          <div className="pl-4">
+            <span className="text-[#7ee787]">&quot;lastLogin&quot;</span>
+            <span className="text-[#c9d1d9]">: </span>
+            <span className="text-[#79c0ff]">1706832000</span>
+          </div>
+          <div className="text-[#c9d1d9]">{"}"}</div>
+        </div>
+      </div>
+      <div className="mt-3 flex items-center justify-between text-xs">
+        <span className="text-[#3fb950]">◆ Retrieved successfully</span>
+        <span className="text-muted-foreground">v3 · 2.1KB</span>
+      </div>
+    </div>
+  );
 
   const renderToolboxPicker = () => (
     <div className="bg-secondary rounded-md border p-4 shadow-sm">
@@ -206,10 +258,17 @@ export default function QASection() {
       </div>
       <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
         <span>↑↓ navigate</span>
-        <span>enter select</span>
+        <span>enter insert</span>
       </div>
     </div>
   );
+
+  const demos: Record<FeatureKey, React.ReactNode> = {
+    scripts: renderScriptsDemo(),
+    instances: renderInstancesDemo(),
+    datastore: renderDatastoreDemo(),
+    toolbox: renderToolboxPicker(),
+  };
 
   return (
     <section className="mx-auto w-full max-w-7xl py-16">
@@ -244,7 +303,7 @@ export default function QASection() {
               </div>
               <div className="relative flex h-full w-full items-center justify-center">
                 <div className="w-[92%] md:w-[86%] lg:w-[78%]">
-                  {activeFeature === "toolbox" ? renderToolboxPicker() : demos[activeFeature]}
+                  {demos[activeFeature]}
                 </div>
               </div>
             </div>
