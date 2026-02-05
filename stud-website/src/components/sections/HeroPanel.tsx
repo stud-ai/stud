@@ -256,7 +256,7 @@ export default function HeroPanel() {
               <div className="flex flex-col h-full gap-0">
                 <div className="grid h-full grid-rows-6 tracking-tight">
                   <div className="flex-1 outline-none row-span-4 p-6 md:p-8">
-                    <p className="font-base text-muted-foreground text-xl leading-relaxed md:text-3xl">
+                    <p className="font-display text-muted-foreground text-xl leading-relaxed md:text-3xl">
                       {description.heading}
                     </p>
                   </div>

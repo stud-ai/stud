@@ -216,8 +216,8 @@ export default function SecuritySection() {
   };
 
   return (
-    <div className="bg-tertiary rounded-sm">
-      <section className="mx-auto w-full max-w-7xl py-16">
+    <div className="bg-tertiary">
+      <section className="mx-auto w-full max-w-7xl px-6 py-16">
         <div className="mb-8">
           <h2 className="font-base text-2xl tracking-tight md:text-3xl">
             You&apos;re always in control

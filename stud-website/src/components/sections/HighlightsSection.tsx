@@ -1,75 +1,41 @@
 export default function HighlightsSection() {
   return (
-    <div className="bg-tertiary mt-12 py-12">
-      <section className="mx-auto w-full max-w-7xl">
-        <h2 className="font-base text-muted-foreground mb-4 text-left text-base text-balance md:text-3xl">
-          Stud is an open-source AI coding assistant built to{" "}
-          <span className="text-foreground">
-            make developers more productive, especially those building on Roblox.
-          </span>
-        </h2>
-        <div className="mt-12 grid grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-span-4">
-            <p className="text-muted-foreground text-sm md:text-base">
-              Get started
-            </p>
-          </div>
-          <div className="col-span-12 lg:col-span-8">
-            <div className="flex flex-col gap-6">
-              <a
-                className="bg-tertiary hover:bg-secondary/40 block rounded-sm border p-3 transition-colors"
-                href="/docs/getting-started"
-              >
-                <div className="text-foreground text-sm font-medium md:text-base">
-                  Getting Started with Stud
-                </div>
-                <p className="text-muted-foreground mt-0.5 text-[13px]">
-                  Install and start coding with AI assistance
-                </p>
-                <p className="text-muted-foreground mt-1 text-[13px]">
-                  Set up Stud in your terminal and connect to your favorite AI provider in minutes.
-                </p>
-                <div className="text-muted-foreground mt-2 text-[11px]">
-                  Documentation
-                </div>
-              </a>
-              <a
-                className="bg-tertiary hover:bg-secondary/40 block rounded-sm border p-3 transition-colors"
-                href="/docs/roblox"
-              >
-                <div className="text-foreground text-sm font-medium md:text-base">
-                  Roblox Integration Guide
-                </div>
-                <p className="text-muted-foreground mt-1 text-[13px]">
-                  Learn how to use Stud&apos;s 27+ specialized tools for Roblox Studio development.
-                </p>
-                <div className="text-muted-foreground mt-2 text-[11px]">
-                  Tutorial
-                </div>
-              </a>
-              <a
-                className="bg-tertiary hover:bg-secondary/40 block rounded-sm border p-3 transition-colors"
-                href="/docs/subagents"
-              >
-                <div className="text-foreground text-sm font-medium md:text-base">
-                  Building with Subagents
-                </div>
-                <p className="text-muted-foreground mt-1 text-[13px]">
-                  Delegate complex tasks to background agents for parallel workflows and faster results.
-                </p>
-                <div className="text-muted-foreground mt-2 text-[11px]">
-                  Advanced
-                </div>
-              </a>
-            </div>
-            <div className="mt-4">
-              <a className="text-foreground text-sm hover:underline" href="/docs">
-                View documentation →
-              </a>
-            </div>
-          </div>
+    <section className="bg-tertiary mt-12 border-y border-border">
+      <div className="mx-auto w-full max-w-7xl px-6 py-16 md:py-20">
+        <div className="max-w-3xl">
+          <p className="text-foreground/45 text-xs font-medium uppercase tracking-[0.16em]">
+            Start Building
+          </p>
+          <h2 className="font-display mt-4 text-4xl leading-[1.05] tracking-tight text-foreground md:text-6xl">
+            Ship your next Roblox update with Stud.
+          </h2>
+          <p className="text-muted-foreground mt-5 max-w-2xl text-base md:text-lg">
+            Luau edits, instance actions, and toolbox workflows from one AI-powered terminal.
+          </p>
         </div>
-      </section>
-    </div>
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <a
+            className="btn-metal inline-flex w-fit items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-foreground"
+            href="/docs/getting-started"
+          >
+            Get Started
+          </a>
+          <a
+            className="btn-metal inline-flex w-fit items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-foreground"
+            href="/docs/roblox"
+          >
+            Roblox Guide
+          </a>
+          <a
+            className="btn-metal-dark inline-flex w-fit items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-white transition-colors"
+            href="https://github.com/improdead/stud"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            GitHub
+          </a>
+        </div>
+      </div>
+    </section>
   );
 }

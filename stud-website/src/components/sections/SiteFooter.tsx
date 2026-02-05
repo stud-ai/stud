@@ -1,90 +1,18 @@
-import Logo from "../Logo";
-
 export default function SiteFooter() {
   return (
-    <footer className="bg-background border-border mt-auto w-full border-t">
-      <div className="mx-auto w-full max-w-7xl px-6 py-8">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
-          <div className="flex flex-col gap-2.5">
-            <h3 className="text-foreground text-xs font-semibold tracking-wide uppercase">
-              Product
-            </h3>
-            <nav className="flex flex-col gap-2">
-              <a
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/docs"
-              >
-                Documentation
-              </a>
-              <a
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/docs/roblox"
-              >
-                Roblox Integration
-              </a>
-              <a
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/docs/tools"
-              >
-                Tools Reference
-              </a>
-            </nav>
-          </div>
-          <div className="flex flex-col gap-2.5">
-            <h3 className="text-foreground text-xs font-semibold tracking-wide uppercase">
-              Community
-            </h3>
-            <nav className="flex flex-col gap-2">
-              <a
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="https://github.com/improdead/stud"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                GitHub
-              </a>
-              <a
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/changelog"
-              >
-                Changelog
-              </a>
-              <a
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/contributing"
-              >
-                Contributing
-              </a>
-            </nav>
-          </div>
-          <div className="flex flex-col gap-2.5">
-            <h3 className="text-foreground text-xs font-semibold tracking-wide uppercase">
-              Legal
-            </h3>
-            <nav className="flex flex-col gap-2">
-              <a
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/legal/terms-of-service"
-              >
-                Terms of service
-              </a>
-              <a
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                href="/legal/privacy-policy"
-              >
-                Privacy policy
-              </a>
-            </nav>
-          </div>
-        </div>
-        <div className="border-border mt-8 flex flex-col items-start justify-between gap-4 border-t pt-6 md:flex-row md:items-center">
-          <a className="flex items-center" href="/">
-            <Logo className="text-foreground h-4 w-auto" />
-          </a>
-          <p className="text-muted-foreground text-sm">
-            © 2026 Stud. Open Source AI Coding Assistant.
-          </p>
-        </div>
+    <footer className="bg-background border-border mt-auto w-full overflow-hidden border-t">
+      <div className="mx-auto w-full max-w-7xl px-6 py-14 md:py-20">
+        <a aria-label="STUD" className="group inline-block" href="/">
+          <span className="font-tech relative block text-[clamp(3.2rem,16vw,10rem)] leading-none tracking-[0.2em]">
+            <span className="text-foreground/18">STUD</span>
+            <span
+              aria-hidden
+              className="text-foreground absolute inset-0 w-0 overflow-hidden whitespace-nowrap transition-[width] duration-500 ease-out group-hover:w-full"
+            >
+              STUD
+            </span>
+          </span>
+        </a>
       </div>
     </footer>
   );
