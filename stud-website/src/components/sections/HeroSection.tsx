@@ -62,7 +62,8 @@ export default function HeroSection() {
 
       {/* Navigation */}
       <nav className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5">
-        <a href="/" className="inline-flex items-center">
+        <a href="/" className="inline-flex items-center gap-2">
+          <img src="/assets/logo_transparent_bg.png" alt="Stud" className="h-7 w-7" />
           <span className="font-tech text-sm tracking-[0.18em] text-foreground md:text-base">STUD</span>
         </a>
         <div className="hidden items-center gap-7 md:flex">
@@ -153,7 +154,7 @@ export default function HeroSection() {
           <div className="rounded-xl border border-foreground/10 bg-white/50 p-1 backdrop-blur-md shadow-sm">
             <div className="rounded-lg bg-foreground/[0.03] p-4">
               <div className="mb-3 flex items-center gap-2">
-                <Terminal className="h-3.5 w-3.5 text-foreground/30" />
+                <img src="/assets/logo_transparent_bg.png" alt="Stud" className="h-4 w-4" />
                 <span className="text-xs font-medium text-foreground/40">stud</span>
                 <span className="ml-auto text-xs text-foreground/20 font-mono">v1.0</span>
               </div>

@@ -2,7 +2,8 @@ export default function SiteFooter() {
   return (
     <footer className="bg-background border-border mt-auto w-full overflow-hidden border-t">
       <div className="mx-auto w-full max-w-7xl px-6 py-14 md:py-20">
-        <a aria-label="STUD" className="group inline-block" href="/">
+        <a aria-label="STUD" className="group inline-flex items-center gap-4" href="/">
+          <img src="/assets/logo_transparent_bg.png" alt="Stud" className="h-16 w-16 md:h-24 md:w-24" />
           <span className="font-tech relative block text-[clamp(3.2rem,16vw,10rem)] leading-none tracking-[0.2em]">
             <span className="text-foreground/18">STUD</span>
             <span

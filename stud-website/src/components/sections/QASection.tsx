@@ -37,13 +37,13 @@ const features = [
   },
 ];
 
-// Real Roblox assets with actual thumbnail URLs from the Roblox API
+// Real Roblox village assets with actual thumbnail URLs from the Roblox API
 const toolboxAssets = [
-  { id: 7136915607, name: "Low Poly Tree Pack", type: "Model", creator: "NatureAssets", verified: true, thumbnail: "https://t2.rbxcdn.com/180DAY-94d8a00d83f26f36de332fbba2223f3c" },
-  { id: 6899470737, name: "Stylized Oak Tree", type: "Model", creator: "TreeMaster3D", verified: true, thumbnail: "https://t4.rbxcdn.com/180DAY-3acb0f0da8433cb97bb84fe70301c78f" },
-  { id: 6439306858, name: "Pine Tree Low Poly", type: "Model", creator: "ForestPack", verified: true, thumbnail: "https://t2.rbxcdn.com/180DAY-c241e6748c4c05ea93e73916de6c0cec" },
-  { id: 6557596986, name: "Cartoon Tree Set", type: "Model", creator: "ToonWorld", verified: false, thumbnail: "https://t7.rbxcdn.com/180DAY-dde6e11e92c0fe4e2179eb39843d0ec4" },
-  { id: 5767839048, name: "Simple Tree Model", type: "Model", creator: "EasyBuild", verified: true, thumbnail: "https://t6.rbxcdn.com/180DAY-cc85115bb7b1a4f5a82e977de51e9c53" },
+  { id: 90405905565781, name: "Medieval Village Pack", type: "Model", creator: "BuildCraft", verified: true, thumbnail: "https://tr.rbxcdn.com/180DAY-118b27b7f6a9283190692ac5aa42061d/150/150/Model/Png/noFilter" },
+  { id: 7021878884, name: "Villager House", type: "Model", creator: "BlockBuilder", verified: true, thumbnail: "https://tr.rbxcdn.com/180DAY-473a5ba01300471878be2aeadb136d9f/150/150/Model/Png/noFilter" },
+  { id: 169765254, name: "Village Town Center", type: "Model", creator: "MapMakers", verified: true, thumbnail: "https://tr.rbxcdn.com/180DAY-d3e27699e4739b9d61f078b1e56a14c1/150/150/Model/Png/noFilter" },
+  { id: 8915687805, name: "Fantasy Village Kit", type: "Model", creator: "RPGAssets", verified: false, thumbnail: "https://tr.rbxcdn.com/180DAY-5d483f6e8430377c9f9eae7b480c9470/150/150/Model/Png/noFilter" },
+  { id: 15485395576, name: "Village Market Stall", type: "Model", creator: "DetailProps", verified: true, thumbnail: "https://tr.rbxcdn.com/180DAY-87cda8fd7a2b104f021950cc8e170510/150/150/Model/Png/noFilter" },
 ];
 
 const demos: Record<FeatureKey, React.ReactNode> = {
@@ -56,21 +56,21 @@ const demos: Record<FeatureKey, React.ReactNode> = {
       <div className="border-border bg-tertiary rounded-sm border font-mono text-sm">
         <div className="flex items-center justify-between px-3 py-2 border-b border-border">
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">→</span>
             <span className="text-muted-foreground">Get Script &quot;ServerScriptService.Main&quot;</span>
           </div>
           <span className="text-xs text-muted-foreground">847 lines</span>
         </div>
         <div className="flex items-center justify-between px-3 py-2 border-b border-border">
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">→</span>
             <span className="text-muted-foreground">Edit Script &quot;ReplicatedStorage.Config&quot;</span>
           </div>
           <span className="text-xs text-muted-foreground">+18 -4</span>
         </div>
         <div className="flex items-center justify-between px-3 py-2 border-b border-border">
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">→</span>
             <span className="text-muted-foreground">Create Script &quot;Workspace.NewHandler&quot;</span>
           </div>
           <span className="text-xs text-muted-foreground">created</span>
@@ -130,21 +130,21 @@ const demos: Record<FeatureKey, React.ReactNode> = {
       <div className="border-border bg-tertiary rounded-sm border font-mono text-sm">
         <div className="flex items-center justify-between px-3 py-2 border-b border-border">
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">☁</span>
             <span className="text-muted-foreground">Get DataStore &quot;PlayerData&quot;</span>
           </div>
           <span className="text-xs text-muted-foreground">connected</span>
         </div>
         <div className="flex items-center justify-between px-3 py-2 border-b border-border">
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">☁</span>
             <span className="text-muted-foreground">Get Key &quot;user_12345&quot;</span>
           </div>
           <span className="text-xs text-muted-foreground">retrieved</span>
         </div>
         <div className="flex items-center justify-between px-3 py-2 border-b border-border">
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">◆</span>
+            <span className="text-muted-foreground">☁</span>
             <span className="text-muted-foreground">Update Key &quot;user_12345.coins&quot;</span>
           </div>
           <span className="text-xs text-muted-foreground">saved</span>
@@ -163,7 +163,7 @@ const demos: Record<FeatureKey, React.ReactNode> = {
 
 export default function QASection() {
   const [activeFeature, setActiveFeature] = useState<FeatureKey>("toolbox");
-  const [selectedAsset, setSelectedAsset] = useState<number>(7136915607);
+  const [selectedAsset, setSelectedAsset] = useState<number>(90405905565781);
   const [hoveredAsset, setHoveredAsset] = useState<number | null>(null);
 
   const renderToolboxPicker = () => (
@@ -174,10 +174,10 @@ export default function QASection() {
       </div>
       <div className="mb-3">
         <div className="bg-tertiary border border-border rounded px-3 py-1.5 text-sm text-foreground font-mono">
-          low poly tree<span className="animate-pulse">|</span>
+          village<span className="animate-pulse">|</span>
         </div>
       </div>
-      <div className="space-y-0.5 max-h-[160px] overflow-y-auto">
+      <div className="space-y-0.5">
         {toolboxAssets.map((asset) => {
           const isActive = hoveredAsset === asset.id || (hoveredAsset === null && selectedAsset === asset.id);
           return (
@@ -190,7 +190,7 @@ export default function QASection() {
               onMouseEnter={() => setHoveredAsset(asset.id)}
               onMouseLeave={() => setHoveredAsset(null)}
             >
-              <img src={asset.thumbnail} alt={asset.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
+              <img src={asset.thumbnail} alt={asset.name} className="w-9 h-9 rounded object-cover flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className={`text-sm font-medium truncate ${isActive ? "text-white" : "text-foreground"}`}>
                   {selectedAsset === asset.id && <span className="mr-1">●</span>}

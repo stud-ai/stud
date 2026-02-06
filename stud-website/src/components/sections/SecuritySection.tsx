@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Eye, Lock, Settings, Terminal, FileText } from "lucide-react";
+import { AlertTriangle, Eye, Lock, Settings } from "lucide-react";
 import { useState } from "react";
 
 type FeatureKey = "granular" | "transparency" | "deny" | "policies";
@@ -54,20 +54,24 @@ export default function SecuritySection() {
       <div className="bg-tertiary rounded border border-border mb-3 overflow-hidden">
         <div className="font-mono text-xs">
           <div className="flex">
-            <div className="w-8 text-right pr-2 text-muted-foreground/50 select-none bg-muted/30">12</div>
+            <div className="w-8 text-right pr-2 py-0.5 text-muted-foreground/50 select-none bg-muted/30">12</div>
             <div className="px-2 py-0.5 text-muted-foreground">local Players = game:GetService(&quot;Players&quot;)</div>
           </div>
           <div className="flex bg-[#3fb950]/10">
-            <div className="w-8 text-right pr-2 text-[#3fb950]/50 select-none bg-[#3fb950]/10">13</div>
-            <div className="px-2 py-0.5 text-[#3fb950]">+ local DataStoreService = game:GetService(&quot;DataStoreService&quot;)</div>
+            <div className="w-8 text-right pr-2 py-0.5 text-[#3fb950]/70 select-none bg-[#3fb950]/10">13</div>
+            <div className="px-2 py-0.5 text-[#3fb950]">+ local DataStoreService =</div>
+          </div>
+          <div className="flex bg-[#3fb950]/10">
+            <div className="w-8 text-right pr-2 py-0.5 text-[#3fb950]/70 select-none bg-[#3fb950]/10"></div>
+            <div className="px-2 py-0.5 text-[#3fb950] pl-6">game:GetService(&quot;DataStoreService&quot;)</div>
           </div>
           <div className="flex">
-            <div className="w-8 text-right pr-2 text-muted-foreground/50 select-none bg-muted/30">14</div>
+            <div className="w-8 text-right pr-2 py-0.5 text-muted-foreground/50 select-none bg-muted/30">14</div>
             <div className="px-2 py-0.5 text-muted-foreground">local function onPlayerAdded(player)</div>
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
         {permissionOptions.map((option, i) => {
           const isActive = selectedOption === i || hoveredOption === i;
           return (
@@ -135,20 +139,23 @@ export default function SecuritySection() {
   const renderDenyDemo = () => (
     <div className="bg-secondary rounded-md border-l-4 border-l-[#f85149] border border-border p-4 shadow-sm">
       <div className="flex items-center gap-2 mb-3">
-        <Terminal className="h-4 w-4 text-[#f85149]" />
+        <span className="text-[#f85149] font-mono text-lg">{">_"}</span>
         <span className="text-foreground text-sm font-medium">
           Bash: rm -rf node_modules/
         </span>
       </div>
       <div className="bg-tertiary rounded border border-border mb-3 p-3 font-mono text-xs">
-        <div className="text-[#f85149] mb-2">⚠ This command will delete files</div>
+        <div className="flex items-center gap-2 text-[#f85149] mb-2">
+          <span>△</span>
+          <span>This command will delete files</span>
+        </div>
         <div className="text-muted-foreground">
           <div>Target: ./node_modules/</div>
           <div>Files: ~2,847 items</div>
           <div>Size: 312 MB</div>
         </div>
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
         <button className="px-3 py-1.5 rounded text-xs font-medium bg-tertiary border border-border text-foreground hover:bg-muted cursor-pointer">
           Allow once
         </button>

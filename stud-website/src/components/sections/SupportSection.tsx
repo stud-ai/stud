@@ -113,7 +113,7 @@ export default function SupportSection() {
                     <div className="bg-secondary rounded-md border p-4 shadow-sm">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <Terminal className="h-3.5 w-3.5 text-muted-foreground" />
+                          <img src="/assets/logo_transparent_bg.png" alt="Stud" className="h-4 w-4" />
                           <span className="text-foreground text-xs font-medium">Stud</span>
                         </div>
                         <span className="text-muted-foreground text-xs font-mono">
