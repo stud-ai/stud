@@ -1,4 +1,5 @@
 import ContextSection from "../components/sections/ContextSection"
+import FeaturesSection from "../components/sections/FeaturesSection"
 import HeroSection from "../components/sections/HeroSection"
 import HeroPanel from "../components/sections/HeroPanel"
 import HighlightsSection from "../components/sections/HighlightsSection"
@@ -54,6 +55,7 @@ export default function HomePage() {
           <div className="mx-auto w-full max-w-7xl px-6 pt-24 pb-8">
             <HeroPanel />
           </div>
+          <FeaturesSection />
           <div className="px-6">
             <SupportSection />
             <QASection />

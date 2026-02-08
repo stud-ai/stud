@@ -67,6 +67,9 @@ export default function HeroSection() {
           <span className="font-tech text-sm tracking-[0.18em] text-foreground md:text-base">STUD</span>
         </a>
         <div className="hidden items-center gap-7 md:flex">
+          <a href="/features" className="text-sm font-medium text-foreground/50 transition-colors hover:text-foreground">
+            Features
+          </a>
           <a href="/docs" className="text-sm font-medium text-foreground/50 transition-colors hover:text-foreground">
             Docs
           </a>
@@ -186,13 +189,6 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2">
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-foreground/25">Scroll</span>
-          <div className="h-8 w-[1px] bg-gradient-to-b from-foreground/20 to-transparent" />
-        </div>
-      </div>
     </section>
   )
 }
