@@ -2,14 +2,16 @@
 
 import { AlertCircle, Check, Terminal } from "lucide-react"
 import { FormEvent, useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
 
 export default function HeroSection() {
   const unicornRef = useRef<HTMLDivElement>(null)
   const [mail, setMail] = useState("")
   const [sent, setSent] = useState(false)
   const [warn, setWarn] = useState("")
+  const [submitting, setSubmitting] = useState(false)
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const value = mail.trim()
     if (!value) {
@@ -20,9 +22,32 @@ export default function HeroSection() {
       setWarn("Use a valid email address.")
       return
     }
+
     setWarn("")
-    setSent(true)
-    setMail("")
+    setSubmitting(true)
+
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: value }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setWarn(data.error ?? "Something went wrong.")
+        return
+      }
+
+      setSent(true)
+      setMail("")
+      toast.success("Check your inbox for a confirmation email.")
+    } catch {
+      setWarn("Network error. Please try again.")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   useEffect(() => {
@@ -120,12 +145,14 @@ export default function HeroSection() {
                   placeholder="Enter your email"
                   type="email"
                   value={mail}
+                  disabled={submitting}
                 />
                 <button
-                  className="inline-flex h-full items-center justify-center rounded-lg bg-foreground px-4 text-sm font-medium text-white transition-colors hover:bg-foreground/85"
+                  className="inline-flex h-full items-center justify-center rounded-lg bg-foreground px-4 text-sm font-medium text-white transition-colors hover:bg-foreground/85 disabled:opacity-50"
                   type="submit"
+                  disabled={submitting}
                 >
-                  Send
+                  {submitting ? "Sending..." : "Send"}
                 </button>
               </form>
               {warn ? (
