@@ -83,16 +83,6 @@ export namespace Session {
     })
   export type Info = z.output<typeof Info>
 
-  export const ShareInfo = z
-    .object({
-      secret: z.string(),
-      url: z.string(),
-    })
-    .meta({
-      ref: "SessionShare",
-    })
-  export type ShareInfo = z.output<typeof ShareInfo>
-
   export const Event = {
     Created: BusEvent.define(
       "session.created",
@@ -254,10 +244,6 @@ export namespace Session {
   export const get = fn(Identifier.schema("session"), async (id) => {
     const read = await Storage.read<Info>(["session", Instance.project.id, id])
     return read as Info
-  })
-
-  export const getShare = fn(Identifier.schema("session"), async (id) => {
-    return Storage.read<ShareInfo>(["share", id])
   })
 
   export const share = fn(Identifier.schema("session"), async (id) => {
