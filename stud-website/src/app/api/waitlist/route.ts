@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     email,
     validateRegex: true,
     validateMx: true,
-    validateTypo: true,
+    validateTypo: false,
     validateDisposable: true,
     validateSMTP: false,
   })
