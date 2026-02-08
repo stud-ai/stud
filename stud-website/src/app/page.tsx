@@ -61,10 +61,10 @@ export default function HomePage() {
             <QASection />
           </div>
           <MemorySection />
-          <SecuritySection />
           <div className="px-6">
             <ContextSection />
           </div>
+          <SecuritySection />
           <HighlightsSection />
         </main>
         <SiteFooter />
