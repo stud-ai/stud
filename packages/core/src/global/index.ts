@@ -50,6 +50,8 @@ if (version !== CACHE_VERSION) {
         }),
       ),
     )
-  } catch (e) {}
+  } catch {
+    // cache dir may not exist yet
+  }
   await Bun.file(path.join(Global.Path.cache, "version")).write(CACHE_VERSION)
 }

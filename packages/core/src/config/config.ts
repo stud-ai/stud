@@ -257,7 +257,14 @@ export namespace Config {
       })
       if (!md) continue
 
-      const patterns = ["/.stud/command/", "/.stud/commands/", "/.opencode/command/", "/.opencode/commands/", "/command/", "/commands/"]
+      const patterns = [
+        "/.stud/command/",
+        "/.stud/commands/",
+        "/.opencode/command/",
+        "/.opencode/commands/",
+        "/command/",
+        "/commands/",
+      ]
       const file = rel(item, patterns) ?? path.basename(item)
       const name = trim(file)
 
@@ -297,7 +304,14 @@ export namespace Config {
       })
       if (!md) continue
 
-      const patterns = ["/.stud/agent/", "/.stud/agents/", "/.opencode/agent/", "/.opencode/agents/", "/agent/", "/agents/"]
+      const patterns = [
+        "/.stud/agent/",
+        "/.stud/agents/",
+        "/.opencode/agent/",
+        "/.opencode/agents/",
+        "/agent/",
+        "/agents/",
+      ]
       const file = rel(item, patterns) ?? path.basename(item)
       const agentName = trim(file)
 
@@ -1218,7 +1232,9 @@ export namespace Config {
           const plugin = data.plugin[i]
           try {
             data.plugin[i] = import.meta.resolve!(plugin, configFilepath)
-          } catch (err) {}
+          } catch {
+            // keep original path if resolution fails
+          }
         }
       }
       return data
