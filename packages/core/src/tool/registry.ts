@@ -26,6 +26,8 @@ import { Log } from "@/util/log"
 import { LspTool } from "./lsp"
 import { Truncate } from "./truncation"
 import { PlanExitTool, PlanEnterTool } from "./plan"
+import { ListTool } from "./ls"
+import { MultiEditTool } from "./multiedit"
 import { ApplyPatchTool } from "./apply_patch"
 import {
   RobloxGetScriptTool,
@@ -137,6 +139,8 @@ export namespace ToolRegistry {
       GrepTool,
       EditTool,
       WriteTool,
+      ListTool,
+      MultiEditTool,
       TaskTool,
       WebFetchTool,
       TodoWriteTool,
@@ -209,7 +213,7 @@ export namespace ToolRegistry {
           const usePatch =
             model.modelID.includes("gpt-") && !model.modelID.includes("oss") && !model.modelID.includes("gpt-4")
           if (t.id === "apply_patch") return usePatch
-          if (t.id === "edit" || t.id === "write") return !usePatch
+          if (t.id === "edit" || t.id === "write" || t.id === "multiedit") return !usePatch
 
           return true
         })
