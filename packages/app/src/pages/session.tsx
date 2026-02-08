@@ -2072,16 +2072,6 @@ export default function Page() {
               </Show>
             </div>
           </div>
-
-          <Show when={isDesktop() && showTabs()}>
-            <ResizeHandle
-              direction="horizontal"
-              size={layout.session.width()}
-              min={450}
-              max={window.innerWidth * 0.45}
-              onResize={layout.session.resize}
-            />
-          </Show>
         </div>
 
         {/* Desktop tabs panel (Review + Context + Files) - hidden on mobile */}
@@ -2089,7 +2079,8 @@ export default function Page() {
           <aside
             id="review-panel"
             aria-label={language.t("session.panel.reviewAndFiles")}
-            class="relative w-[360px] max-w-[420px] min-w-0 h-full border-l border-border-weak-base flex flex-shrink-0"
+            class="relative min-w-[280px] max-w-[45vw] h-full border-l border-border-weak-base flex flex-shrink-0"
+            style={{ width: `${layout.session.width()}px` }}
           >
             <div class="flex-1 min-w-0 h-full">
               <Show
@@ -2875,6 +2866,14 @@ export default function Page() {
                 />
               </div>
             </Show>
+            <ResizeHandle
+              direction="horizontal"
+              edge="start"
+              size={layout.session.width()}
+              min={280}
+              max={window.innerWidth * 0.45}
+              onResize={layout.session.resize}
+            />
           </aside>
         </Show>
       </div>

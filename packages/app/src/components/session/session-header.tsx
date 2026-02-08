@@ -9,9 +9,8 @@ import { getFilename } from "@stud/util/path"
 import { decode64 } from "@/utils/base64"
 
 import { Icon } from "@stud/ui/icon"
-import { IconButton } from "@stud/ui/icon-button"
 import { Button } from "@stud/ui/button"
-import { Tooltip, TooltipKeybind } from "@stud/ui/tooltip"
+import { TooltipKeybind } from "@stud/ui/tooltip"
 import { Keybind } from "@stud/ui/keybind"
 import { StatusPopover } from "../status-popover"
 
@@ -72,33 +71,6 @@ export function SessionHeader() {
             <div class="flex items-center gap-3">
               <StatusPopover />
               <div class="hidden md:flex items-center gap-3 ml-2 shrink-0">
-                <Tooltip value={language.t("sidebar.threads")} placement="bottom">
-                  <Button
-                    variant="ghost"
-                    class="group/left-sidebar-toggle size-6 p-0"
-                    onClick={() => layout.leftSidebar.toggle()}
-                    aria-label={language.t("sidebar.threads")}
-                    aria-expanded={layout.leftSidebar.opened()}
-                  >
-                    <div class="relative flex items-center justify-center size-4 [&>*]:absolute [&>*]:inset-0">
-                      <Icon
-                        size="small"
-                        name={layout.leftSidebar.opened() ? "layout-left-full" : "layout-left"}
-                        class="group-hover/left-sidebar-toggle:hidden"
-                      />
-                      <Icon
-                        size="small"
-                        name="layout-left-partial"
-                        class="hidden group-hover/left-sidebar-toggle:inline-block"
-                      />
-                      <Icon
-                        size="small"
-                        name={layout.leftSidebar.opened() ? "layout-left" : "layout-left-full"}
-                        class="hidden group-active/left-sidebar-toggle:inline-block"
-                      />
-                    </div>
-                  </Button>
-                </Tooltip>
                 <TooltipKeybind
                   title={language.t("command.terminal.toggle")}
                   keybind={command.keybind("terminal.toggle")}
