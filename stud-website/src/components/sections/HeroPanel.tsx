@@ -261,11 +261,11 @@ export default function HeroPanel() {
         </div>
 
         <div className="border-border bg-background col-span-4 border-t lg:col-span-8">
-          <div className="grid grid-cols-12 grid-rows-6">
-            <div className="col-span-12 row-span-6 lg:col-span-9">
-              <div className="flex flex-col h-full gap-0">
-                <div className="grid h-full grid-rows-6 tracking-tight">
-                  <div className="flex-1 outline-none row-span-4 p-6 md:p-8">
+          <div className="flex flex-col lg:grid lg:grid-cols-12">
+            <div className="lg:col-span-9">
+              <div className="flex flex-col gap-0">
+                <div className="tracking-tight">
+                  <div className="flex-1 outline-none p-6 md:p-8">
                     <AnimatePresence mode="wait">
                       <motion.p
                         key={activeTab}
@@ -273,22 +273,22 @@ export default function HeroPanel() {
                         animate={{ opacity: 1, filter: "blur(0px)" }}
                         exit={{ opacity: 0, filter: "blur(8px)" }}
                         transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="font-display text-muted-foreground text-xl leading-relaxed md:text-3xl"
+                        className="font-display text-muted-foreground text-lg leading-relaxed sm:text-xl md:text-3xl"
                       >
                         {description.heading}
                       </motion.p>
                     </AnimatePresence>
                   </div>
-                  <div className="row-span-2 flex flex-row items-center gap-4 px-6 py-4">
-                    <h2 className="text-muted-foreground text-base font-medium">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 px-6 py-4">
+                    <h2 className="text-muted-foreground text-sm sm:text-base font-medium shrink-0">
                       How developers use Stud
                     </h2>
-                    <div className="bg-muted text-muted-foreground inline-flex w-fit items-center justify-center rounded-full p-1 h-12">
+                    <div className="bg-muted text-muted-foreground inline-flex w-fit items-center justify-center rounded-full p-1 h-10 sm:h-12">
                       {(["roblox", "general", "scripts"] as const).map((tab) => (
                         <button
                           key={tab}
                           onClick={() => setActiveTab(tab)}
-                          className="relative inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full px-5 py-2.5 text-base font-medium transition-colors"
+                          className="relative inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3.5 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base font-medium transition-colors"
                         >
                           {activeTab === tab && (
                             <motion.div
@@ -311,15 +311,15 @@ export default function HeroPanel() {
                 </div>
               </div>
             </div>
-            <aside className="col-span-12 row-span-6 grid grid-rows-6 p-6 md:p-8 lg:col-span-3">
-              <div className="row-span-5 flex flex-col gap-3">
+            <aside className="lg:col-span-3 border-t lg:border-t-0 lg:border-l border-border p-6 md:p-8 flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 <h3 className="text-base font-semibold">Get started in minutes</h3>
                 <p className="text-muted-foreground text-sm">
                   Install Stud and start coding with AI assistance.
                   Connect to your favorite LLM provider and build faster.
                 </p>
               </div>
-              <div className="row-span-1 flex items-end">
+              <div>
                 <a
                   className="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium tracking-tight transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6"
                   href="/docs/getting-started"

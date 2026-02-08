@@ -88,7 +88,7 @@ export default function HeroSection() {
         </div>
 
         {/* Headline */}
-        <h1 className="font-display max-w-3xl text-left text-5xl font-normal leading-[1.08] tracking-tight text-foreground md:text-6xl lg:text-[5.5rem]">
+        <h1 className="font-display max-w-3xl text-left text-4xl font-normal leading-[1.08] tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-[5.5rem]">
           Code smarter <br className="hidden sm:block" />
           for Roblox Studio.
         </h1>

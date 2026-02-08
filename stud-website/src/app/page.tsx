@@ -56,14 +56,10 @@ export default function HomePage() {
             <HeroPanel />
           </div>
           <FeaturesSection />
-          <div className="px-6">
-            <SupportSection />
-            <QASection />
-          </div>
+          <SupportSection />
+          <QASection />
           <MemorySection />
-          <div className="px-6">
-            <ContextSection />
-          </div>
+          <ContextSection />
           <SecuritySection />
           <HighlightsSection />
         </main>

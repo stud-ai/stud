@@ -99,6 +99,14 @@
   src: url("/fonts/Raster.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "Geist Pixel";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/GeistPixel-Square.woff2") format("woff2");
+}
+
 @theme {
   --color-background: #ffffff;
   --color-foreground: #1a1817;
@@ -129,7 +137,7 @@
   --color-input: #e7e5e4;
   --color-ring: #1a1817;
 
-  --font-sans: "Geist", "Geist Fallback", system-ui, sans-serif;
+  --font-sans: "Geist Pixel", "Geist", "Geist Fallback", system-ui, sans-serif;
   --font-display: "Kalice", Georgia, "Times New Roman", serif;
   --font-tech: "Raster", "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
   --font-mono:

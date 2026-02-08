@@ -39,7 +39,7 @@ const contextItems = [
 
 export default function ContextSection() {
   return (
-    <section className="mx-auto w-full max-w-7xl py-16">
+    <section className="mx-auto w-full max-w-7xl px-6 py-16">
       <div className="mb-12">
         <h2 className="font-base text-2xl tracking-tight md:text-3xl">
           Powerful capabilities under the hood

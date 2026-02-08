@@ -138,7 +138,7 @@ export default function SupportSection() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <section className="mx-auto w-full max-w-7xl py-20 lg:py-24">
+      <section className="mx-auto w-full max-w-7xl px-6 py-20 lg:py-24">
         <div className="mb-10">
           <h2 className="font-display text-3xl tracking-tight text-foreground md:text-4xl">
             Powerful tools at your fingertips
@@ -150,7 +150,7 @@ export default function SupportSection() {
         </div>
 
         {/* Horizontal tabs */}
-        <div className="flex items-center gap-1.5 mb-6">
+        <div className="flex flex-wrap items-center gap-1.5 mb-6">
           {features.map((feature) => {
             const Icon = feature.icon
             const isActive = activeFeature === feature.key
@@ -158,7 +158,7 @@ export default function SupportSection() {
               <button
                 key={feature.key}
                 onClick={() => handleClick(feature.key)}
-                className="relative flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors duration-200 cursor-pointer"
+                className="relative flex items-center gap-2 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-medium transition-colors duration-200 cursor-pointer"
               >
                 {isActive && (
                   <motion.div
@@ -186,7 +186,7 @@ export default function SupportSection() {
 
         {/* Full-width demo panel */}
         <div className="overflow-hidden rounded-xl border border-border shadow-sm">
-          <div className="relative aspect-[21/9]">
+          <div className="relative aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9]">
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
               <div
                 data-us-project="cGcmyYCBaX00HUG4UFac"
@@ -202,7 +202,7 @@ export default function SupportSection() {
                   animate="animate"
                   exit="exit"
                   transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="w-[70%] md:w-[55%] lg:w-[45%]"
+                  className="w-[88%] sm:w-[70%] md:w-[55%] lg:w-[45%]"
                 >
                   <div className="rounded-lg border border-border/80 bg-white/95 p-4 shadow-lg backdrop-blur-sm">
                     <div className="flex items-center justify-between mb-3">
@@ -254,7 +254,7 @@ export default function SupportSection() {
         </div>
 
         {/* Active feature description + CTA */}
-        <div className="mt-6 flex items-end justify-between">
+        <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeFeature}
@@ -269,7 +269,7 @@ export default function SupportSection() {
             </motion.div>
           </AnimatePresence>
           <a
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors group shrink-0 ml-8"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors group shrink-0"
             href="/docs/tools"
           >
             Explore all tools

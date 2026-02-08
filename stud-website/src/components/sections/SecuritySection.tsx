@@ -271,7 +271,7 @@ export default function SecuritySection() {
         {/* Centered demo panel */}
         <div className="mx-auto max-w-4xl">
           <div className="overflow-hidden rounded-xl border border-border shadow-sm">
-            <div className="relative aspect-[16/9]">
+            <div className="relative aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9]">
               <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <div
                   data-us-project="cGcmyYCBaX00HUG4UFac"

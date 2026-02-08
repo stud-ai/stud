@@ -256,7 +256,7 @@ export default function QASection() {
 
   return (
     <section
-      className="mx-auto w-full max-w-7xl py-20 lg:py-24"
+      className="mx-auto w-full max-w-7xl px-6 py-20 lg:py-24"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -269,7 +269,7 @@ export default function QASection() {
           instances, query DataStores, and search the Toolbox.
         </p>
       </div>
-      <div className="grid grid-cols-12 items-stretch gap-10 lg:gap-14">
+      <div className="grid grid-cols-12 items-stretch gap-6 lg:gap-14">
         {/* Feature list — LEFT side */}
         <div className="col-span-12 flex flex-col lg:col-span-5 order-2 lg:order-1">
           <div className="space-y-1">
