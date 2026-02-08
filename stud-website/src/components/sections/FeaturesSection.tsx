@@ -92,10 +92,10 @@ function AssistantDemo() {
   return (
     <div className="space-y-2.5">
       <div className="flex items-start gap-2.5">
-        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold text-white/70">
+        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-foreground/60">
           U
         </div>
-        <div className="rounded-lg rounded-tl-sm bg-white/10 px-3 py-2 text-[13px] leading-relaxed text-white/90">
+        <div className="rounded-lg rounded-tl-sm bg-secondary/80 px-3 py-2 text-[13px] leading-relaxed text-foreground">
           Add a health bar GUI to the player
         </div>
       </div>
@@ -104,24 +104,24 @@ function AssistantDemo() {
           <img src="/assets/logo_transparent_bg.png" alt="" className="h-3.5 w-3.5" />
         </div>
         <div className="flex-1">
-          <div className="rounded-lg rounded-tl-sm bg-white/[0.06] px-3 py-2">
-            <p className="text-[13px] leading-relaxed text-white/70">
+          <div className="rounded-lg rounded-tl-sm bg-secondary/50 px-3 py-2">
+            <p className="text-[13px] leading-relaxed text-foreground/70">
               I&apos;ll create a health bar UI. Let me set up the files...
             </p>
             <div className="mt-2.5 space-y-1 font-mono text-xs">
-              <div className="flex items-center gap-2 text-emerald-400/90">
+              <div className="flex items-center gap-2 text-emerald-600">
                 <span>&#10003;</span>
-                <span className="text-white/50">Created</span>
-                <span className="text-white/70">StarterGui/HealthBar.lua</span>
+                <span className="text-muted-foreground/50">Created</span>
+                <span className="text-foreground/70">StarterGui/HealthBar.lua</span>
               </div>
-              <div className="flex items-center gap-2 text-emerald-400/90">
+              <div className="flex items-center gap-2 text-emerald-600">
                 <span>&#10003;</span>
-                <span className="text-white/50">Edited</span>
-                <span className="text-white/70">PlayerSetup.lua</span>
+                <span className="text-muted-foreground/50">Edited</span>
+                <span className="text-foreground/70">PlayerSetup.lua</span>
               </div>
-              <div className="flex items-center gap-2 text-amber-400/90">
-                <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400" />
-                <span className="text-white/40">Syncing to Studio...</span>
+              <div className="flex items-center gap-2 text-amber-600">
+                <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />
+                <span className="text-muted-foreground/50">Syncing to Studio...</span>
               </div>
             </div>
           </div>
@@ -143,15 +143,15 @@ function RobloxDemo() {
   return (
     <div className="space-y-2.5">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Connected Tools</span>
-        <span className="rounded-full bg-violet-500/20 px-2 py-0.5 text-[11px] font-semibold text-violet-300">27+</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">Connected Tools</span>
+        <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-600">27+</span>
       </div>
       <div className="space-y-1">
         {tools.map((tool) => (
           <div
             key={tool.name}
             className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition-all duration-200 cursor-pointer ${
-              hovered === tool.name ? "bg-white/[0.12] scale-[1.02]" : "bg-white/[0.05]"
+              hovered === tool.name ? "bg-secondary scale-[1.02]" : "bg-secondary/30"
             }`}
             onMouseEnter={() => setHovered(tool.name)}
             onMouseLeave={() => setHovered(null)}
@@ -159,24 +159,24 @@ function RobloxDemo() {
             <span className="text-sm">{tool.icon}</span>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="text-[12px] font-medium text-white/80">{tool.name}</span>
-                <span className="text-[10px] text-white/30">{tool.count} tools</span>
+                <span className="text-[12px] font-medium text-foreground/80">{tool.name}</span>
+                <span className="text-[10px] text-muted-foreground/40">{tool.count} tools</span>
               </div>
-              <span className="text-[10px] text-white/25">{tool.items}</span>
+              <span className="text-[10px] text-muted-foreground/40">{tool.items}</span>
             </div>
           </div>
         ))}
       </div>
-      <div className="space-y-0.5 border-t border-white/[0.06] pt-2">
+      <div className="space-y-0.5 border-t border-border/60 pt-2">
         <div className="flex items-center gap-2 text-[11px]">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          <span className="text-white/40">Edited</span>
-          <span className="text-white/60 font-mono">&quot;ServerScriptService.Main&quot;</span>
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          <span className="text-muted-foreground/50">Edited</span>
+          <span className="text-foreground/60 font-mono">&quot;ServerScriptService.Main&quot;</span>
         </div>
         <div className="flex items-center gap-2 text-[11px]">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          <span className="text-white/40">Created</span>
-          <span className="text-white/60 font-mono">&quot;ReplicatedStorage.Config&quot;</span>
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          <span className="text-muted-foreground/50">Created</span>
+          <span className="text-foreground/60 font-mono">&quot;ReplicatedStorage.Config&quot;</span>
         </div>
       </div>
     </div>
@@ -200,20 +200,20 @@ function ToolsDemo() {
         <div
           key={row.tool}
           className={`flex items-center justify-between px-3 py-2 transition-all duration-150 cursor-default ${
-            i < rows.length - 1 ? "border-b border-white/[0.06]" : ""
-          } ${hoveredIdx === i ? "bg-white/[0.06]" : ""}`}
+            i < rows.length - 1 ? "border-b border-border/60" : ""
+          } ${hoveredIdx === i ? "bg-secondary/80" : ""}`}
           onMouseEnter={() => setHoveredIdx(i)}
           onMouseLeave={() => setHoveredIdx(null)}
         >
           <div className="flex items-center gap-3 min-w-0">
-            <span className="text-amber-400/70 w-3 text-center">{row.icon}</span>
-            <span className="text-white/50 w-10 shrink-0">{row.tool}</span>
-            <span className="text-white/70 truncate">{row.file}</span>
+            <span className="text-amber-600/70 w-3 text-center">{row.icon}</span>
+            <span className="text-foreground/40 w-10 shrink-0">{row.tool}</span>
+            <span className="text-foreground/70 truncate">{row.file}</span>
           </div>
           {row.done ? (
-            <span className="ml-3 shrink-0 text-[11px] text-white/30">{row.result}</span>
+            <span className="ml-3 shrink-0 text-[11px] text-muted-foreground/50">{row.result}</span>
           ) : (
-            <span className="ml-3 inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400/60" />
+            <span className="ml-3 inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500/50" />
           )}
         </div>
       ))}
@@ -226,11 +226,11 @@ function PermissionsDemo() {
   const [selectedAction, setSelectedAction] = useState(0)
 
   const rules = [
-    { icon: "✓", label: "Read files", status: "Always", color: "bg-emerald-400", textColor: "text-emerald-400" },
-    { icon: "✓", label: "Glob & Grep", status: "Always", color: "bg-emerald-400", textColor: "text-emerald-400" },
-    { icon: "△", label: "Write files", status: "Ask", color: "bg-blue-400", textColor: "text-blue-400" },
-    { icon: "△", label: "Bash commands", status: "Ask", color: "bg-amber-400", textColor: "text-amber-400" },
-    { icon: "✕", label: "Destructive ops", status: "Deny", color: "bg-rose-400", textColor: "text-rose-400" },
+    { icon: "\u2713", label: "Read files", status: "Always", color: "bg-emerald-500", textColor: "text-emerald-600" },
+    { icon: "\u2713", label: "Glob & Grep", status: "Always", color: "bg-emerald-500", textColor: "text-emerald-600" },
+    { icon: "\u25B3", label: "Write files", status: "Ask", color: "bg-blue-500", textColor: "text-blue-600" },
+    { icon: "\u25B3", label: "Bash commands", status: "Ask", color: "bg-amber-500", textColor: "text-amber-600" },
+    { icon: "\u2715", label: "Destructive ops", status: "Deny", color: "bg-rose-500", textColor: "text-rose-500" },
   ]
 
   const actions = ["Allow once", "Allow always", "Deny"]
@@ -239,22 +239,22 @@ function PermissionsDemo() {
     <div className="space-y-3">
       {/* Policy overview */}
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Permission Policy</span>
-        <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-[11px] font-semibold text-blue-300">Active</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">Permission Policy</span>
+        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-semibold text-blue-600">Active</span>
       </div>
       <div className="space-y-0.5">
         {rules.map((rule) => (
           <div
             key={rule.label}
             className={`flex items-center justify-between rounded-md px-2.5 py-1.5 transition-all duration-150 cursor-default ${
-              hoveredRule === rule.label ? "bg-white/[0.08]" : ""
+              hoveredRule === rule.label ? "bg-secondary/80" : ""
             }`}
             onMouseEnter={() => setHoveredRule(rule.label)}
             onMouseLeave={() => setHoveredRule(null)}
           >
             <div className="flex items-center gap-2">
               <div className={`h-1.5 w-1.5 rounded-full ${rule.color}`} />
-              <span className="text-[12px] text-white/60">{rule.label}</span>
+              <span className="text-[12px] text-foreground/60">{rule.label}</span>
             </div>
             <span className={`text-[10px] font-medium ${rule.textColor}`}>{rule.status}</span>
           </div>
@@ -262,13 +262,13 @@ function PermissionsDemo() {
       </div>
 
       {/* Active request */}
-      <div className="border-t border-white/[0.06] pt-3">
-        <div className="rounded-lg bg-blue-500/[0.08] border border-blue-400/20 p-2.5">
+      <div className="border-t border-border/60 pt-3">
+        <div className="rounded-lg bg-blue-50 border border-blue-200 p-2.5">
           <div className="flex items-center gap-2 mb-2">
-            <Shield className="h-3 w-3 text-blue-400" />
-            <span className="text-[11px] font-medium text-blue-300">Write Request</span>
+            <Shield className="h-3 w-3 text-blue-600" />
+            <span className="text-[11px] font-medium text-blue-600">Write Request</span>
           </div>
-          <p className="font-mono text-[11px] text-white/50 mb-2.5">src/server/PlayerData.lua</p>
+          <p className="font-mono text-[11px] text-muted-foreground/50 mb-2.5">src/server/PlayerData.lua</p>
           <div className="flex gap-1.5">
             {actions.map((action, i) => (
               <button
@@ -276,8 +276,8 @@ function PermissionsDemo() {
                 onClick={() => setSelectedAction(i)}
                 className={`flex-1 rounded-md py-1 text-[10px] font-medium transition-all duration-150 cursor-pointer ${
                   selectedAction === i
-                    ? i === 2 ? "bg-rose-500/20 text-rose-300" : "bg-blue-500/25 text-blue-300"
-                    : "bg-white/[0.06] text-white/40 hover:bg-white/[0.1]"
+                    ? i === 2 ? "bg-rose-100 text-rose-600" : "bg-blue-100 text-blue-600"
+                    : "bg-secondary/50 text-muted-foreground/50 hover:bg-secondary"
                 }`}
               >
                 {action}
@@ -295,42 +295,42 @@ function OpenSourceDemo() {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary">
           <img src="/assets/logo_transparent_bg.png" alt="" className="h-4.5 w-4.5" />
         </div>
         <div>
-          <div className="text-[13px] font-semibold text-white/90">stud-dev/stud</div>
-          <div className="text-[11px] text-white/40">Open Source AI for Roblox</div>
+          <div className="text-[13px] font-semibold text-foreground">stud-dev/stud</div>
+          <div className="text-[11px] text-muted-foreground/50">Open Source AI for Roblox</div>
         </div>
       </div>
-      <div className="flex items-center gap-4 text-[11px] text-white/40">
+      <div className="flex items-center gap-4 text-[11px] text-muted-foreground/50">
         <span>MIT License</span>
         <span className="flex items-center gap-1">
-          <svg className="h-3 w-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+          <svg className="h-3 w-3 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
           Stars
         </span>
         <span>TypeScript</span>
       </div>
-      <div className="border-t border-white/[0.06] pt-2.5">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Contributors</span>
+      <div className="border-t border-border/60 pt-2.5">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">Contributors</span>
         <div className="mt-1.5 flex items-center -space-x-1.5">
           {contributors.map((c) => (
-            <div key={c} className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#1a1a1e] bg-white/10 text-[9px] font-bold text-white/60 transition-transform hover:scale-110 hover:z-10 cursor-pointer">{c}</div>
+            <div key={c} className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-secondary text-[9px] font-bold text-foreground/60 transition-transform hover:scale-110 hover:z-10 cursor-pointer">{c}</div>
           ))}
-          <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#1a1a1e] bg-white/10 text-[8px] text-white/40">+12</div>
+          <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-secondary text-[8px] text-muted-foreground/40">+12</div>
         </div>
       </div>
-      <div className="border-t border-white/[0.06] pt-2.5 space-y-1">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-white/30">Releases</span>
+      <div className="border-t border-border/60 pt-2.5 space-y-1">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">Releases</span>
         {[
           { v: "v1.2.0", label: "DataStore tools" },
           { v: "v1.1.0", label: "Subagent system" },
           { v: "v1.0.0", label: "Initial release" },
         ].map((r) => (
           <div key={r.v} className="flex items-center gap-2 text-[11px]">
-            <span className="text-rose-400/70">&#10003;</span>
-            <span className="font-mono text-white/50">{r.v}</span>
-            <span className="text-white/30">&mdash; {r.label}</span>
+            <span className="text-rose-500">&#10003;</span>
+            <span className="font-mono text-foreground/50">{r.v}</span>
+            <span className="text-muted-foreground/40">&mdash; {r.label}</span>
           </div>
         ))}
       </div>
@@ -523,7 +523,7 @@ export default function FeaturesSection() {
                   />
                 </div>
 
-                {/* Floating dark window */}
+                {/* Floating light window */}
                 <div className="relative z-10 flex h-full items-center justify-center p-5 lg:p-10">
                   <AnimatePresence mode="wait">
                     <motion.div
@@ -535,22 +535,12 @@ export default function FeaturesSection() {
                       transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                       className="w-full max-w-md"
                     >
-                      <div className="overflow-hidden rounded-xl border border-white/[0.12] bg-[#1a1a1e]/90 shadow-2xl shadow-black/30 backdrop-blur-xl">
-                        {/* macOS title bar */}
-                        <div className="flex items-center gap-3 border-b border-white/[0.06] px-4 py-2.5">
-                          <div className="flex items-center gap-1.5">
-                            <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-                            <div className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-                            <div className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-                          </div>
-                          <span className="text-[13px] font-medium text-white/50">
-                            {windowTitles[active]}
-                          </span>
+                      <div className="rounded-lg border border-border/80 bg-white/95 p-4 shadow-lg backdrop-blur-sm">
+                        <div className="flex items-center gap-2 mb-3">
+                          <img src="/assets/logo_transparent_bg.png" alt="Stud" className="h-4 w-4" />
+                          <span className="text-foreground text-xs font-semibold">{windowTitles[active]}</span>
                         </div>
-                        {/* Window content */}
-                        <div className="p-3.5">
-                          <DemoComponent />
-                        </div>
+                        <DemoComponent />
                       </div>
                     </motion.div>
                   </AnimatePresence>
