@@ -10,6 +10,9 @@
  * 4. The original request resolves with the result
  */
 
+import { Log } from "../../util/log"
+
+const log = Log.create({ service: "roblox-bridge" })
 const BRIDGE_PORT = 3001
 const REQUEST_TIMEOUT = 15000
 
@@ -150,13 +153,12 @@ function tryStartServer(port: number): ReturnType<typeof Bun.serve> | null {
 const server = tryStartServer(BRIDGE_PORT)
 
 if (server) {
-  console.log(`[Stud Bridge] Listening on http://localhost:${BRIDGE_PORT}`)
-  console.log(`[Stud Bridge] Waiting for Roblox Studio plugin to connect...`)
+  log.info("listening", { port: BRIDGE_PORT })
 
   // Periodically cleanup stale requests
   setInterval(cleanupStaleRequests, 5000)
 } else {
-  console.log(`[Stud Bridge] Port ${BRIDGE_PORT} already in use, assuming bridge is already running`)
+  log.info("skipped", { port: BRIDGE_PORT, reason: "port already in use" })
 }
 
 export { server }

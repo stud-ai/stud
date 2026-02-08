@@ -52,7 +52,7 @@ globalThis.AI_SDK_LOG_WARNINGS = false
 
 export namespace SessionPrompt {
   const log = Log.create({ service: "session.prompt" })
-  export const OUTPUT_TOKEN_MAX = Flag.OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX || 32_000
+  export const OUTPUT_TOKEN_MAX = LLM.OUTPUT_TOKEN_MAX
 
   const state = Instance.state(
     () => {
@@ -1787,7 +1787,10 @@ NOTE: At any point in time through this workflow you should feel free to ask the
     if (userMsgCount === 1 && Session.isDefaultTitle(input.session.title)) {
       const firstMessage = realUserMessages[0]
       const textParts = firstMessage.parts.filter((p) => p.type === "text") as MessageV2.TextPart[]
-      const text = textParts.map((p) => p.text).join(" ").trim()
+      const text = textParts
+        .map((p) => p.text)
+        .join(" ")
+        .trim()
       const provisionalTitle = extractFirstSentence(text)
       if (provisionalTitle) {
         await Session.update(
