@@ -25,7 +25,11 @@ export const RobloxGetChildrenTool = Tool.define<
   description: `List the children of an instance in Roblox Studio.
 
 Use this to explore the game hierarchy.
-Set recursive=true to get all descendants (can be slow for large trees).
+Set recursive=true to get all descendants (WARNING: can be very slow for large trees like game.Workspace).
+
+Usage:
+- Start with recursive=false (default) for large containers like Workspace. Only use recursive=true on smaller subtrees.
+- Use roblox_search instead when looking for a specific instance by name or class.
 
 Examples:
 - game.Workspace
@@ -367,7 +371,12 @@ export const RobloxRunCodeTool = Tool.define<
   description: `Execute Luau code in Roblox Studio.
 
 The code runs in the command bar context with full access to game services.
-Use print() to output results - they will be captured and returned.
+Use print() to output results — they will be captured and returned.
+
+Usage:
+- This is a powerful and token-efficient tool. Use it freely for complex-yet-safe operations: building structures, batch-modifying instances with logic, positioning models, reading runtime state, or any task that would require many individual tool calls.
+- For simple single-instance operations (create one part, set one property), prefer the dedicated tools for clarity.
+- NEVER use this to edit script source code. Use roblox_edit_script or roblox_set_script instead.
 
 Examples:
 - print(game.Workspace:GetChildren())

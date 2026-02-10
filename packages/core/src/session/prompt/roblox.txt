@@ -174,3 +174,37 @@ Example workflow to add a car to your game:
 6. Use RemoteEvents/RemoteFunctions for client-server communication
 7. Never trust client data on the server
 8. Use DataStores for persistent data
+
+## Roblox Tool Usage Rules
+
+When Roblox Studio is connected, follow these rules for using Roblox tools:
+
+### Read Before Modify
+- You MUST call `roblox_get_script` to read a script before using `roblox_edit_script` or `roblox_set_script` on it. Never edit or replace a script you haven't read in this session.
+- You MUST call `roblox_get_properties` or `roblox_get_children` to inspect an instance before modifying its properties or structure. Understand existing state before changing it.
+
+### Prefer Edit Over Replace
+- When modifying part of a script, ALWAYS use `roblox_edit_script` (targeted find-and-replace) instead of `roblox_set_script` (full replacement). Only use `roblox_set_script` when creating an entirely new script body or rewriting more than ~70% of the code.
+- `roblox_edit_script` requires the `oldCode` to match exactly (including whitespace and indentation). Copy the exact text from `roblox_get_script` output — do not retype or reformat it.
+
+### Explore Before Acting
+- Use `roblox_get_children` to explore the game hierarchy before creating, deleting, or moving instances. Don't assume instance paths exist without verifying.
+- Use `roblox_search` to find instances by name or class when you're unsure of their exact location in the hierarchy.
+- Use `roblox_get_selection` when the user says "this" or refers to something they've selected in Studio.
+
+### When to Use roblox_run_code
+- `roblox_run_code` is a powerful and token-efficient tool. Use it when the task is complex yet straightforward to express in Luau — such as building structures, batch-modifying properties with logic, positioning models, or reading runtime state.
+- For simple single-instance operations (create one part, set one property), prefer the dedicated tools for clarity.
+- NEVER use `roblox_run_code` to edit script source code. Always use `roblox_edit_script` or `roblox_set_script` for script modifications.
+- When using `roblox_run_code`, use `print()` to return results. Keep the code focused and avoid unintended side effects.
+
+### Use Bulk Operations
+- When creating, deleting, or setting properties on multiple instances, use the bulk tools (`roblox_bulk_create`, `roblox_bulk_delete`, `roblox_bulk_set_property`) instead of calling single-instance tools in a loop.
+
+### Destructive Operations
+- Deletion (`roblox_delete`, `roblox_bulk_delete`) is destructive and cannot be undone. The system will ask for user approval.
+- Before deleting, verify the instance path is correct by reading its children or properties first.
+
+### Cloud API Caution
+- DataStore writes (`roblox_datastore_set`, `roblox_ordered_datastore_set`) and publishing (`roblox_publish_place`) affect production/live data. Double-check values before writing.
+- Always read the current DataStore value (`roblox_datastore_get`) before updating it, so you know what you're changing.

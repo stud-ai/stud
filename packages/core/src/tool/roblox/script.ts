@@ -19,6 +19,11 @@ export const RobloxGetScriptTool = Tool.define<
 Use this to read scripts like ServerScriptService.MainScript or Workspace.Part.LocalScript.
 The path should be the full instance path from game root.
 
+Usage:
+- You MUST read a script before editing or replacing it. This tool is a prerequisite for roblox_edit_script and roblox_set_script.
+- Results are returned with line numbers for easy reference.
+- You can call this tool multiple times in parallel to read several scripts at once.
+
 Examples:
 - game.ServerScriptService.MainScript
 - game.ReplicatedStorage.Modules.Utils
@@ -56,10 +61,12 @@ export const RobloxSetScriptTool = Tool.define<
 >("roblox_set_script", {
   description: `Replace the entire source code of a script in Roblox Studio.
 
-Use this to completely replace a script's contents.
-For partial edits, consider using roblox_edit_script instead.
+This completely replaces the script's contents. For partial edits, use roblox_edit_script instead — it is safer and more precise.
 
-The path should be the full instance path from game root.`,
+Usage:
+- You MUST use roblox_get_script first to read the current source before replacing.
+- Only use this when writing a completely new script or rewriting the majority of the code.
+- The path should be the full instance path from game root.`,
   parameters: z.object({
     path: z.string().describe("Full instance path to the script"),
     source: z.string().describe("The new source code for the script"),
@@ -98,8 +105,13 @@ export const RobloxEditScriptTool = Tool.define<
   description: `Edit a portion of a script by replacing specific code.
 
 This performs a find-and-replace operation on the script source.
-The oldCode must match exactly (including whitespace).
-Use roblox_get_script first to see the current source.
+ALWAYS prefer this over roblox_set_script when making partial changes.
+
+Usage:
+- You MUST use roblox_get_script first to read the current source. Never edit a script you haven't read.
+- The oldCode must match EXACTLY — including whitespace, indentation, and line breaks. Copy it precisely from the roblox_get_script output.
+- If the oldCode appears multiple times in the script, all occurrences will be replaced. Provide enough surrounding context in oldCode to uniquely identify the section you want to change.
+- Keep oldCode as small as needed to be unique — don't include the entire script.
 
 Example:
   oldCode: "local speed = 10"
