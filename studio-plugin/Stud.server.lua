@@ -1254,39 +1254,51 @@ local function pollServer()
 		end)
 		
 		if success and response.Success then
-			-- Connected!
-			if not isConnected then
-				isConnected = true
-				isConnecting = false
-				failCount = 0
-				updateUI()
-				addActivity("Connected", "success")
-				print("[Stud] Connected to Stud Desktop")
-			end
-			
 			local data = jsonDecode(response.Body)
 			
-			-- Extract project info if available
-			if data and data.project then
-				projectInfo = data.project
-				updateUI()
+			-- Verify this is the real Stud bridge, not another server on the same port
+			if not data or data.bridge ~= "stud" then
+				failCount = failCount + 1
+				if isConnected and failCount >= maxFails then
+					isConnected = false
+					isConnecting = true
+					projectInfo = nil
+					updateUI()
+					addActivity("Wrong server on port", "error")
+					print("[Stud] Port 3001 is not the Stud bridge")
+				end
+			else
+				if not isConnected then
+					isConnected = true
+					isConnecting = false
+					failCount = 0
+					updateUI()
+					addActivity("Connected", "success")
+					print("[Stud] Connected to Stud Desktop")
+				end
+				
+				-- Extract project info if available
+				if data.project then
+					projectInfo = data.project
+					updateUI()
+				end
+				
+				if data.request then
+					local result = handleRequest(data.request)
+					pcall(function()
+						HttpService:RequestAsync({
+							Url = RESPOND_URL,
+							Method = "POST",
+							Headers = { ["Content-Type"] = "application/json" },
+							Body = jsonEncode({
+								id = data.id,
+								response = result,
+							}),
+						})
+					end)
+				end
+				failCount = 0
 			end
-			
-			if data and data.request then
-				local result = handleRequest(data.request)
-				pcall(function()
-					HttpService:RequestAsync({
-						Url = RESPOND_URL,
-						Method = "POST",
-						Headers = { ["Content-Type"] = "application/json" },
-						Body = jsonEncode({
-							id = data.id,
-							response = result,
-						}),
-					})
-				end)
-			end
-			failCount = 0
 		else
 			failCount = failCount + 1
 			if isConnected and failCount >= maxFails then

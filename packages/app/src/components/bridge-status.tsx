@@ -15,7 +15,7 @@ export function BridgeStatus() {
       })
       if (response.ok) {
         const data = await response.json()
-        setStatus(data.studioConnected ? "connected" : "waiting")
+        setStatus(data.connected ? "connected" : "waiting")
       } else {
         setStatus("error")
       }

@@ -69,6 +69,7 @@ function tryStartServer(port: number): ReturnType<typeof Bun.serve> | null {
 
           return Response.json(
             {
+              bridge: "stud",
               connected,
               pendingRequests: pendingRequests.size,
               lastPollTime,
@@ -117,6 +118,7 @@ function tryStartServer(port: number): ReturnType<typeof Bun.serve> | null {
           for (const [id, pending] of pendingRequests) {
             return Response.json(
               {
+                bridge: "stud",
                 id,
                 request: pending.request,
               },
@@ -125,7 +127,7 @@ function tryStartServer(port: number): ReturnType<typeof Bun.serve> | null {
           }
 
           // No pending requests
-          return Response.json({ id: null, request: null }, { headers: corsHeaders })
+          return Response.json({ bridge: "stud", id: null, request: null }, { headers: corsHeaders })
         }
 
         // Studio plugin responds here
