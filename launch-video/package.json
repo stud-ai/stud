@@ -1,0 +1,23 @@
+{
+  "name": "stud-launch-video",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts StudLaunchVideo out/stud-launch.mp4",
+    "build": "remotion render src/index.ts StudLaunchVideo out/stud-launch.mp4 --codec h264"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.261",
+    "@remotion/fonts": "4.0.261",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "remotion": "4.0.261"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "typescript": "^5.8.0"
+  }
+}
