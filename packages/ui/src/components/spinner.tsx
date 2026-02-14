@@ -14,9 +14,9 @@ export function Spinner(props: {
         [props.class ?? ""]: !!props.class,
       }}
     >
-      <div class="spinner-dot" />
-      <div class="spinner-dot" />
-      <div class="spinner-dot" />
+      <div class="spinner-stud" />
+      <div class="spinner-stud" />
+      <div class="spinner-stud" />
     </div>
   )
 }

@@ -508,6 +508,7 @@
 
   [data-slot="session-turn-collapsible-trigger-content"] {
     max-width: 100%;
+    min-height: 24px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -518,9 +519,9 @@
     }
 
     [data-component="spinner"] {
-      width: 12px;
-      height: 12px;
-      margin-right: 4px;
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
     }
 
     [data-component="icon"] {
@@ -545,6 +546,8 @@
   [data-slot="session-turn-status-text"] {
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: opacity 0.15s ease;
   }
 
   [data-slot="session-turn-details-text"] {

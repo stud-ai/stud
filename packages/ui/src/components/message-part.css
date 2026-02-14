@@ -903,8 +903,8 @@
 
   [data-slot="picker-items"] {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(152px, 1fr));
+    gap: 10px;
     max-height: 400px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -919,24 +919,30 @@
     padding: 0;
     background-color: var(--surface-base);
     border: 1px solid var(--border-weaker-base);
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     text-align: left;
     transition:
       background-color 0.15s,
       border-color 0.15s,
-      transform 0.1s;
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
     overflow: hidden;
     position: relative;
 
     &:hover {
       background-color: var(--surface-base-hover);
       border-color: var(--border-default);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     &[data-selected="true"] {
       border-color: var(--border-brand-base);
       background-color: var(--surface-brand-weak);
+      box-shadow:
+        0 0 0 1px var(--border-brand-base),
+        0 0 0 3px var(--surface-brand-weak);
 
       [data-slot="picker-item-checkbox"] {
         color: var(--icon-brand-base);
@@ -1001,16 +1007,22 @@
 
   [data-slot="picker-item-checkbox"] {
     position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 20px;
-    height: 20px;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--surface-raised-base);
-    border-radius: 4px;
+    background-color: color-mix(in srgb, var(--surface-raised-base) 80%, transparent);
+    backdrop-filter: blur(8px);
+    border-radius: 6px;
     color: var(--icon-weak);
+    transition: transform 0.15s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
 
     [data-component="icon"] {
       width: 14px;
@@ -1029,8 +1041,8 @@
 /* Roblox Toolbox Assets Grid */
 [data-component="toolbox-assets"] {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(152px, 1fr));
+  gap: 10px;
   padding: 12px;
   max-height: 400px;
   overflow-y: auto;
@@ -1043,24 +1055,27 @@
     padding: 0;
     background-color: var(--surface-base);
     border: 1px solid var(--border-weaker-base);
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     text-align: left;
     transition:
       background-color 0.15s,
       border-color 0.15s,
-      transform 0.1s;
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
     overflow: hidden;
     position: relative;
 
     &:hover {
       background-color: var(--surface-base-hover);
       border-color: var(--border-default);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     &:active {
       transform: translateY(0);
+      box-shadow: none;
     }
 
     &[data-clicked="true"] {
@@ -1120,17 +1135,24 @@
 
   [data-slot="toolbox-asset-action"] {
     position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 24px;
-    height: 24px;
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--surface-raised-base);
-    border-radius: 4px;
+    background-color: color-mix(in srgb, var(--surface-raised-base) 80%, transparent);
+    backdrop-filter: blur(8px);
+    border-radius: 6px;
     opacity: 0;
-    transition: opacity 0.15s;
+    transition:
+      opacity 0.15s,
+      transform 0.15s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
 
     [data-component="icon"] {
       color: var(--icon-base);

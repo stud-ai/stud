@@ -76,10 +76,10 @@
 
   [data-slot="collapsible-content"] {
     overflow: hidden;
-    animation: collapseUp 0.2s ease-out forwards;
+    animation: collapseUp 0.2s cubic-bezier(0.2, 0, 0, 1) forwards;
 
     &[data-expanded] {
-      animation: expandDown 0.25s ease-out forwards;
+      animation: expandDown 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
     }
   }
 
@@ -125,10 +125,12 @@
   from {
     height: 0;
     opacity: 0;
+    transform: translateY(-4px);
   }
   to {
     height: var(--kb-collapsible-content-height);
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -136,9 +138,11 @@
   from {
     height: var(--kb-collapsible-content-height);
     opacity: 1;
+    transform: translateY(0);
   }
   to {
     height: 0;
     opacity: 0;
+    transform: translateY(-4px);
   }
 }
