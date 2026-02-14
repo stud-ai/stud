@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import ContextSection from "../components/sections/ContextSection"
 import FeaturesSection from "../components/sections/FeaturesSection"
 import HeroSection from "../components/sections/HeroSection"
@@ -9,31 +10,65 @@ import SecuritySection from "../components/sections/SecuritySection"
 import SiteFooter from "../components/sections/SiteFooter"
 import SupportSection from "../components/sections/SupportSection"
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "Stud",
-  applicationCategory: "DeveloperApplication",
-  operatingSystem: "macOS, Windows, Linux",
+export const metadata: Metadata = {
+  title: "AI Coding Assistant for Roblox",
   description:
     "Open-source AI coding assistant with deep Roblox Studio integration. Edit Luau scripts, manipulate instances, query DataStores, and search the Toolbox from your terminal.",
-  url: "https://stud.dev",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD",
+  alternates: {
+    canonical: "/",
   },
-  featureList: [
-    "27+ Roblox Studio tools",
-    "Luau script editing",
-    "Instance manipulation",
-    "DataStore queries",
-    "Toolbox search",
-    "File read/write/edit",
-    "Glob and Grep search",
-    "Bash execution",
-    "Subagent delegation",
-    "Granular permissions",
+  openGraph: {
+    url: "/",
+    title: "Stud - AI Coding Assistant for Roblox",
+    description:
+      "Open-source AI coding assistant with deep Roblox Studio integration. Edit Luau scripts, manipulate instances, query DataStores, and search the Toolbox from your terminal.",
+  },
+}
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: "Stud",
+      url: "https://trystud.me",
+      inLanguage: "en-US",
+      description: "Open-source AI coding assistant with deep Roblox Studio integration.",
+    },
+    {
+      "@type": "Organization",
+      name: "Stud",
+      url: "https://trystud.me",
+      logo: "https://trystud.me/assets/logo_transparent_bg.png",
+      sameAs: ["https://github.com/stud-ai/stud"],
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "Stud",
+      applicationCategory: "DeveloperApplication",
+      operatingSystem: "macOS, Windows, Linux",
+      isAccessibleForFree: true,
+      description:
+        "Open-source AI coding assistant with deep Roblox Studio integration. Edit Luau scripts, manipulate instances, query DataStores, and search the Toolbox from your terminal.",
+      url: "https://trystud.me",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+      featureList: [
+        "27+ Roblox Studio tools",
+        "Luau script editing",
+        "Instance manipulation",
+        "DataStore queries",
+        "Toolbox search",
+        "File read/write/edit",
+        "Glob and Grep search",
+        "Bash execution",
+        "Subagent delegation",
+        "Granular permissions",
+      ],
+    },
   ],
 }
 

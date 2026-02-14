@@ -132,7 +132,7 @@
 | ------------- | ----------------------------------------------------------------------------------- |
 | Background    | Fade back to clean beige + grid                                                     |
 | Terminal card | Dark `#1a1817` rounded card, monospace font                                         |
-| Commands      | `$ git clone https://github.com/stud-ai/stud.git` → `$ bun install` → `$ bun run dev`  |
+| Commands      | `$ git clone https://github.com/stud-ai/stud` → `$ bun install` → `$ bun run dev`   |
 | Typing        | Character-by-character typing with blinking cursor                                  |
 | Badges        | Appear below terminal: "MIT Licensed" pill + "Open Source" pill + GitHub star count |
 | Badge style   | Pill-shaped, 1px dark border, Geist Pixel uppercase, generous letter-spacing        |
@@ -148,7 +148,7 @@
 | Background | Clean `#f8f8f6`, no grid                                                                    |
 | Badge      | Pill: "OPEN SOURCE AI CODING ASSISTANT" — Raster font, all-caps, with Stud durian icon left |
 | Headline   | "Ship your next Roblox update with Stud." — Kalice serif, large, sentence case              |
-| URL        | "stud.dev" — Geist Mono, medium weight, emerald `#10b981`                                   |
+| URL        | "trystud.me" — Geist Mono, medium weight, emerald `#10b981`                                 |
 | Layout     | All center-aligned vertically. Badge → 32px gap → Headline → 24px gap → URL                 |
 | Animation  | Badge fades in first, headline fades in from below 10 frames later, URL last                |
 | Logo       | Small Stud logo fades in at very end, bottom center                                         |

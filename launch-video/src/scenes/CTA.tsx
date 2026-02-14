@@ -86,7 +86,7 @@ export const CTA = () => {
             textShadow: "0 0 30px rgba(16,185,129,0.3)",
           }}
         >
-          stud.games
+          trystud.me
         </div>
 
         {/* Logo */}
