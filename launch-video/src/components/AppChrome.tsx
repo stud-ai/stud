@@ -1,4 +1,4 @@
-import { Img, staticFile } from "remotion"
+import { Img, staticFile, useCurrentFrame } from "remotion"
 import { fonts, ui } from "../constants"
 import type { CSSProperties, ReactNode } from "react"
 
@@ -479,17 +479,64 @@ export function ActionCard({
   title: string
   subtitle: string
   icon?: ReactNode
-  status?: "success" | "pending" | "error"
+  status?: "success" | "pending" | "error" | "info"
   children?: ReactNode
   style?: CSSProperties
 }) {
-  const dot = status === "success" ? "#7dd676" : status === "pending" ? "#f5a623" : "#ef4444"
+  const frame = useCurrentFrame()
+  const bar = (((frame % 108) + 108) % 108) / 108
+  const glow = bar < 0.1 ? bar / 0.1 : bar > 0.9 ? (1 - bar) / 0.1 : 1
+  const shimmer = -30 + bar * 130
+  const pulse = (Math.sin(frame / 18) + 1) / 2
+  const tone =
+    status === "success"
+      ? {
+          border: ui.borderSuccess,
+          card: `linear-gradient(135deg, ${ui.surfaceSuccessWeak} 0%, ${ui.surfaceRaised} 50%)`,
+          iconBg: `linear-gradient(145deg, ${ui.surfaceSuccessWeak} 0%, ${ui.surfaceSuccessBase} 100%)`,
+          iconBorder: ui.borderSuccess,
+          iconColor: ui.iconSuccess,
+          statusBg: ui.surfaceSuccessBase,
+        }
+      : status === "pending"
+        ? {
+            border: ui.borderInteractive,
+            card: `linear-gradient(135deg, ${ui.surfaceInteractiveWeak} 0%, ${ui.surfaceRaised} 50%)`,
+            iconBg: `linear-gradient(145deg, ${ui.surfaceInteractiveWeak} 0%, ${ui.surfaceInteractiveBase} 100%)`,
+            iconBorder: ui.borderInteractive,
+            iconColor: ui.iconInteractive,
+            statusBg: ui.surfaceInteractiveBase,
+          }
+        : status === "error"
+          ? {
+              border: ui.borderCritical,
+              card: `linear-gradient(135deg, ${ui.surfaceCriticalWeak} 0%, ${ui.surfaceRaised} 50%)`,
+              iconBg: `linear-gradient(145deg, ${ui.surfaceCriticalWeak} 0%, ${ui.surfaceCriticalBase} 100%)`,
+              iconBorder: ui.borderCritical,
+              iconColor: ui.iconCritical,
+              statusBg: ui.surfaceCriticalBase,
+            }
+          : {
+              border: ui.borderWeak,
+              card: ui.surfaceRaised,
+              iconBg: `linear-gradient(145deg, ${ui.surfaceBase} 0%, ${ui.surfaceInset} 100%)`,
+              iconBorder: ui.borderWeak,
+              iconColor: ui.iconBase,
+              statusBg: ui.surfaceInset,
+            }
+  const pending = status === "pending"
+  const done = status === "success"
+  const fail = status === "error"
+  const iconGlow =
+    status === "pending"
+      ? `inset 0 1px 0 rgba(255,255,255,0.1), 0 0 ${6 + pulse * 4}px ${1 + pulse}px ${ui.surfaceInteractiveBase}`
+      : "inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 2px rgba(0,0,0,0.05)"
   return (
     <div
       style={{
         borderRadius: ui.radius.lg,
-        backgroundColor: ui.surfaceRaised,
-        border: `1px solid ${ui.borderWeak}`,
+        background: tone.card,
+        border: `1px solid ${tone.border}`,
         boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02)",
         overflow: "hidden",
         ...style,
@@ -511,28 +558,52 @@ export function ActionCard({
               width: 36,
               height: 36,
               borderRadius: 10,
-              background: `linear-gradient(145deg, ${ui.surfaceInset} 0%, ${ui.surfaceInset} 100%)`,
-              border: `1px solid ${ui.borderWeak}`,
+              background: tone.iconBg,
+              border: `1px solid ${tone.iconBorder}`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: ui.iconBase,
+              color: tone.iconColor,
+              boxShadow: iconGlow,
             }}
           >
             {icon ?? <SearchIcon />}
           </div>
-          <div
-            style={{
-              position: "absolute",
-              bottom: -2,
-              right: -2,
-              width: 14,
-              height: 14,
-              borderRadius: 7,
-              backgroundColor: dot,
-              border: `1.5px solid ${ui.surfaceRaised}`,
-            }}
-          />
+          {pending && (
+            <div
+              style={{
+                position: "absolute",
+                inset: -4,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transform: `rotate(${frame * 3}deg)`,
+              }}
+            >
+              <StudSpinner size={44} color={ui.iconInteractive} opacity={0.4} />
+            </div>
+          )}
+          {(done || fail) && (
+            <div
+              style={{
+                position: "absolute",
+                bottom: -4,
+                right: -4,
+                width: 18,
+                height: 18,
+                borderRadius: 9,
+                backgroundColor: tone.statusBg,
+                border: `2px solid ${ui.surfaceRaised}`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+              }}
+            >
+              {done && <CheckSmall size={10} />}
+              {fail && <CloseSmall size={10} />}
+            </div>
+          )}
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0, flex: 1 }}>
@@ -564,11 +635,34 @@ export function ActionCard({
         </div>
       </div>
 
+      {pending && (
+        <div
+          style={{
+            height: 3,
+            background: ui.surfaceInset,
+            overflow: "hidden",
+            position: "relative",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: `${shimmer}%`,
+              height: "100%",
+              width: "30%",
+              background: `linear-gradient(90deg, transparent 0%, ${ui.surfaceInteractiveBase} 50%, transparent 100%)`,
+              opacity: glow,
+            }}
+          />
+        </div>
+      )}
+
       {/* Body */}
       {children && (
         <div
           style={{
-            borderTop: `1px solid ${ui.borderWeak}`,
+            borderTop: `1px solid ${ui.borderWeaker}`,
             backgroundColor: ui.surfaceInset,
           }}
         >
@@ -587,88 +681,220 @@ export function BasicTool({
 }: {
   title: string
   subtitle: string
-  status?: "success" | "pending"
+  status?: "success" | "pending" | "running" | "error" | "complete"
   compact?: boolean
 }) {
+  const frame = useCurrentFrame()
   const size = compact ? 22 : 28
-  const dot = status === "success" ? "#7dd676" : "#f5a623"
+  const run = status === "running" || status === "pending"
+  const done = status === "success" || status === "complete"
+  const fail = status === "error"
+  const tone = run
+    ? {
+        bg: `linear-gradient(145deg, ${ui.surfaceInteractiveWeak} 0%, ${ui.surfaceBase} 100%)`,
+        border: ui.borderInteractive,
+        color: ui.iconInteractive,
+      }
+    : done
+      ? {
+          bg: `linear-gradient(145deg, ${ui.surfaceSuccessWeak} 0%, ${ui.surfaceBase} 100%)`,
+          border: ui.borderSuccess,
+          color: ui.iconSuccess,
+        }
+      : fail
+        ? {
+            bg: `linear-gradient(145deg, ${ui.surfaceCriticalWeak} 0%, ${ui.surfaceBase} 100%)`,
+            border: ui.borderCritical,
+            color: ui.iconCritical,
+          }
+        : {
+            bg: `linear-gradient(145deg, ${ui.surfaceBase} 0%, ${ui.surfaceInset} 100%)`,
+            border: ui.borderWeak,
+            color: ui.iconWeak,
+          }
   return (
     <div
       style={{
         display: "flex",
         alignItems: "center",
+        justifyContent: "space-between",
         gap: compact ? 8 : 10,
         padding: compact ? "2px 0" : "4px 0",
         width: "100%",
       }}
     >
-      <div style={{ position: "relative", flexShrink: 0 }}>
+      <div style={{ width: "100%", display: "flex", alignItems: "center", gap: compact ? 8 : 12 }}>
         <div
           style={{
-            width: size,
-            height: size,
-            borderRadius: compact ? 6 : 8,
-            background: `linear-gradient(145deg, ${ui.surfaceInset} 0%, ${ui.surfaceInset} 100%)`,
-            border: `1px solid ${ui.borderWeak}`,
+            position: "relative",
+            flexShrink: 0,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: ui.iconWeak,
           }}
         >
-          <svg
-            viewBox="0 0 24 24"
-            width={compact ? 12 : 14}
-            height={compact ? 12 : 14}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.8}
+          <div
+            style={{
+              width: size,
+              height: size,
+              borderRadius: compact ? 6 : 8,
+              background: tone.bg,
+              border: `1px solid ${tone.border}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: tone.color,
+            }}
           >
-            <path
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            <svg
+              viewBox="0 0 24 24"
+              width={compact ? 12 : 14}
+              height={compact ? 12 : 14}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+            >
+              <path
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          {run && (
+            <div
+              style={{
+                position: "absolute",
+                inset: compact ? -2 : -3,
+                borderRadius: compact ? 8 : 11,
+                border: "2px solid transparent",
+                borderTopColor: ui.borderInteractive,
+                borderRightColor: "rgba(152,191,255,0.4)",
+                transform: `rotate(${frame * 8}deg)`,
+              }}
             />
-          </svg>
+          )}
+          {(done || fail) && (
+            <div
+              style={{
+                position: "absolute",
+                bottom: compact ? -1 : -2,
+                right: compact ? -1 : -2,
+                width: compact ? 12 : 14,
+                height: compact ? 12 : 14,
+                borderRadius: compact ? 6 : 7,
+                border: `1.5px solid ${ui.surfaceRaised}`,
+                backgroundColor: done ? ui.surfaceSuccessBase : ui.surfaceCriticalBase,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+              }}
+            >
+              {done && <CheckSmall size={compact ? 7 : 8} />}
+              {fail && <CloseSmall size={compact ? 7 : 8} />}
+            </div>
+          )}
         </div>
-        <div
-          style={{
-            position: "absolute",
-            bottom: -2,
-            right: -2,
-            width: 12,
-            height: 12,
-            borderRadius: 6,
-            backgroundColor: dot,
-            border: `1.5px solid ${ui.surfaceRaised}`,
-          }}
-        />
+
+        <div style={{ display: "flex", alignItems: "center", gap: compact ? 6 : 8, minWidth: 0, overflow: "hidden" }}>
+          <span
+            style={{
+              flexShrink: 0,
+              fontFamily: inter,
+              fontSize: compact ? 12 : 13,
+              fontWeight: 500,
+              color: ui.text,
+            }}
+          >
+            {title}
+          </span>
+
+          <span style={{ color: ui.textSubtle, fontSize: 11, flexShrink: 0, opacity: 0.6 }}>→</span>
+
+          <span
+            style={{
+              flexShrink: 1,
+              minWidth: 0,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              fontFamily: plex,
+              fontSize: compact ? 10 : 11,
+              color: ui.textWeak,
+              padding: compact ? "1px 6px" : "2px 8px",
+              borderRadius: 4,
+              backgroundColor: ui.surfaceInset,
+            }}
+          >
+            {subtitle}
+          </span>
+        </div>
       </div>
-
-      <span
-        style={{
-          fontFamily: inter,
-          fontSize: compact ? 12 : 13,
-          fontWeight: 500,
-          color: ui.text,
-        }}
-      >
-        {title}
-      </span>
-
-      <span
-        style={{
-          fontFamily: plex,
-          fontSize: compact ? 10 : 11,
-          color: ui.textWeak,
-          padding: "2px 8px",
-          borderRadius: 4,
-          backgroundColor: ui.surfaceInset,
-        }}
-      >
-        {subtitle}
-      </span>
     </div>
+  )
+}
+
+export function StudSpinner({
+  size = 14,
+  color = ui.iconBase,
+  opacity = 1,
+}: {
+  size?: number
+  color?: string
+  opacity?: number
+}) {
+  const frame = useCurrentFrame()
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "center",
+        gap: 2,
+        color,
+        opacity,
+        flexShrink: 0,
+      }}
+    >
+      {[0, 1, 2].map((i) => {
+        const wave = (Math.sin(frame / 9 + i * 0.8) + 1) / 2
+        const scale = 0.6 + wave
+        const alpha = 0.3 + wave * 0.7
+        return (
+          <div
+            key={i}
+            style={{
+              width: 5,
+              height: 5,
+              borderRadius: 0.5,
+              backgroundColor: "currentColor",
+              opacity: alpha,
+              transform: `scaleY(${scale})`,
+              transformOrigin: "bottom center",
+            }}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
+function CheckSmall({ size = 10 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={2.5}>
+      <path d="M5 12.5l4.2 4.2L19 7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function CloseSmall({ size = 10 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={2.5}>
+      <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+    </svg>
   )
 }
 

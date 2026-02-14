@@ -15,7 +15,7 @@ const assets = [
 
 function CheckIcon() {
   return (
-    <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="white" strokeWidth={2.5}>
+    <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2.5}>
       <path d="M5 12.5l4.2 4.2L19 7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
@@ -23,7 +23,7 @@ function CheckIcon() {
 
 function PlusIcon() {
   return (
-    <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke={ui.iconBase} strokeWidth={2.1}>
+    <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2.1}>
       <path d="M12 5v14M5 12h14" strokeLinecap="round" />
     </svg>
   )
@@ -98,8 +98,8 @@ export const Features = () => {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
-                  gap: 8,
+                  gridTemplateColumns: "repeat(auto-fill, minmax(152px, 1fr))",
+                  gap: 10,
                   padding: 12,
                   maxHeight: 400,
                   overflow: "hidden",
@@ -111,6 +111,8 @@ export const Features = () => {
                   const hovered = hit || hover === i
                   const bg = hit ? ui.surfaceSuccess : ui.surfaceRaised
                   const stroke = hit ? ui.borderSuccess : ui.borderWeak
+                  const lift = hovered ? -2 : 0
+                  const shadow = hovered ? "0 4px 12px rgba(0,0,0,0.08)" : "none"
 
                   return (
                     <div
@@ -118,13 +120,14 @@ export const Features = () => {
                       style={{
                         display: "flex",
                         flexDirection: "column",
-                        borderRadius: 6,
+                        borderRadius: 8,
                         overflow: "hidden",
                         border: `1px solid ${stroke}`,
                         backgroundColor: bg,
                         position: "relative",
                         opacity: rise,
-                        transform: `translateY(${(1 - rise) * 12}px)`,
+                        transform: `translateY(${(1 - rise) * 12 + lift}px)`,
+                        boxShadow: shadow,
                       }}
                     >
                       {/* Thumbnail */}
@@ -182,16 +185,17 @@ export const Features = () => {
                       <div
                         style={{
                           position: "absolute",
-                          top: 4,
-                          right: 4,
-                          width: 24,
-                          height: 24,
+                          top: 6,
+                          right: 6,
+                          width: 26,
+                          height: 26,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          backgroundColor: hit ? "#10b981" : ui.surfaceRaised,
-                          borderRadius: 4,
-                          boxShadow: hit ? "none" : `0 0 0 1px ${ui.borderWeak}`,
+                          backgroundColor: "rgba(255,255,255,0.8)",
+                          backdropFilter: "blur(8px)",
+                          borderRadius: 6,
+                          color: hit ? ui.iconSuccess : ui.iconBase,
                           opacity: hovered ? 1 : 0,
                         }}
                       >

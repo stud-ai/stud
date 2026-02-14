@@ -1,5 +1,5 @@
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion"
-import { AppChrome, BasicTool, StepsColumn, UserMessage } from "../components/AppChrome"
+import { AppChrome, BasicTool, StepsColumn, StudSpinner, UserMessage } from "../components/AppChrome"
 import { ScenePage } from "../components/ScenePage"
 import { fonts, springs, ui } from "../constants"
 
@@ -128,16 +128,7 @@ export const Interaction = () => {
               >
                 {/* Spinner or check */}
                 {frame < 258 ? (
-                  <div
-                    style={{
-                      width: 12,
-                      height: 12,
-                      border: `2px solid ${ui.borderWeak}`,
-                      borderTopColor: "#10b981",
-                      borderRadius: 6,
-                      transform: `rotate(${frame * 6}deg)`,
-                    }}
-                  />
+                  <StudSpinner size={14} color={ui.iconInteractive} />
                 ) : (
                   <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="#10b981" strokeWidth={2}>
                     <path d="M5 12.5l4.2 4.2L19 7" strokeLinecap="round" strokeLinejoin="round" />
@@ -172,7 +163,7 @@ export const Interaction = () => {
                       <BasicTool
                         title={step.title}
                         subtitle={step.subtitle}
-                        status={done ? "success" : "pending"}
+                        status={done ? "success" : "running"}
                         compact
                       />
                     </div>
