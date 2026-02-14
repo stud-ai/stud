@@ -2,14 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import {
-  Terminal,
-  Blocks,
-  Wrench,
-  Shield,
-  Github,
-  User,
-} from "lucide-react"
+import { Terminal, Blocks, Wrench, Shield, Github, User } from "lucide-react"
 
 type FeatureKey = "assistant" | "roblox" | "tools" | "permissions" | "opensource"
 
@@ -144,7 +137,9 @@ function RobloxDemo() {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">Connected Tools</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
+          Connected Tools
+        </span>
         <span className="rounded-full bg-violet-100 px-2.5 py-0.5 text-[11px] font-semibold text-violet-600">27+</span>
       </div>
       <div className="space-y-1.5">
@@ -191,7 +186,7 @@ function ToolsDemo() {
     { icon: "\u2190", tool: "Write", file: "src/shared/Config.lua", result: "+124 lines", done: true },
     { icon: "\u270e", tool: "Edit", file: "src/server/PlayerData.lua", result: "+18 \u22124", done: true },
     { icon: "\u2731", tool: "Glob", file: "**/*.lua", result: "47 files", done: true },
-    { icon: "\u2315", tool: "Grep", file: "\"PlayerData\"", result: "23 matches", done: true },
+    { icon: "\u2315", tool: "Grep", file: '"PlayerData"', result: "23 matches", done: true },
     { icon: "$", tool: "Bash", file: "rojo build -o game.rbxl", result: "", done: false },
   ]
 
@@ -240,7 +235,9 @@ function PermissionsDemo() {
     <div className="space-y-3">
       {/* Policy overview */}
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">Permission Policy</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
+          Permission Policy
+        </span>
         <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-semibold text-blue-600">Active</span>
       </div>
       <div className="space-y-0.5">
@@ -277,7 +274,9 @@ function PermissionsDemo() {
                 onClick={() => setSelectedAction(i)}
                 className={`flex-1 rounded-md py-1.5 text-[11px] font-medium transition-all duration-150 cursor-pointer ${
                   selectedAction === i
-                    ? i === 2 ? "bg-rose-100 text-rose-600" : "bg-blue-100 text-blue-600"
+                    ? i === 2
+                      ? "bg-rose-100 text-rose-600"
+                      : "bg-blue-100 text-blue-600"
                     : "bg-secondary/50 text-muted-foreground/50 hover:bg-secondary"
                 }`}
               >
@@ -300,25 +299,36 @@ function OpenSourceDemo() {
           <img src="/assets/logo_transparent_bg.png" alt="" className="h-5 w-5" />
         </div>
         <div>
-          <div className="text-sm font-semibold text-foreground">stud-dev/stud</div>
+          <div className="text-sm font-semibold text-foreground">stud-ai/stud</div>
           <div className="text-[12px] text-muted-foreground/50">Open Source AI for Roblox</div>
         </div>
       </div>
       <div className="flex items-center gap-4 text-[12px] text-muted-foreground/50">
         <span>MIT License</span>
         <span className="flex items-center gap-1">
-          <svg className="h-3.5 w-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+          <svg className="h-3.5 w-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
           Stars
         </span>
         <span>TypeScript</span>
       </div>
       <div className="border-t border-border/60 pt-3">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">Contributors</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
+          Contributors
+        </span>
         <div className="mt-2 flex items-center -space-x-1.5">
           {contributors.map((c) => (
-            <div key={c} className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-secondary text-[10px] font-bold text-foreground/60 transition-transform hover:scale-110 hover:z-10 cursor-pointer">{c}</div>
+            <div
+              key={c}
+              className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-secondary text-[10px] font-bold text-foreground/60 transition-transform hover:scale-110 hover:z-10 cursor-pointer"
+            >
+              {c}
+            </div>
           ))}
-          <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-secondary text-[9px] text-muted-foreground/40">+12</div>
+          <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-secondary text-[9px] text-muted-foreground/40">
+            +12
+          </div>
         </div>
       </div>
       <div className="border-t border-border/60 pt-3 space-y-1.5">
@@ -449,8 +459,7 @@ export default function FeaturesSection() {
       {/* Section header */}
       <div className="mx-auto max-w-7xl px-6 mb-10">
         <h2 className="font-display text-3xl tracking-tight text-foreground md:text-4xl lg:text-[2.75rem]">
-          Everything you need,{" "}
-          <br className="hidden sm:block" />
+          Everything you need, <br className="hidden sm:block" />
           nothing you don&apos;t.
         </h2>
         <p className="mt-3 max-w-xl text-sm text-muted-foreground leading-relaxed md:text-base">
@@ -499,7 +508,9 @@ export default function FeaturesSection() {
                           {feature.title}
                         </span>
                         {feature.subtitle && (
-                          <span className="hidden text-[10px] text-muted-foreground/50 lg:inline">{feature.subtitle}</span>
+                          <span className="hidden text-[10px] text-muted-foreground/50 lg:inline">
+                            {feature.subtitle}
+                          </span>
                         )}
                       </div>
                       {/* Progress bar */}

@@ -19,16 +19,48 @@ export default function SiteFooter() {
           <div className="flex gap-16 sm:gap-20">
             <div className="flex flex-col gap-3">
               <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">Product</span>
-              <a href="/docs/getting-started" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Get Started</a>
-              <a href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Documentation</a>
-              <a href="/docs/tools" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Tools</a>
-              <a href="/docs/roblox" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Roblox Guide</a>
+              <a
+                href="/docs/getting-started"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Get Started
+              </a>
+              <a href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Documentation
+              </a>
+              <a href="/docs/tools" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Tools
+              </a>
+              <a href="/docs/roblox" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Roblox Guide
+              </a>
             </div>
             <div className="flex flex-col gap-3">
               <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">Community</span>
-              <a href="https://github.com/improdead/stud" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">GitHub</a>
-              <a href="https://github.com/improdead/stud/issues" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Issues</a>
-              <a href="https://github.com/improdead/stud/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">License</a>
+              <a
+                href="https://github.com/stud-ai/stud"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                GitHub
+              </a>
+              <a
+                href="https://github.com/stud-ai/stud/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Issues
+              </a>
+              <a
+                href="https://github.com/stud-ai/stud/blob/main/LICENSE"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                License
+              </a>
             </div>
           </div>
         </div>

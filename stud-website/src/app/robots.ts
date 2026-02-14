@@ -1,4 +1,4 @@
-import type { MetadataRoute } from "next";
+import type { MetadataRoute } from "next"
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,8 +6,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
+        disallow: "/api/",
       },
     ],
-    sitemap: "https://stud.dev/sitemap.xml",
-  };
+    host: "trystud.me",
+    sitemap: "https://trystud.me/sitemap.xml",
+  }
 }

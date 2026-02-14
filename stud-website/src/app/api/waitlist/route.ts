@@ -9,18 +9,12 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json(
-      { error: "Invalid request body." },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 })
   }
 
   const email = body.email?.trim().toLowerCase()
   if (!email) {
-    return NextResponse.json(
-      { error: "Email is required." },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: "Email is required." }, { status: 400 })
   }
 
   // Deep email validation (SMTP disabled — port 25 blocked on Vercel)
@@ -41,10 +35,7 @@ export async function POST(request: NextRequest) {
       mx: "We couldn't verify that email domain. Check for typos.",
     }
     const reason = validation.reason ?? "regex"
-    return NextResponse.json(
-      { error: messages[reason] ?? "Invalid email address." },
-      { status: 422 }
-    )
+    return NextResponse.json({ error: messages[reason] ?? "Invalid email address." }, { status: 422 })
   }
 
   // Geo metadata from Vercel headers
@@ -64,25 +55,19 @@ export async function POST(request: NextRequest) {
 
   if (dbError) {
     if (dbError.code === "23505") {
-      return NextResponse.json(
-        { error: "You're already on the waitlist!" },
-        { status: 409 }
-      )
+      return NextResponse.json({ error: "You're already on the waitlist!" }, { status: 409 })
     }
     console.error("[waitlist] Supabase insert error:", dbError)
-    return NextResponse.json(
-      { error: "Something went wrong. Please try again." },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 })
   }
 
   // Send confirmation email (fire-and-forget)
   try {
     const resend = new Resend(process.env.RESEND_API_KEY!)
     await resend.emails.send({
-      from: "Stud <onboarding@resend.dev>",
+      from: "Stud <hello@trystud.me>",
       to: [email],
-      subject: "You're on the Stud waitlist",
+      subject: "Welcome to the Stud waitlist",
       html: renderWaitlistEmail(email),
     })
   } catch (emailError) {

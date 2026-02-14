@@ -21,9 +21,7 @@ const navGroups = [
   },
   {
     label: "Integrations",
-    items: [
-      { title: "Roblox Studio", href: "/docs/roblox" },
-    ],
+    items: [{ title: "Roblox Studio", href: "/docs/roblox" }],
   },
 ]
 
@@ -56,7 +54,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
 
           <div className="ml-auto hidden items-center gap-5 md:flex">
             <a
-              href="https://github.com/improdead/stud"
+              href="https://github.com/stud-ai/stud"
               className="text-sm text-foreground/50 transition-colors hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -122,9 +120,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
           )}
 
           {/* Main content */}
-          <main className="min-w-0 flex-1 px-6 py-10 md:px-12 lg:px-16">
-            {children}
-          </main>
+          <main className="min-w-0 flex-1 px-6 py-10 md:px-12 lg:px-16">{children}</main>
         </div>
       </div>
     </div>
