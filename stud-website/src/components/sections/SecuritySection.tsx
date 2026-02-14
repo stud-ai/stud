@@ -273,10 +273,7 @@ export default function SecuritySection() {
           <div className="overflow-hidden rounded-xl border border-border shadow-sm">
             <div className="relative aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9]">
               <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                <div
-                  data-us-project="cGcmyYCBaX00HUG4UFac"
-                  style={{ width: "100%", height: "100%", transform: "scale(1.6)", transformOrigin: "center center" }}
-                />
+                <img src="/assets/redwoods-dark.png" alt="" className="h-full w-full object-cover" />
               </div>
               <div className="relative flex h-full w-full items-center justify-center">
                 <AnimatePresence mode="wait">

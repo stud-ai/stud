@@ -145,7 +145,6 @@ export default function FeaturesSection() {
   const [paused, setPaused] = useState(false)
   const current = features.find((f) => f.key === active)!
   const DemoComponent = demoComponents[active]
-  const unicornRef = useRef<HTMLDivElement>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const advanceFeature = useCallback(() => {
@@ -179,33 +178,6 @@ export default function FeaturesSection() {
     setActive(key)
     setProgress(0)
   }
-
-  useEffect(() => {
-    const initUnicorn = () => {
-      const u = (window as any).UnicornStudio
-      if (u && u.init) {
-        u.init()
-      }
-    }
-
-    if ((window as any).UnicornStudio?.isInitialized !== undefined) {
-      initUnicorn()
-    } else {
-      ;(window as any).UnicornStudio = { isInitialized: false }
-      const script = document.createElement("script")
-      script.src = "https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.0.5/dist/unicornStudio.umd.js"
-      script.onload = () => {
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", () => {
-            ;(window as any).UnicornStudio.init()
-          })
-        } else {
-          ;(window as any).UnicornStudio.init()
-        }
-      }
-      ;(document.head || document.body).appendChild(script)
-    }
-  }, [])
 
   return (
     <section className="py-20 lg:py-28">
@@ -289,15 +261,11 @@ export default function FeaturesSection() {
               transition={{ layout: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } }}
               className="flex flex-1 flex-col min-h-[420px] lg:min-h-[520px]"
             >
-              {/* Preview area with Unicorn Studio background */}
+              {/* Preview area with background image */}
               <div className="relative flex-1 overflow-hidden">
-                {/* Unicorn Studio animated background */}
+                {/* Static background image */}
                 <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-                  <div
-                    ref={unicornRef}
-                    data-us-project="cGcmyYCBaX00HUG4UFac"
-                    style={{ width: "100%", height: "100%", transform: "scale(1.6)", transformOrigin: "center center" }}
-                  />
+                  <img src="/assets/cliff.png" alt="" className="h-full w-full object-cover" />
                 </div>
 
                 {/* Floating light window */}
