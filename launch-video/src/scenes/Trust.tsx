@@ -1,5 +1,6 @@
 import { AbsoluteFill, spring, useCurrentFrame, useVideoConfig } from "remotion"
 import { Grid } from "../components/Grid"
+import { ScenePage } from "../components/ScenePage"
 import { colors, fonts, springs } from "../constants"
 
 const commands = ["$ git clone https://github.com/stud-dev/stud", "$ bun install", "$ bun run dev"]
@@ -10,10 +11,18 @@ export const Trust = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
 
-  const cardScale = spring({ fps, frame, config: springs.default })
+  const cardScale = spring({ fps, frame: frame - 10, config: springs.default })
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.bg }}>
+      <ScenePage
+        line1="Open source. Transparent. Yours."
+        line2="No black box. No lock-in."
+        size={80}
+        bg={colors.bg}
+        hold={74}
+        fade={14}
+      />
       <Grid />
 
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
@@ -43,9 +52,9 @@ export const Trust = () => {
             </div>
             <div style={{ padding: 24 }}>
               {commands.map((cmd, i) => {
-                const charDelay = i * 35
-                const chars = Math.max(0, Math.floor((frame - 15 - charDelay) * 3))
-                if (frame < 15 + charDelay) return null
+                const charDelay = i * 48
+                const chars = Math.max(0, Math.floor((frame - 20 - charDelay) * 2.2))
+                if (frame < 20 + charDelay) return null
                 return (
                   <div
                     key={i}
@@ -68,7 +77,7 @@ export const Trust = () => {
           {/* Badges */}
           <div style={{ display: "flex", gap: 12 }}>
             {badges.map((badge, i) => {
-              const delay = 110 + i * 8
+              const delay = 130 + i * 14
               const s = spring({ fps, frame: frame - delay, config: springs.light })
               return (
                 <div

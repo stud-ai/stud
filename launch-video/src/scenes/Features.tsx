@@ -1,107 +1,210 @@
-import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion"
-import { Grid } from "../components/Grid"
-import { colors, fonts, springs } from "../constants"
+import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion"
+import { AppChrome, ActionCard, UserMessage } from "../components/AppChrome"
+import { ScenePage } from "../components/ScenePage"
+import { fonts, springs, ui } from "../constants"
 
-const cards = [
-  { icon: "📝", label: "Write Luau scripts" },
-  { icon: "🔧", label: "Edit instances" },
-  { icon: "🔍", label: "Search Toolbox" },
-  { icon: "📊", label: "Query DataStores" },
-  { icon: "🛡️", label: "Review permissions" },
-  { icon: "💬", label: "Send a message" },
+const prompt = 'Search the toolbox for "medieval village assets" and insert the best one into Workspace'
+
+const assets = [
+  { name: "Medieval Village Pack", type: "Model", creator: "BuildRBLX", vote: 96, thumb: "medieval-village.png" },
+  { name: "Villager House", type: "Model", creator: "VoxelForge", vote: 94, thumb: "villager-house.png" },
+  { name: "Village Town Center", type: "Model", creator: "MapKit", vote: 91, thumb: "village-town.png" },
+  { name: "Fantasy Village Kit", type: "Model", creator: "TreeForge", vote: 88, thumb: "fantasy-village.png" },
+  { name: "Village Market Stall", type: "Model", creator: "EnviroLab", vote: 85, thumb: "village-market.png" },
 ]
 
-const prompt = "Build a sword combat system with damage, effects, and a leaderboard"
+function CheckIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="white" strokeWidth={2.5}>
+      <path d="M5 12.5l4.2 4.2L19 7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function PlusIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke={ui.iconBase} strokeWidth={2.1}>
+      <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+    </svg>
+  )
+}
 
 export const Features = () => {
   const frame = useCurrentFrame()
-  const { fps } = useVideoConfig()
+  const video = useVideoConfig()
 
-  const containerScale = spring({ fps, frame, config: springs.default })
+  const shell = spring({ fps: video.fps, frame: frame - 10, config: springs.default })
+  const typed = Math.max(0, Math.floor((frame - 20) * 1.55))
+  const card = spring({ fps: video.fps, frame: frame - 88, config: springs.default })
+  const selected = frame >= 214
+  const hover = frame < 180 ? -1 : Math.min(4, Math.floor((frame - 180) / 18))
+
+  // Zoom into the thumbnail grid area when results appear
+  const zoomProgress = interpolate(frame, [104, 154], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  })
+  // Cursor click punch around asset click (scene frame ~195)
+  const clickPunch = interpolate(frame, [204, 210, 230], [0, 1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  })
+  const zoom = 1 + zoomProgress * 0.1 + clickPunch * 0.07
+  // Origin: center of thumbnail grid area (roughly center-right of screen, upper area)
+  const originX = 55 // percent — slightly right of center (sidebar pushes content right)
+  const originY = 35 // percent — upper third where thumbnails are
 
   return (
-    <AbsoluteFill style={{ backgroundColor: colors.bg }}>
-      <Grid />
-
-      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
-        <div
-          style={{
-            width: 1400,
-            backgroundColor: colors.container,
-            borderRadius: 32,
-            border: `1px solid ${colors.border}`,
-            padding: 32,
-            boxShadow: "0 25px 60px rgba(0,0,0,0.06)",
-            transform: `scale(${containerScale})`,
-          }}
-        >
-          {/* Card grid */}
+    <AbsoluteFill style={{ backgroundColor: ui.background }}>
+      <ScenePage
+        line1="Use assets directly from Roblox Toolbox."
+        line2="Search it. Click it. Drop it in."
+        size={68}
+        bg={ui.background}
+        hold={84}
+        fade={18}
+      />
+      <div
+        style={{
+          opacity: shell,
+          transform: `scale(${(0.97 + shell * 0.03) * zoom})`,
+          transformOrigin: `${originX}% ${originY}%`,
+        }}
+      >
+        <AppChrome prompt={prompt} typing={typed}>
+          {/* User message */}
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 20,
+              opacity: spring({ fps: video.fps, frame: frame - 12, config: springs.light }),
+              transform: `translateY(${(1 - spring({ fps: video.fps, frame: frame - 12, config: springs.light })) * 14}px)`,
             }}
           >
-            {cards.map((card, i) => {
-              const delay = 20 + i * 3
-              const s = spring({ fps, frame: frame - delay, config: springs.default })
-              const highlighted = i === 5
-              return (
-                <div
-                  key={i}
-                  style={{
-                    backgroundColor: highlighted ? "#efeee8" : colors.card,
-                    borderRadius: 16,
-                    border: `1px solid ${colors.border}`,
-                    padding: "16px 20px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 14,
-                    transform: `scale(${s}) translateY(${(1 - s) * 20}px)`,
-                    opacity: s,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 8,
-                      backgroundColor: colors.bg,
-                      border: `1px solid ${colors.border}`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 20,
-                    }}
-                  >
-                    {card.icon}
-                  </div>
-                  <span style={{ fontFamily: fonts.sans, fontSize: 16, color: colors.fg }}>{card.label}</span>
-                </div>
-              )
-            })}
+            <UserMessage text={prompt} />
           </div>
 
-          {/* Prompt input */}
-          {frame > 100 && (
-            <div
-              style={{
-                marginTop: 24,
-                padding: "16px 20px",
-                backgroundColor: colors.card,
-                borderRadius: 16,
-                border: `1px solid ${colors.border}`,
-              }}
+          {/* ActionCard with toolbox results */}
+          <div
+            style={{
+              width: "100%",
+              opacity: card,
+              transform: `translateY(${(1 - card) * 20}px)`,
+            }}
+          >
+            <ActionCard
+              title="Toolbox Search"
+              subtitle={`"medieval village" (${assets.length} results)`}
+              status="success"
             >
-              <span style={{ fontFamily: fonts.mono, fontSize: 16, color: colors.fg }}>
-                {prompt.slice(0, Math.floor((frame - 100) / 1))}
-              </span>
-              {frame % 30 < 15 && <span style={{ color: colors.emerald, fontFamily: fonts.mono }}>|</span>}
-            </div>
-          )}
-        </div>
-      </AbsoluteFill>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                  gap: 8,
+                  padding: 12,
+                  maxHeight: 400,
+                  overflow: "hidden",
+                }}
+              >
+                {assets.map((asset, i) => {
+                  const rise = spring({ fps: video.fps, frame: frame - 108 - i * 8, config: springs.light })
+                  const hit = selected && i === 0
+                  const hovered = hit || hover === i
+                  const bg = hit ? ui.surfaceSuccess : ui.surfaceRaised
+                  const stroke = hit ? ui.borderSuccess : ui.borderWeak
+
+                  return (
+                    <div
+                      key={i}
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        borderRadius: 6,
+                        overflow: "hidden",
+                        border: `1px solid ${stroke}`,
+                        backgroundColor: bg,
+                        position: "relative",
+                        opacity: rise,
+                        transform: `translateY(${(1 - rise) * 12}px)`,
+                      }}
+                    >
+                      {/* Thumbnail */}
+                      <div
+                        style={{
+                          width: "100%",
+                          aspectRatio: "1",
+                          backgroundColor: ui.surfaceInset,
+                          borderBottom: `1px solid ${ui.borderWeak}`,
+                          overflow: "hidden",
+                        }}
+                      >
+                        <Img
+                          src={staticFile(`thumbnails/${asset.thumb}`)}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      </div>
+
+                      {/* Info */}
+                      <div
+                        style={{ display: "flex", flexDirection: "column", gap: 1, padding: "6px 8px", flexGrow: 1 }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: fonts.inter,
+                            fontSize: 12,
+                            fontWeight: 500,
+                            lineHeight: "16px",
+                            color: ui.textStrong,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap" as const,
+                          }}
+                        >
+                          {asset.name}
+                        </span>
+                        <span
+                          style={{
+                            fontFamily: fonts.inter,
+                            fontSize: 10,
+                            color: ui.textWeak,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap" as const,
+                          }}
+                        >
+                          {asset.type} | {asset.creator}
+                        </span>
+                        <span style={{ fontFamily: fonts.inter, fontSize: 10, color: ui.textSubtle }}>
+                          {asset.vote}% liked
+                        </span>
+                      </div>
+
+                      {/* Hover/selected overlay button */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 4,
+                          right: 4,
+                          width: 24,
+                          height: 24,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backgroundColor: hit ? "#10b981" : ui.surfaceRaised,
+                          borderRadius: 4,
+                          boxShadow: hit ? "none" : `0 0 0 1px ${ui.borderWeak}`,
+                          opacity: hovered ? 1 : 0,
+                        }}
+                      >
+                        {hit ? <CheckIcon /> : <PlusIcon />}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </ActionCard>
+          </div>
+        </AppChrome>
+      </div>
     </AbsoluteFill>
   )
 }

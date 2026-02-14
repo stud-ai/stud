@@ -1,28 +1,21 @@
 import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion"
+import { ScenePage } from "../components/ScenePage"
 import { colors, fonts, springs } from "../constants"
 
 export const CTA = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
 
-  const badgeScale = spring({ fps, frame: frame - 5, config: springs.light })
-  const headlineOpacity = interpolate(frame, [20, 35], [0, 1], {
+  const badgeScale = spring({ fps, frame: frame - 88, config: springs.light })
+  const urlOpacity = interpolate(frame, [82, 112], [0, 1], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
   })
-  const headlineY = interpolate(frame, [20, 35], [20, 0], {
+  const logoOpacity = interpolate(frame, [132, 166], [0, 1], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
   })
-  const urlOpacity = interpolate(frame, [40, 55], [0, 1], {
-    extrapolateRight: "clamp",
-    extrapolateLeft: "clamp",
-  })
-  const logoOpacity = interpolate(frame, [65, 80], [0, 1], {
-    extrapolateRight: "clamp",
-    extrapolateLeft: "clamp",
-  })
-  const pulse = 1 + 0.03 * Math.sin(frame * 0.08)
+  const pulse = 1 + 0.03 * Math.sin(frame * 0.06)
   const urlScale = interpolate(urlOpacity, [0, 1], [1, pulse], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
@@ -36,6 +29,15 @@ export const CTA = () => {
         alignItems: "center",
       }}
     >
+      <ScenePage
+        line1="Ship faster. Ship better."
+        line2="Build with Stud at"
+        size={86}
+        bg={colors.bg}
+        hold={80}
+        fade={18}
+      />
+
       <div
         style={{
           display: "flex",
@@ -55,7 +57,7 @@ export const CTA = () => {
             padding: "8px 18px",
             borderRadius: 100,
             border: `1px solid ${colors.fg}`,
-            marginBottom: 32,
+            marginBottom: 260,
           }}
         >
           <span style={{ fontSize: 16 }}>🍈</span>
@@ -70,23 +72,6 @@ export const CTA = () => {
           >
             OPEN SOURCE AI CODING ASSISTANT
           </span>
-        </div>
-
-        {/* Headline */}
-        <div
-          style={{
-            fontFamily: fonts.display,
-            fontSize: 64,
-            color: colors.fg,
-            textAlign: "center",
-            maxWidth: 1200,
-            lineHeight: 1.3,
-            opacity: headlineOpacity,
-            transform: `translateY(${headlineY}px)`,
-            marginBottom: 24,
-          }}
-        >
-          Ship your next Roblox update with Stud.
         </div>
 
         {/* URL */}

@@ -1,34 +1,51 @@
 import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion"
 import { Grid } from "../components/Grid"
+import { ScenePage } from "../components/ScenePage"
 import { colors, fonts, springs } from "../constants"
 
 export const Switch = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
+  const shift = 44
+  const scene = Math.max(0, frame - shift)
 
-  const pillSlide = spring({ fps, frame: frame - 15, config: springs.default })
-  const gridOpacity = interpolate(frame, [45, 70], [0, 0.3], {
+  const pillSlide = spring({ fps, frame: scene - 20, config: springs.default })
+  const gridOpacity = interpolate(scene, [52, 82], [0, 0.3], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
   })
 
-  const logoScale = spring({ fps, frame: frame - 45, config: springs.default })
-  const headlineOpacity = interpolate(frame, [60, 75], [0, 1], {
+  const logoScale = spring({ fps, frame: scene - 58, config: springs.default })
+  const clickPunch = interpolate(scene, [54, 58, 76], [0, 1, 0], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
   })
-  const headlineY = interpolate(frame, [60, 75], [20, 0], {
-    extrapolateRight: "clamp",
-    extrapolateLeft: "clamp",
-  })
+  const stageZoom = 1 + clickPunch * 0.08
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.bg }}>
+      <ScenePage
+        line1="One click changes everything."
+        line2="Let Stud take over the grind."
+        size={80}
+        bg={colors.bg}
+        hold={66}
+        fade={14}
+      />
       <Grid opacity={gridOpacity} />
 
       {/* Toggle */}
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 40 }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 40,
+            transform: `scale(${stageZoom})`,
+            transformOrigin: "center center",
+          }}
+        >
           <div
             style={{
               display: "flex",
@@ -89,19 +106,6 @@ export const Switch = () => {
           {/* Logo */}
           <div style={{ transform: `scale(${logoScale})`, opacity: logoScale }}>
             <Img src={staticFile("logo.png")} style={{ width: 80, height: 80 }} />
-          </div>
-
-          {/* Headline */}
-          <div
-            style={{
-              fontFamily: fonts.display,
-              fontSize: 60,
-              color: colors.fg,
-              opacity: headlineOpacity,
-              transform: `translateY(${headlineY}px)`,
-            }}
-          >
-            Let&apos;s build something.
           </div>
         </div>
       </AbsoluteFill>

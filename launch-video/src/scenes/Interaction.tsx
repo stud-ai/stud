@@ -1,86 +1,102 @@
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion"
-import { Grid } from "../components/Grid"
-import { colors, fonts, springs } from "../constants"
+import { AppChrome, BasicTool, StepsColumn, UserMessage } from "../components/AppChrome"
+import { ScenePage } from "../components/ScenePage"
+import { fonts, springs, ui } from "../constants"
 
 const options = ["Classic Sword", "Ability-Based", "Hybrid", "Surprise me"]
 const steps = [
-  "Reading your codebase...",
-  "Generating SwordSystem.luau...",
-  "Adding damage handler...",
-  "Connecting to StarterPack...",
-  "Setting up leaderboard...",
+  { title: "Read", subtitle: "game/src/init.luau", delay: 0 },
+  { title: "Glob", subtitle: "game/src/**/*.luau", delay: 12 },
+  { title: "Read", subtitle: "game/src/combat/...", delay: 26 },
+  { title: "Write", subtitle: "SwordSystem.luau", delay: 40 },
+  { title: "Write", subtitle: "DamageHandler.luau", delay: 54 },
 ]
 
 export const Interaction = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
 
-  const bubbleY = spring({ fps, frame: frame - 20, config: springs.default })
+  const shell = spring({ fps, frame: frame - 10, config: springs.default })
+  const msg = spring({ fps, frame: frame - 20, config: springs.light })
+
+  // Zoom into the pills area when options appear, then toward steps
+  const zoomPills = interpolate(frame, [70, 120], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  })
+  const zoomSteps = interpolate(frame, [165, 220], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  })
+  const zoom = 1 + zoomPills * 0.08 + zoomSteps * 0.06
+  const originY = 30 + zoomSteps * 20 // shift origin down as steps appear
 
   return (
-    <AbsoluteFill style={{ backgroundColor: colors.bg }}>
-      <Grid />
-
-      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
-        <div style={{ width: 1400, display: "flex", flexDirection: "column", gap: 24 }}>
-          {/* Chat bubble */}
+    <AbsoluteFill style={{ backgroundColor: ui.background }}>
+      <ScenePage
+        line1="No more prompt-and-pray."
+        line2="Guide decisions live and build your way."
+        size={66}
+        bg={ui.background}
+        hold={72}
+        fade={18}
+      />
+      <div
+        style={{
+          opacity: shell,
+          transform: `scale(${(0.97 + shell * 0.03) * zoom})`,
+          transformOrigin: `55% ${originY}%`,
+        }}
+      >
+        <AppChrome>
+          {/* User message */}
           <div
             style={{
-              transform: `translateY(${(1 - bubbleY) * 30}px)`,
-              opacity: bubbleY,
+              opacity: msg,
+              transform: `translateY(${(1 - msg) * 14}px)`,
             }}
           >
-            <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-              <div
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 10,
-                  backgroundColor: colors.container,
-                  border: `1px solid ${colors.border}`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 18,
-                  flexShrink: 0,
-                }}
-              >
-                🍈
-              </div>
-              <div
-                style={{
-                  backgroundColor: colors.card,
-                  borderRadius: 16,
-                  border: `1px solid ${colors.border}`,
-                  padding: "20px 24px",
-                  fontFamily: fonts.sans,
-                  fontSize: 18,
-                  color: colors.fg,
-                  lineHeight: 1.5,
-                }}
-              >
-                What combat style? Classic sword fighter or modern ability-based?
-              </div>
+            <UserMessage text="Build me a sword combat system for my game" />
+          </div>
+
+          {/* AI question */}
+          <div
+            style={{
+              opacity: spring({ fps, frame: frame - 40, config: springs.light }),
+              transform: `translateY(${(1 - spring({ fps, frame: frame - 40, config: springs.light })) * 14}px)`,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: fonts.inter,
+                fontSize: 14,
+                lineHeight: "180%",
+                color: ui.textStrong,
+                fontWeight: 400,
+              }}
+            >
+              What combat style do you prefer? Classic sword fighting or modern ability-based?
             </div>
           </div>
 
-          {/* Options */}
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", paddingLeft: 48 }}>
+          {/* Option pills */}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {options.map((opt, i) => {
-              const delay = 60 + i * 5
+              const delay = 82 + i * 10
               const s = spring({ fps, frame: frame - delay, config: springs.light })
-              const selected = i === 0 && frame > 130
+              const selected = i === 0 && frame > 160
               return (
                 <div
                   key={i}
                   style={{
-                    padding: "10px 20px",
+                    padding: "6px 14px",
                     borderRadius: 100,
-                    border: `2px solid ${selected ? colors.emerald : colors.border}`,
-                    backgroundColor: selected ? `${colors.emerald}10` : colors.card,
-                    fontFamily: fonts.sans,
-                    fontSize: 16,
-                    color: selected ? colors.emerald : colors.fg,
+                    border: `1px solid ${selected ? "#10b981" : ui.borderWeak}`,
+                    backgroundColor: selected ? "rgba(16,185,129,0.08)" : ui.surfaceRaised,
+                    fontFamily: fonts.inter,
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: selected ? "#10b981" : ui.text,
                     transform: `scale(${s})`,
                     opacity: s,
                   }}
@@ -91,70 +107,82 @@ export const Interaction = () => {
             })}
           </div>
 
-          {/* Progress checklist */}
-          {frame > 160 && (
+          {/* Steps column (tool calls) */}
+          {frame > 178 && (
             <div
               style={{
-                paddingLeft: 48,
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: fonts.display,
-                  fontStyle: "italic",
-                  fontSize: 16,
-                  color: colors.grey,
-                  opacity: interpolate(frame, [160, 175], [0, 1], {
-                    extrapolateRight: "clamp",
-                    extrapolateLeft: "clamp",
-                  }),
-                }}
-              >
-                Building plan...
-              </div>
-              {steps.map((step, i) => {
-                const appear = 175 + i * 20
-                const checked = frame > appear + 18
-                const opacity = interpolate(frame, [appear, appear + 20], [0, 1], {
+                opacity: interpolate(frame, [178, 202], [0, 1], {
                   extrapolateRight: "clamp",
                   extrapolateLeft: "clamp",
-                })
-                return (
+                }),
+              }}
+            >
+              {/* Collapsible trigger */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  marginBottom: 12,
+                }}
+              >
+                {/* Spinner or check */}
+                {frame < 258 ? (
                   <div
-                    key={i}
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      opacity,
+                      width: 12,
+                      height: 12,
+                      border: `2px solid ${ui.borderWeak}`,
+                      borderTopColor: "#10b981",
+                      borderRadius: 6,
+                      transform: `rotate(${frame * 6}deg)`,
                     }}
-                  >
+                  />
+                ) : (
+                  <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="#10b981" strokeWidth={2}>
+                    <path d="M5 12.5l4.2 4.2L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+                <span
+                  style={{
+                    fontFamily: fonts.inter,
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: ui.textWeak,
+                  }}
+                >
+                  {frame < 258 ? "Working..." : "5 steps completed"}
+                </span>
+              </div>
+
+              <StepsColumn>
+                {steps.map((step, i) => {
+                  const appear = 190 + step.delay
+                  if (frame < appear) return null
+                  const s = spring({ fps, frame: frame - appear, config: springs.light })
+                  const done = frame > appear + 24
+                  return (
                     <div
+                      key={i}
                       style={{
-                        width: 22,
-                        height: 22,
-                        borderRadius: 11,
-                        backgroundColor: checked ? colors.emerald : `${colors.emerald}30`,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 11,
-                        color: "white",
+                        opacity: s,
+                        transform: `translateY(${(1 - s) * 10}px)`,
                       }}
                     >
-                      {checked ? "✓" : ""}
+                      <BasicTool
+                        title={step.title}
+                        subtitle={step.subtitle}
+                        status={done ? "success" : "pending"}
+                        compact
+                      />
                     </div>
-                    <span style={{ fontFamily: fonts.sans, fontSize: 16, color: colors.fg }}>{step}</span>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </StepsColumn>
             </div>
           )}
-        </div>
-      </AbsoluteFill>
+        </AppChrome>
+      </div>
     </AbsoluteFill>
   )
 }
