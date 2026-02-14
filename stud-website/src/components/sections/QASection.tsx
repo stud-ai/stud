@@ -1,59 +1,79 @@
 "use client"
 
-import {
-  Box,
-  Code,
-  Database,
-  Search,
-  ChevronRight,
-} from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { Box, Code, Database, Search, ChevronRight } from "lucide-react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
 type FeatureKey = "scripts" | "instances" | "datastore" | "toolbox"
-
-const CYCLE_MS = 7000
-const TICK_MS = 30
 
 const features = [
   {
     key: "scripts" as FeatureKey,
     icon: Code,
     title: "Script Editing",
-    description:
-      "Read, write, and edit Luau scripts directly in Roblox Studio instances.",
+    description: "Read, write, and edit Luau scripts directly in Roblox Studio instances.",
   },
   {
     key: "instances" as FeatureKey,
     icon: Box,
     title: "Instance Manipulation",
-    description:
-      "Create, move, delete, and modify any instance in the game hierarchy.",
+    description: "Create, move, delete, and modify any instance in the game hierarchy.",
   },
   {
     key: "datastore" as FeatureKey,
     icon: Database,
     title: "DataStore Access",
-    description:
-      "Query and update DataStores for testing and debugging player data.",
+    description: "Query and update DataStores for testing and debugging player data.",
   },
   {
     key: "toolbox" as FeatureKey,
     icon: Search,
     title: "Toolbox Search",
-    description:
-      "Find and insert models, plugins, and assets from the Roblox Toolbox.",
+    description: "Find and insert models, plugins, and assets from the Roblox Toolbox.",
   },
 ]
 
-const featureKeys = features.map((f) => f.key)
-
 const toolboxAssets = [
-  { id: 90405905565781, name: "Medieval Village Pack", type: "Model", creator: "BuildCraft", verified: true, thumbnail: "https://tr.rbxcdn.com/180DAY-118b27b7f6a9283190692ac5aa42061d/150/150/Model/Png/noFilter" },
-  { id: 7021878884, name: "Villager House", type: "Model", creator: "BlockBuilder", verified: true, thumbnail: "https://tr.rbxcdn.com/180DAY-473a5ba01300471878be2aeadb136d9f/150/150/Model/Png/noFilter" },
-  { id: 169765254, name: "Village Town Center", type: "Model", creator: "MapMakers", verified: true, thumbnail: "https://tr.rbxcdn.com/180DAY-d3e27699e4739b9d61f078b1e56a14c1/150/150/Model/Png/noFilter" },
-  { id: 8915687805, name: "Fantasy Village Kit", type: "Model", creator: "RPGAssets", verified: false, thumbnail: "https://tr.rbxcdn.com/180DAY-5d483f6e8430377c9f9eae7b480c9470/150/150/Model/Png/noFilter" },
-  { id: 15485395576, name: "Village Market Stall", type: "Model", creator: "DetailProps", verified: true, thumbnail: "https://tr.rbxcdn.com/180DAY-87cda8fd7a2b104f021950cc8e170510/150/150/Model/Png/noFilter" },
+  {
+    id: 90405905565781,
+    name: "Medieval Village Pack",
+    type: "Model",
+    creator: "BuildCraft",
+    verified: true,
+    thumbnail: "https://tr.rbxcdn.com/180DAY-118b27b7f6a9283190692ac5aa42061d/150/150/Model/Png/noFilter",
+  },
+  {
+    id: 7021878884,
+    name: "Villager House",
+    type: "Model",
+    creator: "BlockBuilder",
+    verified: true,
+    thumbnail: "https://tr.rbxcdn.com/180DAY-473a5ba01300471878be2aeadb136d9f/150/150/Model/Png/noFilter",
+  },
+  {
+    id: 169765254,
+    name: "Village Town Center",
+    type: "Model",
+    creator: "MapMakers",
+    verified: true,
+    thumbnail: "https://tr.rbxcdn.com/180DAY-d3e27699e4739b9d61f078b1e56a14c1/150/150/Model/Png/noFilter",
+  },
+  {
+    id: 8915687805,
+    name: "Fantasy Village Kit",
+    type: "Model",
+    creator: "RPGAssets",
+    verified: false,
+    thumbnail: "https://tr.rbxcdn.com/180DAY-5d483f6e8430377c9f9eae7b480c9470/150/150/Model/Png/noFilter",
+  },
+  {
+    id: 15485395576,
+    name: "Village Market Stall",
+    type: "Model",
+    creator: "DetailProps",
+    verified: true,
+    thumbnail: "https://tr.rbxcdn.com/180DAY-87cda8fd7a2b104f021950cc8e170510/150/150/Model/Png/noFilter",
+  },
 ]
 
 const demoVariants = {
@@ -77,10 +97,15 @@ function ScriptsDemo() {
       </div>
       <div className="rounded-md border border-border bg-secondary/50 font-mono text-[13px]">
         {rows.map((row, i) => (
-          <div key={row.text} className={`flex items-center justify-between px-3 py-2.5 ${i < rows.length - 1 ? "border-b border-border/60" : ""}`}>
+          <div
+            key={row.text}
+            className={`flex items-center justify-between px-3 py-2.5 ${i < rows.length - 1 ? "border-b border-border/60" : ""}`}
+          >
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <span className="text-foreground/40">{row.icon}</span>
-              <span className={`truncate ${row.result ? "text-foreground/70" : "text-muted-foreground/50"}`}>{row.text}</span>
+              <span className={`truncate ${row.result ? "text-foreground/70" : "text-muted-foreground/50"}`}>
+                {row.text}
+              </span>
             </div>
             {row.result ? (
               <span className="ml-2 shrink-0 text-[11px] text-muted-foreground/50">{row.result}</span>
@@ -109,10 +134,15 @@ function InstancesDemo() {
       </div>
       <div className="rounded-md border border-border bg-secondary/50 font-mono text-[13px]">
         {rows.map((row, i) => (
-          <div key={row.text} className={`flex items-center justify-between px-3 py-2.5 ${i < rows.length - 1 ? "border-b border-border/60" : ""}`}>
+          <div
+            key={row.text}
+            className={`flex items-center justify-between px-3 py-2.5 ${i < rows.length - 1 ? "border-b border-border/60" : ""}`}
+          >
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <span className="text-foreground/40">{row.icon}</span>
-              <span className={`truncate ${row.result ? "text-foreground/70" : "text-muted-foreground/50"}`}>{row.text}</span>
+              <span className={`truncate ${row.result ? "text-foreground/70" : "text-muted-foreground/50"}`}>
+                {row.text}
+              </span>
             </div>
             {row.result ? (
               <span className="ml-2 shrink-0 text-[11px] text-muted-foreground/50">{row.result}</span>
@@ -141,10 +171,15 @@ function DataStoreDemo() {
       </div>
       <div className="rounded-md border border-border bg-secondary/50 font-mono text-[13px]">
         {rows.map((row, i) => (
-          <div key={row.text} className={`flex items-center justify-between px-3 py-2.5 ${i < rows.length - 1 ? "border-b border-border/60" : ""}`}>
+          <div
+            key={row.text}
+            className={`flex items-center justify-between px-3 py-2.5 ${i < rows.length - 1 ? "border-b border-border/60" : ""}`}
+          >
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <span className="text-foreground/40">{row.icon}</span>
-              <span className={`truncate ${row.result ? "text-foreground/70" : "text-muted-foreground/50"}`}>{row.text}</span>
+              <span className={`truncate ${row.result ? "text-foreground/70" : "text-muted-foreground/50"}`}>
+                {row.text}
+              </span>
             </div>
             {row.result ? (
               <span className="ml-2 shrink-0 text-[11px] text-muted-foreground/50">{row.result}</span>
@@ -193,7 +228,8 @@ function ToolboxDemo() {
                   {asset.name}
                 </div>
                 <div className={`text-[11px] truncate ${isActive ? "text-white/60" : "text-muted-foreground/60"}`}>
-                  {asset.type} · {asset.creator}{asset.verified ? " ✓" : ""}
+                  {asset.type} · {asset.creator}
+                  {asset.verified ? " ✓" : ""}
                 </div>
               </div>
             </div>
@@ -217,56 +253,27 @@ const demoComponents: Record<FeatureKey, () => React.JSX.Element> = {
 
 export default function QASection() {
   const [activeFeature, setActiveFeature] = useState<FeatureKey>("toolbox")
-  const [progress, setProgress] = useState(0)
-  const [paused, setPaused] = useState(false)
 
   useEffect(() => {
     const u = (window as any).UnicornStudio
     if (u && u.init) u.init()
   }, [])
 
-  const advanceFeature = useCallback(() => {
-    const idx = featureKeys.indexOf(activeFeature)
-    const next = (idx + 1) % featureKeys.length
-    setActiveFeature(featureKeys[next])
-    setProgress(0)
-  }, [activeFeature])
-
-  useEffect(() => {
-    if (paused) return
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + (TICK_MS / CYCLE_MS) * 100
-        if (next >= 100) {
-          advanceFeature()
-          return 0
-        }
-        return next
-      })
-    }, TICK_MS)
-    return () => clearInterval(interval)
-  }, [paused, advanceFeature])
-
   const handleClick = (key: FeatureKey) => {
     setActiveFeature(key)
-    setProgress(0)
   }
 
   const DemoComponent = demoComponents[activeFeature]
 
   return (
-    <section
-      className="mx-auto w-full max-w-7xl px-6 py-20 lg:py-24"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
+    <section className="mx-auto w-full max-w-7xl px-6 py-20 lg:py-24">
       <div className="mb-10">
         <h2 className="font-display text-3xl tracking-tight text-foreground md:text-4xl">
           Built for Roblox developers
         </h2>
         <p className="text-muted-foreground mt-3 max-w-2xl text-sm leading-relaxed md:text-base">
-          27+ specialized tools for Roblox Studio. Edit scripts, manipulate
-          instances, query DataStores, and search the Toolbox.
+          27+ specialized tools for Roblox Studio. Edit scripts, manipulate instances, query DataStores, and search the
+          Toolbox.
         </p>
       </div>
       <div className="grid grid-cols-12 items-stretch gap-6 lg:gap-14">
@@ -286,29 +293,27 @@ export default function QASection() {
                       : "border border-transparent hover:bg-muted/40"
                   }`}
                 >
-                  <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors ${
-                    isActive ? "bg-foreground/[0.06]" : "bg-transparent"
-                  }`}>
-                    <Icon className={`h-4 w-4 transition-colors ${isActive ? "text-foreground" : "text-muted-foreground/60 group-hover:text-muted-foreground"}`} />
+                  <div
+                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors ${
+                      isActive ? "bg-foreground/[0.06]" : "bg-transparent"
+                    }`}
+                  >
+                    <Icon
+                      className={`h-4 w-4 transition-colors ${isActive ? "text-foreground" : "text-muted-foreground/60 group-hover:text-muted-foreground"}`}
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className={`text-sm font-semibold transition-colors ${isActive ? "text-foreground" : "text-foreground/70 group-hover:text-foreground/90"}`}>
+                    <div
+                      className={`text-sm font-semibold transition-colors ${isActive ? "text-foreground" : "text-foreground/70 group-hover:text-foreground/90"}`}
+                    >
                       {feature.title}
                     </div>
-                    <div className={`text-[13px] leading-relaxed mt-0.5 transition-colors ${isActive ? "text-muted-foreground" : "text-muted-foreground/60"}`}>
+                    <div
+                      className={`text-[13px] leading-relaxed mt-0.5 transition-colors ${isActive ? "text-muted-foreground" : "text-muted-foreground/60"}`}
+                    >
                       {feature.description}
                     </div>
                   </div>
-                  {isActive && (
-                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-border/50">
-                      <motion.div
-                        className="h-full bg-foreground/20"
-                        initial={{ width: "0%" }}
-                        animate={{ width: `${progress}%` }}
-                        transition={{ duration: 0.05, ease: "linear" }}
-                      />
-                    </div>
-                  )}
                 </button>
               )
             })}

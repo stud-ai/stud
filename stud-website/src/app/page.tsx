@@ -40,10 +40,7 @@ const jsonLd = {
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* Full-screen dark hero with Unicorn Studio */}
       <HeroSection />
@@ -52,10 +49,10 @@ export default function HomePage() {
       <div className="bg-secondary flex-1">
         <main>
           {/* Transition section */}
+          <FeaturesSection />
           <div className="mx-auto w-full max-w-7xl px-6 pt-24 pb-8">
             <HeroPanel />
           </div>
-          <FeaturesSection />
           <SupportSection />
           <QASection />
           <MemorySection />
