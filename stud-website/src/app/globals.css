@@ -187,6 +187,16 @@
     overflow-x: hidden;
   }
 
+  ::selection {
+    background-color: #facc15;
+    color: #1a1817;
+  }
+
+  ::-moz-selection {
+    background-color: #facc15;
+    color: #1a1817;
+  }
+
   .font-base {
     font-family: var(--font-sans);
   }

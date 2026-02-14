@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Terminal,
@@ -372,9 +372,11 @@ export default function FeaturesSection() {
   const [active, setActive] = useState<FeatureKey>("assistant")
   const [progress, setProgress] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [box, setBox] = useState<number | null>(null)
   const current = features.find((f) => f.key === active)!
   const DemoComponent = demoComponents[active]
   const unicornRef = useRef<HTMLDivElement>(null)
+  const boxRef = useRef<HTMLDivElement>(null)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const advanceFeature = useCallback(() => {
@@ -435,6 +437,12 @@ export default function FeaturesSection() {
       ;(document.head || document.body).appendChild(script)
     }
   }, [])
+
+  useLayoutEffect(() => {
+    const next = boxRef.current?.getBoundingClientRect().height
+    if (!next) return
+    setBox(next)
+  }, [active])
 
   return (
     <section className="py-20 lg:py-28">
@@ -512,7 +520,11 @@ export default function FeaturesSection() {
             </div>
 
             {/* Right content */}
-            <div className="flex flex-1 flex-col min-h-[420px] lg:min-h-[520px]">
+            <motion.div
+              layout
+              transition={{ layout: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } }}
+              className="flex flex-1 flex-col min-h-[420px] lg:min-h-[520px]"
+            >
               {/* Preview area with Unicorn Studio background */}
               <div className="relative flex-1 overflow-hidden">
                 {/* Unicorn Studio animated background */}
@@ -526,30 +538,43 @@ export default function FeaturesSection() {
 
                 {/* Floating light window */}
                 <div className="relative z-10 flex h-full items-center justify-center p-5 lg:p-10">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={active}
-                      variants={previewVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                      transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-                      className="w-full max-w-md"
-                    >
-                      <div className="rounded-lg border border-border/80 bg-white/95 p-5 shadow-lg backdrop-blur-sm">
-                        <div className="flex items-center gap-2.5 mb-4">
-                          <img src="/assets/logo_transparent_bg.png" alt="Stud" className="h-4.5 w-4.5" />
-                          <span className="text-foreground text-sm font-semibold">{windowTitles[active]}</span>
-                        </div>
-                        <DemoComponent />
+                  <motion.div className="w-full max-w-md">
+                    <div className="rounded-lg border border-border/80 bg-white/95 p-5 shadow-lg backdrop-blur-sm">
+                      <div className="mb-4 flex items-center gap-2.5">
+                        <img src="/assets/logo_transparent_bg.png" alt="Stud" className="h-4.5 w-4.5" />
+                        <span className="text-foreground text-sm font-semibold">{windowTitles[active]}</span>
                       </div>
-                    </motion.div>
-                  </AnimatePresence>
+                      <motion.div
+                        animate={box === null ? { height: "auto" } : { height: box }}
+                        transition={{ duration: 0.32, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        className="overflow-hidden"
+                      >
+                        <div ref={boxRef}>
+                          <AnimatePresence mode="wait">
+                            <motion.div
+                              key={active}
+                              variants={previewVariants}
+                              initial="initial"
+                              animate="animate"
+                              exit="exit"
+                              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                            >
+                              <DemoComponent />
+                            </motion.div>
+                          </AnimatePresence>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </motion.div>
                 </div>
               </div>
 
               {/* Description area - light */}
-              <div className="border-t border-border bg-secondary/30 px-5 py-5 lg:px-8 lg:py-6">
+              <motion.div
+                layout
+                transition={{ layout: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } }}
+                className="border-t border-border bg-secondary/30 px-5 py-5 lg:px-8 lg:py-6"
+              >
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={active}
@@ -572,8 +597,8 @@ export default function FeaturesSection() {
                     </p>
                   </motion.div>
                 </AnimatePresence>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>
