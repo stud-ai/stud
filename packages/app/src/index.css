@@ -1,0 +1,98 @@
+@import "@stud/ui/styles/tailwind";
+
+/* Fix for xterm/ghostty terminal helper textarea showing white in dark mode */
+.xterm-helper-textarea {
+  background: transparent !important;
+  color: transparent !important;
+  caret-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+}
+
+[data-component="terminal"] textarea {
+  background: transparent !important;
+  color: transparent !important;
+  caret-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+}
+
+/* Home page glass card styling */
+.glass-card {
+  background: var(--surface-raised-base);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-weak-base);
+  will-change: background, border-color, box-shadow;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+  background: var(--surface-raised-base-hover);
+  border-color: var(--border-base);
+  box-shadow: var(--shadow-md);
+}
+
+/* Floating animation for background blobs */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Home page background */
+.home-bg {
+  background-color: var(--background-stronger);
+}
+
+@media (prefers-color-scheme: dark) {
+  .home-bg {
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(40, 40, 40, 0.4) 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(30, 30, 30, 0.3) 0%, transparent 30%);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .home-bg {
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(200, 200, 200, 0.3) 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(180, 180, 180, 0.2) 0%, transparent 30%);
+  }
+}
+
+/* Main action glow effect */
+.main-action-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 1rem;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .main-action-glow {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .main-action-glow {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0));
+  }
+}
+
+.group:hover .main-action-glow {
+  opacity: 1;
+}

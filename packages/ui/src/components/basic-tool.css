@@ -1,0 +1,287 @@
+/* BasicTool - Visual tool display with status indicators */
+[data-component="tool-trigger"] {
+  content-visibility: auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 4px 0;
+
+  [data-slot="basic-tool-trigger-content"] {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Icon wrapper with status effects */
+  [data-slot="basic-tool-icon-wrapper"] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  [data-slot="basic-tool-icon"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(145deg, var(--surface-base) 0%, var(--surface-inset-base) 100%);
+    border: 1px solid var(--border-weak-base);
+    color: var(--icon-weak);
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.15s ease,
+      box-shadow 0.2s ease;
+
+    [data-component="icon"] {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  /* Spinner ring around icon */
+  [data-slot="basic-tool-spinner-ring"] {
+    position: absolute;
+    inset: -3px;
+    border-radius: 11px;
+    border: 2px solid transparent;
+    border-top-color: var(--border-interactive-base);
+    border-right-color: color-mix(in srgb, var(--border-interactive-base) 40%, transparent);
+    animation: spinRing 1s linear infinite;
+  }
+
+  @keyframes spinRing {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Status dot badge */
+  [data-slot="basic-tool-status-dot"] {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--surface-raised-base);
+    animation: dotPop 0.3s cubic-bezier(0.34, 1.8, 0.64, 1);
+
+    [data-component="icon"] {
+      width: 8px;
+      height: 8px;
+    }
+  }
+
+  [data-slot="basic-tool-status-dot"][data-status="complete"],
+  [data-slot="basic-tool-status-dot"][data-status="success"] {
+    background: var(--surface-success-base);
+    color: white;
+  }
+
+  [data-slot="basic-tool-status-dot"][data-status="error"] {
+    background: var(--surface-critical-base);
+    color: white;
+  }
+
+  @keyframes dotPop {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Info section */
+  [data-slot="basic-tool-info"] {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  [data-slot="basic-tool-info-structured"] {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  [data-slot="basic-tool-info-main"] {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  [data-slot="basic-tool-title"] {
+    flex-shrink: 0;
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-large);
+    letter-spacing: var(--letter-spacing-normal);
+    color: var(--text-base);
+    transition: color 0.15s ease;
+
+    &.capitalize {
+      text-transform: capitalize;
+    }
+  }
+
+  [data-slot="basic-tool-separator"] {
+    color: var(--text-weaker);
+    font-size: 11px;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  [data-slot="basic-tool-subtitle"] {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-large);
+    color: var(--text-weak);
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--surface-inset-base);
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+
+    &.clickable {
+      cursor: pointer;
+
+      &:hover {
+        color: var(--text-base);
+        background: var(--surface-base-hover);
+      }
+    }
+  }
+
+  [data-slot="basic-tool-arg"] {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-large);
+    color: var(--text-weaker);
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--surface-inset-base);
+    border: 1px solid var(--border-weaker-base);
+  }
+}
+
+/* Status-based icon coloring */
+[data-component="tool-trigger"][data-status="running"] {
+  [data-slot="basic-tool-icon"] {
+    background: linear-gradient(145deg, var(--surface-interactive-weak) 0%, var(--surface-base) 100%);
+    border-color: var(--border-interactive-base);
+    color: var(--icon-interactive-base);
+  }
+}
+
+[data-component="tool-trigger"][data-status="complete"],
+[data-component="tool-trigger"][data-status="success"] {
+  [data-slot="basic-tool-icon"] {
+    background: linear-gradient(145deg, var(--surface-success-weak) 0%, var(--surface-base) 100%);
+    border-color: var(--border-success-weak);
+    color: var(--icon-success-base);
+  }
+}
+
+[data-component="tool-trigger"][data-status="error"] {
+  [data-slot="basic-tool-icon"] {
+    background: linear-gradient(145deg, var(--surface-critical-weak) 0%, var(--surface-base) 100%);
+    border-color: var(--border-critical-weak);
+    color: var(--icon-critical-base);
+  }
+}
+
+/* Hover effects */
+[data-component="collapsible"]:not([data-variant="ghost"]):hover {
+  [data-slot="basic-tool-icon"] {
+    transform: scale(1.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  [data-slot="basic-tool-title"] {
+    color: var(--text-strong);
+  }
+}
+
+/* Compact mode - one-line display for read-only tools */
+[data-component="tool-trigger"][data-compact="true"] {
+  padding: 2px 0;
+
+  [data-slot="basic-tool-trigger-content"] {
+    gap: 8px;
+  }
+
+  [data-slot="basic-tool-icon"] {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+
+    [data-component="icon"] {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  [data-slot="basic-tool-spinner-ring"] {
+    inset: -2px;
+    border-radius: 8px;
+  }
+
+  [data-slot="basic-tool-status-dot"] {
+    width: 12px;
+    height: 12px;
+    bottom: -1px;
+    right: -1px;
+
+    [data-component="icon"] {
+      width: 7px;
+      height: 7px;
+    }
+  }
+
+  [data-slot="basic-tool-title"] {
+    font-size: 12px;
+  }
+
+  [data-slot="basic-tool-subtitle"] {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+
+  [data-slot="basic-tool-arg"] {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+}

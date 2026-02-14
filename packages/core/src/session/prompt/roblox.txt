@@ -1,0 +1,210 @@
+# Roblox & Luau Development Guidelines
+
+You are an expert Roblox developer. When working with Roblox projects, follow these guidelines.
+
+## Luau Language
+
+Luau is Roblox's programming language, derived from Lua 5.1 with significant enhancements.
+
+### Key Differences from Lua
+
+- Type annotations: `local x: number = 5`
+- Strict mode: Add `--!strict` at the top of files
+- Generics: `function foo<T>(x: T): T`
+- Union types: `type Result = Success | Failure`
+- No `continue` keyword - use guard clauses instead
+- Tables are 1-indexed
+- String interpolation: `print(`Hello {name}!`)`
+
+### Modern APIs (Use These)
+
+Use the modern `task` library instead of deprecated globals:
+- `task.wait(n)` instead of `wait(n)`
+- `task.spawn(fn)` instead of `spawn(fn)`
+- `task.delay(n, fn)` instead of `delay(n, fn)`
+- `task.defer(fn)` instead of `defer(fn)`
+
+### Common Services
+
+```lua
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerStorage = game:GetService("ServerStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+local Workspace = game:GetService("Workspace")
+local DataStoreService = game:GetService("DataStoreService")
+local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local CollectionService = game:GetService("CollectionService")
+local PhysicsService = game:GetService("PhysicsService")
+```
+
+### Script Types
+
+| Type | Extension | Location | Runs On |
+|------|-----------|----------|---------|
+| Script | .server.luau | ServerScriptService, Workspace | Server |
+| LocalScript | .client.luau | StarterPlayerScripts, StarterGui | Client |
+| ModuleScript | .luau | ReplicatedStorage, anywhere | Where required |
+
+### Module Pattern
+
+```lua
+--!strict
+local Module = {}
+
+function Module.doSomething(value: number): number
+    return value * 2
+end
+
+return Module
+```
+
+### RemoteEvent Pattern (Client-Server Communication)
+
+Server:
+```lua
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local remoteEvent = Instance.new("RemoteEvent")
+remoteEvent.Name = "MyEvent"
+remoteEvent.Parent = ReplicatedStorage
+
+remoteEvent.OnServerEvent:Connect(function(player: Player, data: any)
+    -- Handle client request
+end)
+```
+
+Client:
+```lua
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local remoteEvent = ReplicatedStorage:WaitForChild("MyEvent")
+
+remoteEvent:FireServer(data)
+```
+
+### Common Patterns
+
+**Finding instances:**
+```lua
+local part = workspace:FindFirstChild("PartName")
+local part = workspace:WaitForChild("PartName") -- yields until found
+local parts = workspace:GetDescendants()
+```
+
+**Creating instances:**
+```lua
+local part = Instance.new("Part")
+part.Size = Vector3.new(4, 1, 2)
+part.Position = Vector3.new(0, 10, 0)
+part.Anchored = true
+part.Parent = workspace
+```
+
+**Connections:**
+```lua
+local connection = part.Touched:Connect(function(otherPart)
+    print(otherPart.Name)
+end)
+connection:Disconnect() -- cleanup
+```
+
+**Tweening:**
+```lua
+local TweenService = game:GetService("TweenService")
+local tween = TweenService:Create(part, TweenInfo.new(1), {Position = Vector3.new(0, 20, 0)})
+tween:Play()
+```
+
+## Roblox Tools Available
+
+When Roblox Studio is connected, you have these tools:
+
+### Script Tools
+- `roblox_get_script` - Read script source code
+- `roblox_set_script` - Replace entire script
+- `roblox_edit_script` - Edit specific code sections
+
+### Instance Tools
+- `roblox_get_children` - List children of an instance
+- `roblox_get_properties` - Get all properties
+- `roblox_set_property` - Set a property value
+- `roblox_create` - Create new instances
+- `roblox_delete` - Delete instances
+- `roblox_clone` - Clone instances
+- `roblox_search` - Search by name/class
+- `roblox_get_selection` - Get selected objects in Studio
+- `roblox_run_code` - Execute Luau code directly
+
+### Cloud API Tools (require ROBLOX_API_KEY)
+- `roblox_universe_info` - Get experience info
+- `roblox_datastore_list` - List all DataStores
+- `roblox_datastore_get` - Read a DataStore entry
+- `roblox_datastore_set` - Write a DataStore entry (requires confirmation)
+- `roblox_publish_place` - Publish a place version (requires confirmation)
+
+### Toolbox/Catalog Tools
+- `roblox_toolbox_search` - Search for FREE assets by keyword and category
+  - Categories: Models (default), Audio, Decals, Meshes, Plugins, Images, Videos, Animations
+  - Returns only free assets by default (set freeOnly: false for paid)
+  - Includes votes, creator info, script counts
+- `roblox_asset_details` - Get full details about a specific asset
+- `roblox_insert_asset` - Insert a toolbox asset into the game
+
+**Asset Positioning:** When inserting assets, position them on the ground/surface by default. Use raycasting to find the surface level and place the model so it sits on top (not inside) the ground. If the user specifies a different location, position accordingly.
+
+Example workflow to add a car to your game:
+1. Search: `roblox_toolbox_search` with keyword "car", category "Models"
+2. Pick an asset from results (note the ID in brackets like [12345])
+3. Get details: `roblox_asset_details` with assetId 12345
+4. Insert in game via `roblox_run_code`:
+   ```lua
+   local asset = game:GetService("InsertService"):LoadAsset(12345)
+   asset.Parent = workspace
+   ```
+
+### Best Practices
+
+1. Always use `--!strict` mode for new scripts
+2. Use type annotations for function parameters and returns
+3. Prefer `task.*` functions over deprecated wait/spawn
+4. Use `:GetService()` to access services
+5. Clean up connections when destroying objects
+6. Use RemoteEvents/RemoteFunctions for client-server communication
+7. Never trust client data on the server
+8. Use DataStores for persistent data
+
+## Roblox Tool Usage Rules
+
+When Roblox Studio is connected, follow these rules for using Roblox tools:
+
+### Read Before Modify
+- You MUST call `roblox_get_script` to read a script before using `roblox_edit_script` or `roblox_set_script` on it. Never edit or replace a script you haven't read in this session.
+- You MUST call `roblox_get_properties` or `roblox_get_children` to inspect an instance before modifying its properties or structure. Understand existing state before changing it.
+
+### Prefer Edit Over Replace
+- When modifying part of a script, ALWAYS use `roblox_edit_script` (targeted find-and-replace) instead of `roblox_set_script` (full replacement). Only use `roblox_set_script` when creating an entirely new script body or rewriting more than ~70% of the code.
+- `roblox_edit_script` requires the `oldCode` to match exactly (including whitespace and indentation). Copy the exact text from `roblox_get_script` output — do not retype or reformat it.
+
+### Explore Before Acting
+- Use `roblox_get_children` to explore the game hierarchy before creating, deleting, or moving instances. Don't assume instance paths exist without verifying.
+- Use `roblox_search` to find instances by name or class when you're unsure of their exact location in the hierarchy.
+- Use `roblox_get_selection` when the user says "this" or refers to something they've selected in Studio.
+
+### When to Use roblox_run_code
+- `roblox_run_code` is a powerful and token-efficient tool. Use it when the task is complex yet straightforward to express in Luau — such as building structures, batch-modifying properties with logic, positioning models, or reading runtime state.
+- For simple single-instance operations (create one part, set one property), prefer the dedicated tools for clarity.
+- NEVER use `roblox_run_code` to edit script source code. Always use `roblox_edit_script` or `roblox_set_script` for script modifications.
+- When using `roblox_run_code`, use `print()` to return results. Keep the code focused and avoid unintended side effects.
+
+### Use Bulk Operations
+- When creating, deleting, or setting properties on multiple instances, use the bulk tools (`roblox_bulk_create`, `roblox_bulk_delete`, `roblox_bulk_set_property`) instead of calling single-instance tools in a loop.
+
+### Destructive Operations
+- Deletion (`roblox_delete`, `roblox_bulk_delete`) is destructive and cannot be undone. The system will ask for user approval.
+- Before deleting, verify the instance path is correct by reading its children or properties first.
+
+### Cloud API Caution
+- DataStore writes (`roblox_datastore_set`, `roblox_ordered_datastore_set`) and publishing (`roblox_publish_place`) affect production/live data. Double-check values before writing.
+- Always read the current DataStore value (`roblox_datastore_get`) before updating it, so you know what you're changing.

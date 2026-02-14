@@ -1,0 +1,45 @@
+[data-component="spinner"] {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.spinner-stud {
+  width: 5px;
+  height: 5px;
+  border-radius: 0.5px;
+  background: currentColor;
+  animation: stud-build 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite both;
+}
+
+.spinner-stud:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.spinner-stud:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.spinner-stud:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes stud-build {
+  0% {
+    transform: scaleY(0.6);
+    opacity: 0.3;
+  }
+  25% {
+    transform: scaleY(1.6);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(0.6);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scaleY(0.6);
+    opacity: 0.3;
+  }
+}

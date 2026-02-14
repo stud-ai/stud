@@ -1,0 +1,15 @@
+38 |       pendingRequests.delete(id)
+39 |     }
+40 |   }
+41 | }
+42 | 
+43 | const server = Bun.serve({
+                        ^
+error: Failed to start server. Is port 3001 in use?
+ syscall: "listen",
+   errno: 0,
+    code: "EADDRINUSE"
+
+      at /Users/shauryagupta/Downloads/stud/packages/core/src/tool/roblox/bridge.ts:43:20
+
+Bun v1.3.6 (macOS arm64)
