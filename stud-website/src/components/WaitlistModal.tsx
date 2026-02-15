@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { useClerk } from "@clerk/nextjs"
 import { X, ArrowRight, ArrowLeft, Check, Loader2 } from "lucide-react"
 import { motion } from "motion/react"
 import { TransitionPanel } from "@/components/motion-primitives/transition-panel"
@@ -15,7 +14,6 @@ interface WaitlistModalProps {
 }
 
 export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
-    const clerk = useClerk()
     const [step, setStep] = useState(0)
     const [firstName, setFirstName] = useState("")
     const [email, setEmail] = useState("")
@@ -57,43 +55,37 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
         setIsSubmitting(true)
         setError("")
         try {
-            await clerk.joinWaitlist({
-                emailAddress: email,
+            // Server-side route handles both Clerk + Supabase
+            const res = await fetch("/api/join-waitlist", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email,
+                    firstName: firstName.trim(),
+                    excitement: excitement.trim() || undefined,
+                }),
             })
 
-            // Sync extra fields (name + excitement) to Supabase
-            try {
-                await fetch("/api/waitlist-metadata", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        email,
-                        firstName: firstName.trim(),
-                        excitement: excitement.trim() || undefined,
-                    }),
-                })
-            } catch {
-                // Non-critical — don't block the success state
+            const data = await res.json()
+
+            if (!res.ok) {
+                setError(data.error || "Something went wrong. Please try again.")
+                return
+            }
+
+            if (data.alreadyExists) {
+                setAlreadyOnList(true)
             }
 
             setShowSuccess(true)
             setStep(3)
-        } catch (err: any) {
+        } catch (err) {
             console.error("[waitlist] Error:", err)
-            const code = err?.errors?.[0]?.code
-            // Clerk returns this code when the email is already on the waitlist
-            if (code === "form_identifier_exists" || code === "waitlist_entry_already_exists") {
-                setAlreadyOnList(true)
-                setShowSuccess(true)
-                setStep(3)
-                return
-            }
-            const clerkError = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message
-            setError(clerkError || "Something went wrong. Please try again.")
+            setError("Something went wrong. Please try again.")
         } finally {
             setIsSubmitting(false)
         }
-    }, [clerk, email, firstName, excitement])
+    }, [email, firstName, excitement])
 
     const canAdvance = () => {
         if (step === 0) return firstName.trim().length > 0
