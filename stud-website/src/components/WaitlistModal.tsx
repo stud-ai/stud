@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useClerk } from "@clerk/nextjs"
 import { X, ArrowRight, ArrowLeft, Check, Loader2 } from "lucide-react"
+import { motion } from "motion/react"
 import { TransitionPanel } from "@/components/motion-primitives/transition-panel"
 import { TextScramble } from "@/components/motion-primitives/text-scramble"
 import { BorderTrail } from "@/components/motion-primitives/border-trail"
@@ -14,7 +15,7 @@ interface WaitlistModalProps {
 }
 
 export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
-    const { client } = useClerk()
+    const clerk = useClerk()
     const [step, setStep] = useState(0)
     const [firstName, setFirstName] = useState("")
     const [email, setEmail] = useState("")
@@ -56,7 +57,7 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
         setIsSubmitting(true)
         setError("")
         try {
-            await client?.joinWaitlist({
+            await clerk.joinWaitlist({
                 emailAddress: email,
             })
 
@@ -92,7 +93,7 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
         } finally {
             setIsSubmitting(false)
         }
-    }, [client, email, firstName, excitement])
+    }, [clerk, email, firstName, excitement])
 
     const canAdvance = () => {
         if (step === 0) return firstName.trim().length > 0
@@ -272,24 +273,56 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                             </div>
 
                             {/* Step 3: Success */}
-                            <div className="flex flex-col items-center py-6 text-center">
-                                <div className={`mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full ${alreadyOnList ? 'bg-blue-500/10' : 'bg-emerald-500/10'}`}>
-                                    <Check className={`h-7 w-7 ${alreadyOnList ? 'text-blue-600' : 'text-emerald-600'}`} strokeWidth={2.5} />
+                            <div className="flex flex-col items-center py-8 text-center">
+                                {/* Animated SVG draw-in checkmark */}
+                                <div className="relative mb-5">
+                                    <div className={`absolute inset-0 rounded-2xl blur-xl opacity-20 ${alreadyOnList ? 'bg-blue-400' : 'bg-emerald-400'}`} />
+                                    <div className={`relative inline-flex h-20 w-20 items-center justify-center rounded-2xl ${alreadyOnList ? 'bg-blue-500/5 ring-1 ring-blue-500/15' : 'bg-emerald-500/5 ring-1 ring-emerald-500/15'}`}>
+                                        <svg width="40" height="40" viewBox="0 0 50 50" fill="none">
+                                            {/* Circle that draws in first */}
+                                            <motion.circle
+                                                cx="25"
+                                                cy="25"
+                                                r="22"
+                                                stroke={alreadyOnList ? '#2563eb' : '#16a34a'}
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                fill="none"
+                                                initial={{ pathLength: 0, opacity: 0 }}
+                                                animate={showSuccess ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
+                                                transition={{ duration: 0.6, ease: "easeOut" }}
+                                            />
+                                            {/* Checkmark path that draws in after */}
+                                            <motion.path
+                                                d="M15 26L22 33L35 18"
+                                                stroke={alreadyOnList ? '#2563eb' : '#16a34a'}
+                                                strokeWidth="3"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                fill="none"
+                                                initial={{ pathLength: 0, opacity: 0 }}
+                                                animate={showSuccess ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
+                                                transition={{ duration: 0.4, ease: "easeOut", delay: 0.4 }}
+                                            />
+                                        </svg>
+                                    </div>
                                 </div>
+
                                 <TextScramble
                                     as="h3"
                                     trigger={showSuccess}
                                     duration={1.2}
-                                    className="font-display text-xl text-foreground"
+                                    className="font-display text-2xl text-foreground"
                                 >
                                     {alreadyOnList
                                         ? "You\u0027re already on the list!"
                                         : "You\u0027re on the list!"}
                                 </TextScramble>
-                                <p className="mt-2 text-sm text-foreground/50">
+
+                                <p className="mt-3 max-w-[280px] text-sm leading-relaxed text-foreground/50">
                                     {alreadyOnList
-                                        ? "We already have your spot saved. Hang tight!"
-                                        : "We\u0027ll reach out when your spot is ready."}
+                                        ? `We already have your spot saved${firstName ? `, ${firstName}` : ''}. We\u0027ll be in touch soon.`
+                                        : `Thanks${firstName ? `, ${firstName}` : ''}! We\u0027ll reach out when your spot is ready. 🎉`}
                                 </p>
                             </div>
                         </TransitionPanel>
