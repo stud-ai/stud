@@ -28,7 +28,7 @@ export default function HighlightsSection() {
           </a>
           <a
             className="btn-metal-dark inline-flex w-fit items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-white transition-colors"
-            href="https://github.com/improdead/stud"
+            href="https://github.com/stud-ai/stud"
             rel="noopener noreferrer"
             target="_blank"
           >

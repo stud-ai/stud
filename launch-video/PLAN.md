@@ -132,7 +132,7 @@
 | ------------- | ----------------------------------------------------------------------------------- |
 | Background    | Fade back to clean beige + grid                                                     |
 | Terminal card | Dark `#1a1817` rounded card, monospace font                                         |
-| Commands      | `$ git clone https://github.com/stud-dev/stud` → `$ bun install` → `$ bun run dev`  |
+| Commands      | `$ git clone https://github.com/stud-ai/stud.git` → `$ bun install` → `$ bun run dev`  |
 | Typing        | Character-by-character typing with blinking cursor                                  |
 | Badges        | Appear below terminal: "MIT Licensed" pill + "Open Source" pill + GitHub star count |
 | Badge style   | Pill-shaped, 1px dark border, Geist Pixel uppercase, generous letter-spacing        |

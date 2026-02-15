@@ -56,7 +56,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
 
           <div className="ml-auto hidden items-center gap-5 md:flex">
             <a
-              href="https://github.com/improdead/stud"
+              href="https://github.com/stud-ai/stud"
               className="text-sm text-foreground/50 transition-colors hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"

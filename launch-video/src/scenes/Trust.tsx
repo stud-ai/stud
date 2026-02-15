@@ -3,7 +3,7 @@ import { Grid } from "../components/Grid"
 import { ScenePage } from "../components/ScenePage"
 import { colors, fonts, springs } from "../constants"
 
-const commands = ["$ git clone https://github.com/stud-dev/stud", "$ bun install", "$ bun run dev"]
+const commands = ["$ git clone https://github.com/stud-ai/stud.git", "$ bun install", "$ bun run dev"]
 
 const badges = ["MIT Licensed", "Open Source", "★ 1.2k"]
 

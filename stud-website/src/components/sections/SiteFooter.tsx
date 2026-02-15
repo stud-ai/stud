@@ -26,9 +26,9 @@ export default function SiteFooter() {
             </div>
             <div className="flex flex-col gap-3">
               <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">Community</span>
-              <a href="https://github.com/improdead/stud" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">GitHub</a>
-              <a href="https://github.com/improdead/stud/issues" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Issues</a>
-              <a href="https://github.com/improdead/stud/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">License</a>
+              <a href="https://github.com/stud-ai/stud" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">GitHub</a>
+              <a href="https://github.com/stud-ai/stud/issues" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Issues</a>
+              <a href="https://github.com/stud-ai/stud/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">License</a>
             </div>
           </div>
         </div>

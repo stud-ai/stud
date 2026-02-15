@@ -51,7 +51,7 @@ export default function GettingStartedPage() {
             <span className="font-mono text-xs text-foreground/40">Terminal</span>
           </div>
           <pre className="overflow-x-auto bg-foreground p-4 font-mono text-sm leading-relaxed text-white/85">
-            <code>{`git clone https://github.com/improdead/stud.git
+            <code>{`git clone https://github.com/stud-ai/stud.git
 cd stud
 bun install`}</code>
           </pre>

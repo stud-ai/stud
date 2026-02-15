@@ -1,5 +1,5 @@
 - ALWAYS USE PARALLEL TOOLS WHEN APPLICABLE.
-- The default branch in this repo is `dev`.
+- The default branch in this repo is `main`.
 
 ## Style Guide
 

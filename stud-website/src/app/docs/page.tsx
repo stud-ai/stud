@@ -125,7 +125,7 @@ const prompts = [
 const commands = [
   {
     label: "Install",
-    text: `git clone https://github.com/improdead/stud.git\ncd stud\nbun install`,
+    text: `git clone https://github.com/stud-ai/stud.git\ncd stud\nbun install`,
   },
   {
     label: "Set API key",
