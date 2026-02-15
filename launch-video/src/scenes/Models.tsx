@@ -7,9 +7,9 @@ const providers = [
     name: "Anthropic",
     path: "M26.9568 9.88184H22.1265L30.7753 31.7848H35.4917L26.9568 9.88184ZM13.028 9.88184L4.4917 31.7848H9.32203L11.2305 27.1793H20.2166L22.0126 31.6724H26.8444L18.0832 9.88184H13.028ZM12.5783 23.1361L15.4987 15.3853L18.5315 23.1361H12.5783Z",
     models: [
-      { name: "Claude Opus 4.6", on: true },
       { name: "Claude Opus 4.5", on: true },
       { name: "Claude Sonnet 4.5", on: true },
+      { name: "Claude Haiku 3.5", on: false },
     ],
   },
   {

@@ -19,11 +19,12 @@ import { CTA } from "./scenes/CTA"
 // Cursor is moved off-screen between and after clicks.
 const cursorKeyframes = [
   // Switch scene: enter after text page and click "Stud" toggle
-  { frame: scenes.switch.start + 114, x: 1260, y: 380, cursor: "arrow" },
-  { frame: scenes.switch.start + 145, x: 1038, y: 470, click: true, cursor: "pointer" },
+  { frame: scenes.switch.start + 110, x: 1460, y: 640, cursor: "arrow" },
+  { frame: scenes.switch.start + 126, x: 1210, y: 560, cursor: "arrow" },
+  { frame: scenes.switch.start + 146, x: 1038, y: 470, click: true, cursor: "pointer" },
 
   // Exit after first click so middle scenes have no cursor
-  { frame: scenes.switch.start + 163, x: 2100, y: -120, cursor: "arrow" },
+  { frame: scenes.switch.start + 164, x: 2100, y: 120, cursor: "arrow" },
   { frame: scenes.features.start + 198, x: 2100, y: -120, cursor: "arrow" },
 
   // Features: cursor moves to first thumbnail (Medieval Village)
@@ -44,8 +45,6 @@ const transitions = [
   scenes.models.start + scenes.models.duration,
   scenes.trust.start + scenes.trust.duration,
 ]
-
-const clickFrames = cursorKeyframes.filter((k) => k.click).map((k) => k.frame)
 
 export const Video = () => {
   return (
@@ -113,78 +112,6 @@ export const Video = () => {
       {transitions.map((t) => (
         <Fade key={t} at={t} />
       ))}
-
-      {/* ── Whoosh SFX at each transition ── */}
-      {transitions.map((t) => (
-        <Sequence key={`whoosh-${t}`} from={t - 8} durationInFrames={60}>
-          <Audio src={staticFile("audio/whoosh.wav")} volume={0.35} name="Whoosh" />
-        </Sequence>
-      ))}
-
-      {/* ── Cursor click SFX ── */}
-      {clickFrames.map((f) => (
-        <Sequence key={`click-${f}`} from={f} durationInFrames={30}>
-          <Audio src={staticFile("audio/click.wav")} volume={0.5} name="Click" />
-        </Sequence>
-      ))}
-
-      {/* ── Toggle SFX (Switch scene) ── */}
-      <Sequence from={scenes.switch.start + 145} durationInFrames={30}>
-        <Audio src={staticFile("audio/interface-click.wav")} volume={0.4} name="Toggle" />
-      </Sequence>
-
-      {/* ── Asset card pop SFX (Features scene) — delayed to match new timing ── */}
-      {[0, 1, 2, 3, 4].map((i) => (
-        <Sequence key={`pop-${i}`} from={scenes.features.start + 148 + i * 12} durationInFrames={30}>
-          <Audio src={staticFile("audio/pop.wav")} volume={0.15} name="Pop" />
-        </Sequence>
-      ))}
-
-      {/* ── Typing SFX (Features prompt) ── */}
-      <Sequence from={scenes.features.start + 42} durationInFrames={210}>
-        <Audio src={staticFile("audio/typing.wav")} volume={0.25} name="Typing" />
-      </Sequence>
-
-      {/* ── Typing SFX (Trust terminal) ── */}
-      <Sequence from={scenes.trust.start + 20} durationInFrames={110}>
-        <Audio src={staticFile("audio/typing.wav")} volume={0.2} name="Terminal Typing" />
-      </Sequence>
-
-      {/* ── Tool step SFX (Interaction scene) — delayed to match new timing ── */}
-      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-        <Sequence key={`step-${i}`} from={scenes.interaction.start + 236 + i * 16} durationInFrames={30}>
-          <Audio src={staticFile("audio/checkbox.wav")} volume={0.25} name="Step" />
-        </Sequence>
-      ))}
-
-      {/* ── Code reveal pop (Result scene) ── */}
-      <Sequence from={scenes.result.start + 132} durationInFrames={30}>
-        <Audio src={staticFile("audio/pop.wav")} volume={0.2} name="Code Pop" />
-      </Sequence>
-
-      {/* ── Success ding (Result response appears) ── */}
-      <Sequence from={scenes.result.start + 378} durationInFrames={90}>
-        <Audio src={staticFile("audio/success.wav")} volume={0.35} name="Success" />
-      </Sequence>
-
-      {/* ── Explorer tree item pops ── */}
-      {[0, 1, 2, 3, 4].map((i) => (
-        <Sequence key={`tree-${i}`} from={scenes.explorer.start + 66 + i * 12} durationInFrames={30}>
-          <Audio src={staticFile("audio/pop.wav")} volume={0.1} name="Tree Pop" />
-        </Sequence>
-      ))}
-
-      {/* ── Models toggle clicks ── */}
-      {[0, 1, 2].map((i) => (
-        <Sequence key={`toggle-${i}`} from={scenes.models.start + 98 + i * 42} durationInFrames={30}>
-          <Audio src={staticFile("audio/interface-click.wav")} volume={0.2} name="Toggle" />
-        </Sequence>
-      ))}
-
-      {/* ── Positive beep on CTA badge entrance ── */}
-      <Sequence from={scenes.cta.start + 122} durationInFrames={60}>
-        <Audio src={staticFile("audio/positive-beep.wav")} volume={0.25} name="CTA Beep" />
-      </Sequence>
 
       {/* ── Cursor ── */}
       <Cursor keyframes={cursorKeyframes} />

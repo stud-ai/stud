@@ -5,22 +5,20 @@ import { colors, fonts, springs } from "../constants"
 export const CTA = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
-  const install = "curl -sSL https://trystud.me/install.sh | bash"
 
   const badgeScale = spring({ fps, frame: frame - 116, config: springs.light })
   const urlOpacity = interpolate(frame, [116, 152], [0, 1], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
   })
-  const cmdOpacity = interpolate(frame, [156, 190], [0, 1], {
+  const noteOpacity = interpolate(frame, [154, 190], [0, 1], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
   })
-  const logoOpacity = interpolate(frame, [188, 232], [0, 1], {
+  const logoOpacity = interpolate(frame, [184, 228], [0, 1], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
   })
-  const chars = Math.max(0, Math.min(install.length, Math.floor((frame - 168) * 1.45)))
   const pulse = 1 + 0.03 * Math.sin(frame * 0.06)
   const urlScale = interpolate(urlOpacity, [0, 1], [1, pulse], {
     extrapolateRight: "clamp",
@@ -37,7 +35,7 @@ export const CTA = () => {
     >
       <ScenePage
         line1="Ship faster. Ship better."
-        line2="Build with Stud at"
+        line2="Waitlist now at"
         size={86}
         bg={colors.bg}
         hold={118}
@@ -83,10 +81,11 @@ export const CTA = () => {
         {/* URL */}
         <div
           style={{
-            fontFamily: fonts.mono,
-            fontSize: 38,
+            fontFamily: fonts.inter,
+            fontSize: 72,
             color: colors.emerald,
-            fontWeight: 500,
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
             opacity: urlOpacity,
             transform: `scale(${urlScale})`,
             textShadow: "0 0 30px rgba(16,185,129,0.3)",
@@ -97,22 +96,22 @@ export const CTA = () => {
 
         <div
           style={{
-            marginTop: 26,
-            padding: "10px 16px",
+            marginTop: 20,
+            padding: "12px 18px",
             borderRadius: 8,
             border: `1px solid ${colors.border}`,
             backgroundColor: colors.card,
-            fontFamily: fonts.plex,
-            fontSize: 18,
+            fontFamily: fonts.inter,
+            fontSize: 20,
+            fontWeight: 500,
             color: colors.fg,
-            opacity: cmdOpacity,
-            minWidth: 900,
+            opacity: noteOpacity,
+            minWidth: 760,
+            textAlign: "center",
           }}
         >
-          <span style={{ color: colors.grey }}>{">_"}</span>
-          <span style={{ color: colors.emerald }}>$ </span>
-          <span>{install.slice(0, chars)}</span>
-          {chars < install.length && frame % 28 < 14 ? <span style={{ color: colors.emerald }}>▌</span> : null}
+          <span style={{ color: colors.grey }}>Join the waitlist now at </span>
+          <span style={{ color: colors.emerald, fontWeight: 700 }}>trystud.me</span>
         </div>
 
         {/* Logo */}

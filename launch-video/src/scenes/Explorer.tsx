@@ -29,7 +29,9 @@ const updates = [
   { title: "Write", subtitle: "ServerScriptService/SwordSystem" },
   { title: "Write", subtitle: "ServerScriptService/DamageHandler" },
   { title: "Update", subtitle: "StarterPack/ClassicSword" },
+  { title: "Write", subtitle: "ReplicatedStorage/CombatEvents" },
   { title: "Run", subtitle: "workspace://rebuild-navmesh" },
+  { title: "Run", subtitle: "studio://playtest/sword-combat" },
 ]
 
 const palette: Record<string, { color: string; letter: string }> = {
@@ -91,6 +93,7 @@ export const Explorer = () => {
   const zoom = 1 + zoomTree * 0.06 + zoomChanges * 0.07
   const originX = 45 + zoomChanges * 16
   const originY = 34 + zoomChanges * 10
+  const recap = spring({ fps, frame: frame - 194, config: springs.light })
 
   return (
     <AbsoluteFill style={{ backgroundColor: ui.background, justifyContent: "center", alignItems: "center" }}>
@@ -105,7 +108,7 @@ export const Explorer = () => {
       <div
         style={{
           display: "flex",
-          gap: 18,
+          gap: 20,
           transform: `scale(${(0.95 + card * 0.05) * zoom})`,
           transformOrigin: `${originX}% ${originY}%`,
           opacity: card,
@@ -113,7 +116,7 @@ export const Explorer = () => {
       >
         <div
           style={{
-            width: 560,
+            width: 580,
             backgroundColor: ui.surfaceRaised,
             borderRadius: 16,
             border: `1px solid ${ui.borderWeak}`,
@@ -174,7 +177,7 @@ export const Explorer = () => {
                     paddingBottom: 4,
                     paddingRight: 12,
                     borderRadius: 6,
-                    backgroundColor: selected ? `rgba(16,185,129,${0.08 * highlight})` : "transparent",
+                    backgroundColor: selected ? `rgba(16,185,129,${0.06 * highlight})` : "transparent",
                     opacity: s,
                     transform: `translateX(${(1 - s) * -12}px)`,
                   }}
@@ -187,7 +190,7 @@ export const Explorer = () => {
                       fontFamily: fonts.inter,
                       fontSize: 14,
                       fontWeight: selected ? 500 : 400,
-                      color: selected ? "#10b981" : ui.textStrong,
+                      color: selected ? "#059669" : ui.textStrong,
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap" as const,
@@ -203,7 +206,7 @@ export const Explorer = () => {
 
         <div
           style={{
-            width: 360,
+            width: 420,
             backgroundColor: ui.surfaceRaised,
             borderRadius: 16,
             border: `1px solid ${ui.borderWeak}`,
@@ -217,36 +220,101 @@ export const Explorer = () => {
             style={{
               padding: "14px 16px",
               borderBottom: `1px solid ${ui.borderWeak}`,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
               fontFamily: fonts.inter,
               fontSize: 13,
               fontWeight: 600,
               color: ui.textStrong,
             }}
           >
-            Live Changes
+            <span>Live Changes</span>
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+              <span
+                style={{
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                  border: `1px solid ${ui.borderWeak}`,
+                  fontFamily: fonts.plex,
+                  fontSize: 10,
+                  color: ui.textWeak,
+                  fontWeight: 400,
+                }}
+              >
+                {updates.length} actions
+              </span>
+              <span
+                style={{
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                  border: `1px solid ${ui.borderSuccess}`,
+                  backgroundColor: ui.surfaceSuccessWeak,
+                  fontFamily: fonts.inter,
+                  fontSize: 10,
+                  color: "#059669",
+                  fontWeight: 600,
+                }}
+              >
+                playtest passed
+              </span>
+            </div>
           </div>
-          <div style={{ padding: "12px 12px", display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
+          <div style={{ padding: "12px 12px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
             {updates.map((item, i) => {
-              const delay = 96 + i * 16
+              const delay = 92 + i * 14
               const show = spring({ fps, frame: frame - delay, config: springs.light })
-              const done = frame > delay + 26
+              const done = frame > delay + 22
               return (
                 <div
                   key={i}
                   style={{
                     opacity: show,
-                    transform: `translateY(${(1 - show) * 10}px)`,
+                    transform: `translateY(${(1 - show) * 12}px)`,
                   }}
                 >
                   <BasicTool
                     title={item.title}
                     subtitle={item.subtitle}
                     status={done ? "success" : "running"}
-                    compact
+                    compact={false}
                   />
                 </div>
               )
             })}
+
+            <div
+              style={{
+                marginTop: 2,
+                borderRadius: 8,
+                border: `1px solid ${ui.borderWeak}`,
+                backgroundColor: ui.surfaceInset,
+                padding: "10px 12px",
+                opacity: recap,
+                transform: `translateY(${(1 - recap) * 8}px)`,
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: fonts.plex,
+                  fontSize: 10,
+                  color: ui.textSubtle,
+                  marginBottom: 6,
+                }}
+              >
+                RECENT OUTPUT
+              </div>
+              <div
+                style={{
+                  fontFamily: fonts.inter,
+                  fontSize: 12,
+                  lineHeight: 1.4,
+                  color: ui.textStrong,
+                }}
+              >
+                ClassicSword synced to StarterPack and combat scripts validated for publish.
+              </div>
+            </div>
           </div>
           <div
             style={{
@@ -260,7 +328,7 @@ export const Explorer = () => {
             }}
           >
             <span>Objects inserted: 11</span>
-            <span style={{ color: "#10b981" }}>Synced</span>
+            <span style={{ color: "#059669" }}>Synced 2s ago</span>
           </div>
         </div>
       </div>

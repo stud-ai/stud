@@ -60,7 +60,6 @@ export const Result = () => {
   const card = spring({ fps, frame: frame - 98, config: springs.default })
   const verify = spring({ fps, frame: frame - 246, config: springs.default })
   const response = spring({ fps, frame: frame - 372, config: springs.light })
-  const badge = spring({ fps, frame: frame - 438, config: springs.light })
 
   // Zoom into the code block area as it reveals
   const zoomCode = interpolate(frame, [110, 226], [0, 1], {
@@ -72,13 +71,9 @@ export const Result = () => {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   })
-  const zoomBadge = interpolate(frame, [430, 486], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  })
-  const zoom = 1 + zoomCode * 0.15 - zoomOut * 0.06 - zoomBadge * 0.03
+  const zoom = 1 + zoomCode * 0.15 - zoomOut * 0.06
   const originX = 55 + zoomCode * 4 - zoomOut * 2
-  const originY = 35 + zoomOut * 15 + zoomBadge * 10
+  const originY = 35 + zoomOut * 15
 
   return (
     <AbsoluteFill style={{ backgroundColor: ui.background }}>
@@ -233,32 +228,6 @@ export const Result = () => {
                 <path d="M5 12.5l4.2 4.2L19 7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               4 files written, 428 lines
-            </div>
-          )}
-
-          {/* Badge */}
-          {badge > 0.01 && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                width: "100%",
-                transform: `scale(${badge})`,
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor: colors.emerald,
-                  color: "white",
-                  fontFamily: fonts.tech,
-                  fontSize: 18,
-                  padding: "12px 28px",
-                  borderRadius: 100,
-                  letterSpacing: 1,
-                }}
-              >
-                27+ ROBLOX TOOLS • 4 FILES READY • PLAYTESTED
-              </div>
             </div>
           )}
         </AppChrome>

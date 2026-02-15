@@ -370,7 +370,7 @@ export function AppChrome({
                   <span style={{ fontSize: 14, color: prompt ? ui.textStrong : ui.textWeak, fontWeight: 400 }}>
                     {prompt ? prompt.slice(0, typing ?? prompt.length) : "What do you want to build?"}
                     {prompt && typing !== undefined && typing < prompt.length && (
-                      <span style={{ color: "#10b981" }}>|</span>
+                      <span style={{ color: ui.iconInteractive }}>|</span>
                     )}
                   </span>
                 </div>
@@ -384,20 +384,28 @@ export function AppChrome({
                 >
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                     <Pill label="auto" />
-                    <Pill label="claude-4-opus" />
+                    <Pill label="claude-opus-4.5" />
                   </div>
                   <div
                     style={{
-                      width: 24,
-                      height: 18,
-                      borderRadius: 5,
-                      backgroundColor: "#10b981",
+                      width: 26,
+                      height: 20,
+                      borderRadius: 6,
+                      border: `1px solid ${ui.borderInteractive}`,
+                      background: `linear-gradient(135deg, ${ui.surfaceInteractiveWeak} 0%, ${ui.surfaceInteractiveBase} 100%)`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                     }}
                   >
-                    <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="white" strokeWidth={2.5}>
+                    <svg
+                      viewBox="0 0 24 24"
+                      width={12}
+                      height={12}
+                      fill="none"
+                      stroke={ui.iconInteractive}
+                      strokeWidth={2.5}
+                    >
                       <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
