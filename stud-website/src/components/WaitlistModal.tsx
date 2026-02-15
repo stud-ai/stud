@@ -22,6 +22,7 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState("")
     const [showSuccess, setShowSuccess] = useState(false)
+    const [alreadyOnList, setAlreadyOnList] = useState(false)
 
     // Reset state when modal opens
     useEffect(() => {
@@ -33,6 +34,7 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
             setError("")
             setIsSubmitting(false)
             setShowSuccess(false)
+            setAlreadyOnList(false)
         }
     }, [open])
 
@@ -77,6 +79,14 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
             setStep(3)
         } catch (err: any) {
             console.error("[waitlist] Error:", err)
+            const code = err?.errors?.[0]?.code
+            // Clerk returns this code when the email is already on the waitlist
+            if (code === "form_identifier_exists" || code === "waitlist_entry_already_exists") {
+                setAlreadyOnList(true)
+                setShowSuccess(true)
+                setStep(3)
+                return
+            }
             const clerkError = err?.errors?.[0]?.longMessage || err?.errors?.[0]?.message
             setError(clerkError || "Something went wrong. Please try again.")
         } finally {
@@ -181,7 +191,7 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                                     <label className="block text-sm font-medium text-foreground">
                                         What&apos;s your name?
                                     </label>
-                                    <div className="relative">
+                                    <div className="relative rounded-lg overflow-hidden">
                                         <input
                                             type="text"
                                             value={firstName}
@@ -207,7 +217,7 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                                     <label className="block text-sm font-medium text-foreground">
                                         Your email, {firstName || "friend"}
                                     </label>
-                                    <div className="relative">
+                                    <div className="relative rounded-lg overflow-hidden">
                                         <input
                                             type="email"
                                             value={email}
@@ -233,7 +243,7 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                                     <label className="block text-sm font-medium text-foreground">
                                         What excites you most about Stud?
                                     </label>
-                                    <div className="relative">
+                                    <div className="relative rounded-lg">
                                         <textarea
                                             value={excitement}
                                             onChange={(e) => setExcitement(e.target.value)}
@@ -246,13 +256,13 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                                             placeholder="Optional — tell us what you're building!"
                                             rows={3}
                                             autoFocus
-                                            className="w-full resize-none rounded-lg border border-foreground/15 bg-white px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 outline-none transition-colors focus:border-foreground/30"
+                                            className="block w-full resize-none rounded-lg border border-foreground/15 bg-white px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 outline-none transition-colors focus:border-foreground/30"
                                         />
                                         <BorderTrail
                                             className="bg-foreground/20"
                                             size={40}
                                             borderRadius={8}
-                                            transition={{ duration: 3, ease: "linear", repeat: Infinity }}
+                                            transition={{ duration: 5, ease: "linear", repeat: Infinity }}
                                         />
                                     </div>
                                     <p className="text-xs text-foreground/30">
@@ -263,8 +273,8 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
 
                             {/* Step 3: Success */}
                             <div className="flex flex-col items-center py-6 text-center">
-                                <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10">
-                                    <Check className="h-7 w-7 text-emerald-600" strokeWidth={2.5} />
+                                <div className={`mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full ${alreadyOnList ? 'bg-blue-500/10' : 'bg-emerald-500/10'}`}>
+                                    <Check className={`h-7 w-7 ${alreadyOnList ? 'text-blue-600' : 'text-emerald-600'}`} strokeWidth={2.5} />
                                 </div>
                                 <TextScramble
                                     as="h3"
@@ -272,10 +282,14 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                                     duration={1.2}
                                     className="font-display text-xl text-foreground"
                                 >
-                                    You&apos;re on the list!
+                                    {alreadyOnList
+                                        ? "You\u0027re already on the list!"
+                                        : "You\u0027re on the list!"}
                                 </TextScramble>
                                 <p className="mt-2 text-sm text-foreground/50">
-                                    We&apos;ll reach out when your spot is ready.
+                                    {alreadyOnList
+                                        ? "We already have your spot saved. Hang tight!"
+                                        : "We\u0027ll reach out when your spot is ready."}
                                 </p>
                             </div>
                         </TransitionPanel>
