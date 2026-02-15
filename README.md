@@ -1,17 +1,42 @@
-# Stud
+<p align="center">
+  <img src="packages/identity/mark.svg" alt="Stud" width="80" height="80" />
+</p>
 
-<a href="https://trystud.me"><img src="https://img.shields.io/badge/Try-Stud-blue?style=flat&logo=robux&color=00A2FF" alt="Try Stud at trystud.me" /></a>
+<h1 align="center">Stud</h1>
 
-Stud is an AI-powered desktop tool for Roblox development.  
-It connects to Roblox Studio through a local plugin, so an AI agent can inspect and modify scripts, instances, and properties in real time.
+<p align="center">
+  <strong>AI-powered development tool for Roblox Studio</strong>
+</p>
 
-## Highlights
+<p align="center">
+  <a href="https://github.com/stud-ai/stud/blob/dev/LICENSE"><img src="https://img.shields.io/github/license/stud-ai/stud?style=flat-square&color=blue" alt="License" /></a>
+  <a href="https://github.com/stud-ai/stud/stargazers"><img src="https://img.shields.io/github/stars/stud-ai/stud?style=flat-square&color=yellow" alt="Stars" /></a>
+  <a href="https://github.com/stud-ai/stud"><img src="https://img.shields.io/badge/bun-%3E%3D1.0-f472b6?style=flat-square" alt="Bun" /></a>
+  <a href="https://github.com/stud-ai/stud"><img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-8b5cf6?style=flat-square" alt="Platform" /></a>
+</p>
 
-- Live Roblox Studio integration through `studio-plugin/Stud.server.lua`
-- AI tooling for script edits, instance operations, toolbox workflows, and cloud APIs
-- Desktop app with Tauri + SolidJS
-- Local-first architecture (plugin communicates with a local bridge server)
-- Optional Cloud API support for DataStores and publishing flows
+<p align="center">
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#features">Features</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#sdk">SDK</a> •
+  <a href="#contributing">Contributing</a>
+</p>
+
+---
+
+Stud connects an AI agent directly to Roblox Studio through a local plugin.  
+It can inspect and modify scripts, instances, and properties in real time — so you can **build games with natural language**.
+
+## Features
+
+🤖 **AI Agent** — Chat-driven development with tool use, code generation, and multi-step planning  
+🔌 **Live Studio Integration** — Real-time bridge to Roblox Studio via a lightweight Luau plugin  
+🛠️ **Script Editing** — Read, write, and patch scripts directly inside Studio  
+🧩 **Toolbox & Cloud APIs** — Search assets, manage DataStores, and publish from the desktop  
+📂 **Rojo Support** — File-based workflows with full Rojo project integration  
+🌐 **Multi-Provider** — Supports Anthropic, OpenAI, Google, Groq, Mistral, and more  
+🖥️ **Native Desktop App** — Built with Tauri + SolidJS for a fast, native experience  
 
 ## Quick Start
 
@@ -19,76 +44,76 @@ It connects to Roblox Studio through a local plugin, so an AI agent can inspect 
 ./start.sh
 ```
 
-`start.sh` handles setup and launch:
+The start script handles everything:
 
-1. Checks prerequisites
-2. Installs workspace dependencies
-3. Installs or updates the Studio plugin
-4. Starts the desktop app
+1. ✅ Checks prerequisites (Bun, Rust, platform deps)
+2. 📦 Installs workspace dependencies
+3. 🔌 Installs or updates the Studio plugin
+4. 🚀 Starts the desktop app
 
-### Roblox Studio Setup
+> **Options:** `--check` (validate only) · `--build` (production build) · `--skip-plugin` · `--help`
 
-1. Open Roblox Studio.
-2. Enable `Game Settings -> Security -> Allow HTTP Requests`.
-3. Open the `Plugins` tab and click `Stud`.
-4. Keep the desktop app running while you work.
+### Studio Setup
 
-## Try without installing
-
-Visit **[trystud.me](https://trystud.me)** to see Stud in action — no setup required.
+1. Open **Roblox Studio**
+2. Go to **Game Settings → Security** and enable **Allow HTTP Requests**
+3. Open the **Plugins** tab and click **Stud**
+4. Keep the desktop app running while you work
 
 ## Requirements
 
-- [Bun](https://bun.sh/) (`1.0+`, repo uses `bun@1.3.5`)
-- [Rust](https://www.rust-lang.org/tools/install) (for Tauri)
-- Roblox Studio
-
-Optional:
-
-- [Rojo](https://rojo.space/) for project synchronization workflows
+| Dependency | Version | Required |
+|------------|---------|----------|
+| [Bun](https://bun.sh/) | `≥ 1.0` | ✅ |
+| [Rust](https://www.rust-lang.org/tools/install) | Latest stable | ✅ |
+| Roblox Studio | — | ✅ |
+| [Rojo](https://rojo.space/) | Latest | Optional |
 
 ## Common Commands
 
 ```bash
-# Start development app (Tauri + Vite)
+# Start development (Tauri + Vite)
 bun run dev
 
-# Build desktop app
+# Build for production
 bun run build
 
-# Typecheck workspace
+# Typecheck entire workspace
 bun run typecheck
 ```
 
-`start.sh` also supports:
+## Architecture
 
-- `./start.sh --check` to validate prerequisites only
-- `./start.sh --build` to run a production build flow
-- `./start.sh --skip-plugin` to skip Studio plugin install/update
-- `./start.sh --help` for all options
-
-## Manual Plugin Installation
-
-Copy `studio-plugin/Stud.server.lua` into your Roblox plugins directory:
-
-- macOS: `~/Documents/Roblox/Plugins/Stud.server.lua`
-- Windows: `%LOCALAPPDATA%\Roblox\Plugins\Stud.server.lua`
-- Linux: `~/.local/share/roblox/plugins/Stud.server.lua`
-
-Then restart Roblox Studio.
-
-## Optional Cloud API Configuration
-
-For DataStore and publishing-related operations:
-
-```bash
-export ROBLOX_API_KEY="your-api-key"
-export ROBLOX_UNIVERSE_ID="your-universe-id"
+```mermaid
+graph LR
+    A["Desktop App<br/>(Tauri + SolidJS)"] --> B["Local Bridge Server<br/>(localhost:3001)"]
+    B --> C["Studio Plugin<br/>(Luau, polls bridge)"]
+    B --> D["Roblox Web APIs<br/>(Toolbox, Cloud)"]
+    A --> E["AI Providers<br/>(Anthropic, OpenAI, …)"]
 ```
 
-Create API keys in [Roblox Creator Hub](https://create.roblox.com/dashboard/credentials).
+### Repository Layout
 
-## SDK (Workspace Package)
+```
+stud/
+├── packages/
+│   ├── app/            # Desktop app UI (SolidJS)
+│   ├── core/           # AI engine — tools, sessions, providers, server
+│   ├── desktop/        # Tauri native shell
+│   ├── sdk/            # TypeScript SDK (@stud/sdk)
+│   ├── ui/             # Shared UI component library
+│   ├── util/           # Shared utilities
+│   ├── plugin/         # Plugin SDK for extensions
+│   ├── identity/       # Brand assets (logos, icons)
+│   └── script/         # Build scripts
+├── studio-plugin/      # Roblox Studio plugin (Luau)
+├── stud-website/       # Marketing website (Next.js)
+├── launch-video/       # Launch video (Remotion)
+├── docs/               # Technical documentation
+└── start.sh            # Setup & launch script
+```
+
+## SDK
 
 The monorepo includes a TypeScript SDK at `packages/sdk/js` (`@stud/sdk`):
 
@@ -105,45 +130,59 @@ await stud.client.session.prompt(session.id, {
 })
 ```
 
-## Architecture
+## Plugin Installation
 
-```text
-Desktop App (Tauri + SolidJS)
-  -> Local bridge server (localhost)
-    -> Studio plugin (Luau, polling bridge endpoints)
-    -> Roblox web APIs (toolbox/cloud operations)
+The `start.sh` script installs the plugin automatically. To install manually:
+
+| OS | Plugin Path |
+|----|-------------|
+| macOS | `~/Documents/Roblox/Plugins/Stud.server.lua` |
+| Windows | `%LOCALAPPDATA%\Roblox\Plugins\Stud.server.lua` |
+| Linux | `~/.local/share/roblox/plugins/Stud.server.lua` |
+
+Copy `studio-plugin/Stud.server.lua` to the path above, then restart Studio.
+
+## Cloud API Configuration
+
+For DataStore and publishing operations, set these environment variables:
+
+```bash
+export ROBLOX_API_KEY="your-api-key"
+export ROBLOX_UNIVERSE_ID="your-universe-id"
 ```
 
-## Repository Layout
+Create API keys at [Roblox Creator Hub → Credentials](https://create.roblox.com/dashboard/credentials).
 
-```text
-stud/
-├── packages/
-│   ├── app/          # Main UI package
-│   ├── core/         # Tools, sessions, providers, server
-│   ├── desktop/      # Tauri shell
-│   ├── sdk/          # TypeScript SDK sources
-│   ├── ui/           # Shared UI components
-│   └── util/         # Shared utilities
-├── studio-plugin/    # Roblox Studio plugin
-├── stud-website/     # Marketing website
-└── start.sh          # Setup and launch script
-```
+## Built With
+
+| Technology | Purpose |
+|-----------|---------|
+| [Tauri v2](https://tauri.app/) | Native desktop shell |
+| [SolidJS](https://solidjs.com/) | Reactive UI framework |
+| [Bun](https://bun.sh/) | Runtime & package manager |
+| [Vercel AI SDK](https://sdk.vercel.ai/) | Multi-provider AI integration |
+| [Hono](https://hono.dev/) | Local bridge server |
+| [Remotion](https://remotion.dev/) | Launch video |
 
 ## Troubleshooting
 
-- `Could not connect to server`: ensure the desktop app is running, the plugin is installed as `Stud.server.lua`, and Studio HTTP requests are enabled.
-- Plugin not appearing: verify the plugin path above and restart Roblox Studio.
-- Setup issues: run `./start.sh --check` to validate prerequisites.
+| Problem | Solution |
+|---------|----------|
+| "Could not connect to server" | Ensure the desktop app is running, the plugin is installed, and Studio HTTP requests are enabled |
+| Plugin not appearing | Verify the plugin path and restart Roblox Studio |
+| Setup issues | Run `./start.sh --check` to validate prerequisites |
+| White screen on restart | The app auto-recovers; if not, it falls back to a page reload |
 
 ## Contributing
 
-- Before opening a PR, run:
+Before opening a PR:
 
 ```bash
 bun run typecheck
 ```
 
+See [AGENTS.md](AGENTS.md) for coding style guidelines.
+
 ## License
 
-MIT
+[MIT](LICENSE)

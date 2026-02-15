@@ -1,6 +1,6 @@
-# Stud Prompt System - Technical Documentation
+# Stud Prompt System — Technical Documentation
 
-> **Note**: Stud is forked from OpenCode. This document explains how the current prompt system works and identifies opportunities for improvement.
+> **Note**: Stud is forked from [OpenCode](https://github.com/opencode-ai/opencode). This document explains how the prompt system works and identifies opportunities for improvement.
 
 ## Table of Contents
 
@@ -476,7 +476,7 @@ if (taskType === "chat") {
 **Current Issue**: Multiple instruction sources (`AGENTS.md`, `CLAUDE.md`, `CONTEXT.md`, config instructions) with unclear precedence.
 
 **Improvement**:
-- Consolidate to single `STUD.md` or similar
+- Consolidate to a single `STUD.md` file
 - Clear documentation on precedence
 - Validation for conflicting instructions
 

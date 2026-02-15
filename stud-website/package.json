@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.37.4",
+    "@clerk/themes": "^2.4.52",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-aspect-ratio": "^1.1.7",
@@ -39,12 +41,12 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "deep-email-validator": "^0.1.21",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.24",
     "geist": "^1.7.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.552.0",
+    "motion": "^12.34.0",
     "next": "^16.1.6",
     "next-themes": "^0.4.6",
     "react": "^19.0.0",
@@ -52,8 +54,8 @@
     "react-dom": "^19.0.0",
     "react-resizable-panels": "^3.0.3",
     "recharts": "^3.0.2",
-    "resend": "^6.9.1",
     "sonner": "^2.0.7",
+    "svix": "^1.85.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2"

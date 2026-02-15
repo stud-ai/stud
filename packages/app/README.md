@@ -1,51 +1,57 @@
-## Usage
+# @stud/app
 
-Dependencies for these templates are managed with [pnpm](https://pnpm.io) using `pnpm up -Lri`.
+The desktop application UI for Stud, built with SolidJS and Tailwind CSS 4.
 
-This is the reason you see a `pnpm-lock.yaml`. That said, any package manager will work. This file can safely be removed once you clone a template.
+## Overview
+
+This package provides the full UI that runs inside the Tauri desktop shell. It includes the chat interface, session management, instance explorer, terminal emulator, and all interactive components.
+
+## Development
 
 ```bash
-$ npm install # or pnpm install or yarn install
+# Start Vite dev server (web only, no native shell)
+bun run dev
+
+# Start with Tauri (full native app) — run from repo root
+bun run dev
 ```
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+The Vite dev server runs on `http://localhost:1420`.
 
-## Available Scripts
+## Scripts
 
-In the project directory, you can run:
-
-### `npm run dev` or `npm start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-
-### `npm run build`
-
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+| Command | Description |
+|---------|-------------|
+| `bun run dev` | Start Vite dev server |
+| `bun run build` | Production build to `dist/` |
+| `bun run typecheck` | Typecheck with `tsgo` |
 
 ## E2E Testing
 
-Playwright starts the Vite dev server automatically via `webServer`, and UI tests need an opencode backend (defaults to `localhost:4096`).
-Use the local runner to create a temp sandbox, seed data, and run the tests.
+Uses Playwright. The Vite dev server starts automatically via `webServer`.
 
 ```bash
+# Install browsers
 bunx playwright install
+
+# Run all E2E tests
 bun run test:e2e:local
+
+# Run specific tests
 bun run test:e2e:local -- --grep "settings"
+
+# Interactive UI mode
+bun run test:e2e:ui
+
+# View report
+bun run test:e2e:report
 ```
 
-Environment options:
+### Environment Variables
 
-- `PLAYWRIGHT_SERVER_HOST` / `PLAYWRIGHT_SERVER_PORT` (backend address, default: `localhost:4096`)
-- `PLAYWRIGHT_PORT` (Vite dev server port, default: `3000`)
-- `PLAYWRIGHT_BASE_URL` (override base URL, default: `http://localhost:<PLAYWRIGHT_PORT>`)
-
-## Deployment
-
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PLAYWRIGHT_SERVER_HOST` | `localhost` | Backend host |
+| `PLAYWRIGHT_SERVER_PORT` | `4096` | Backend port |
+| `PLAYWRIGHT_PORT` | `3000` | Vite dev server port |
+| `PLAYWRIGHT_BASE_URL` | `http://localhost:<port>` | Override base URL |

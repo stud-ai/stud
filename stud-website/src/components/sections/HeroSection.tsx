@@ -1,54 +1,11 @@
 "use client"
 
-import { AlertCircle, Check, Terminal } from "lucide-react"
-import { FormEvent, useEffect, useRef, useState } from "react"
-import { toast } from "sonner"
+import WaitlistModal from "@/components/WaitlistModal"
+import { useEffect, useRef, useState } from "react"
 
 export default function HeroSection() {
   const unicornRef = useRef<HTMLDivElement>(null)
-  const [mail, setMail] = useState("")
-  const [sent, setSent] = useState(false)
-  const [warn, setWarn] = useState("")
-  const [submitting, setSubmitting] = useState(false)
-
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const value = mail.trim()
-    if (!value) {
-      setWarn("Enter an email first.")
-      return
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      setWarn("Use a valid email address.")
-      return
-    }
-
-    setWarn("")
-    setSubmitting(true)
-
-    try {
-      const res = await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: value }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        setWarn(data.error ?? "Something went wrong.")
-        return
-      }
-
-      setSent(true)
-      setMail("")
-      toast.success("Check your inbox for a confirmation email.")
-    } catch {
-      setWarn("Network error. Please try again.")
-    } finally {
-      setSubmitting(false)
-    }
-  }
+  const [showWaitlist, setShowWaitlist] = useState(false)
 
   useEffect(() => {
     // Initialize Unicorn Studio
@@ -62,19 +19,19 @@ export default function HeroSection() {
     if ((window as any).UnicornStudio?.isInitialized !== undefined) {
       initUnicorn()
     } else {
-      ;(window as any).UnicornStudio = { isInitialized: false }
+      ; (window as any).UnicornStudio = { isInitialized: false }
       const script = document.createElement("script")
       script.src = "https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.0.5/dist/unicornStudio.umd.js"
       script.onload = () => {
         if (document.readyState === "loading") {
           document.addEventListener("DOMContentLoaded", () => {
-            ;(window as any).UnicornStudio.init()
+            ; (window as any).UnicornStudio.init()
           })
         } else {
-          ;(window as any).UnicornStudio.init()
+          ; (window as any).UnicornStudio.init()
         }
       }
-      ;(document.head || document.body).appendChild(script)
+        ; (document.head || document.body).appendChild(script)
     }
   }, [])
 
@@ -96,12 +53,12 @@ export default function HeroSection() {
             Docs
           </a>
         </div>
-        <a
-          href="#waitlist"
+        <button
+          onClick={() => setShowWaitlist(true)}
           className="inline-flex items-center justify-center rounded-lg border border-foreground/15 bg-white/70 px-5 py-2 text-sm font-medium text-foreground backdrop-blur-sm transition-colors hover:bg-white"
         >
           Waitlist
-        </a>
+        </button>
       </nav>
 
       {/* Hero Content */}
@@ -123,57 +80,17 @@ export default function HeroSection() {
           Write Luau, edit instances, and ship from one terminal.
         </p>
 
-        {/* CTAs */}
+        {/* CTA */}
         <div className="mt-10 w-full max-w-2xl">
-          <p className="mb-2.5 text-xs font-medium tracking-[0.12em] text-foreground/45">Join the waitlist</p>
-          <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-stretch">
-            <div className="relative h-14 w-full max-w-md sm:max-w-lg" id="waitlist">
-              <form
-                className={`absolute inset-0 flex items-center gap-2 rounded-xl border p-2 shadow-[0_8px_22px_rgba(26,24,23,0.08)] backdrop-blur-md transition-all duration-300 ${warn ? "border-rose-300/80 bg-rose-50/70" : "border-foreground/15 bg-white/72"} ${sent ? "pointer-events-none translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}
-                noValidate
-                onSubmit={submit}
-              >
-                <input
-                  autoComplete="email"
-                  aria-describedby={warn ? "waitlist-warn" : undefined}
-                  aria-invalid={Boolean(warn)}
-                  className={`h-full min-w-0 flex-1 rounded-lg border bg-white px-3.5 text-sm text-foreground outline-none transition-colors placeholder:text-foreground/35 ${warn ? "border-rose-300 focus:border-rose-400" : "border-foreground/10 focus:border-foreground/30"}`}
-                  onChange={(event) => {
-                    setMail(event.target.value)
-                    if (warn) setWarn("")
-                  }}
-                  placeholder="Enter your email"
-                  type="email"
-                  value={mail}
-                  disabled={submitting}
-                />
-                <button
-                  className="inline-flex h-full items-center justify-center rounded-lg bg-foreground px-4 text-sm font-medium text-white transition-colors hover:bg-foreground/85 disabled:opacity-50"
-                  type="submit"
-                  disabled={submitting}
-                >
-                  {submitting ? "Sending..." : "Send"}
-                </button>
-              </form>
-              {warn ? (
-                <div
-                  className={`pointer-events-none absolute top-[calc(100%+8px)] left-0 inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50/90 px-2.5 py-1.5 text-xs font-medium text-rose-700 shadow-sm transition-all duration-300 ${sent ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}
-                  id="waitlist-warn"
-                >
-                  <AlertCircle className="h-3.5 w-3.5" />
-                  <span>{warn}</span>
-                </div>
-              ) : null}
-              <div
-                className={`absolute inset-0 flex items-center gap-2 rounded-xl border border-foreground/15 bg-white/80 px-4 shadow-[0_8px_22px_rgba(26,24,23,0.08)] backdrop-blur-md transition-all duration-300 ${sent ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"}`}
-              >
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600">
-                  <Check className="h-3.5 w-3.5" />
-                </span>
-                <span className="text-sm font-medium text-foreground">Thanks for signing up.</span>
-              </div>
-            </div>
-          </div>
+          <button
+            onClick={() => setShowWaitlist(true)}
+            className="btn-metal group inline-flex items-center gap-2.5 rounded-md px-7 py-3.5 text-sm font-medium text-foreground"
+          >
+            Join the Waitlist
+            <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </button>
         </div>
 
         {/* Floating terminal preview */}
@@ -213,6 +130,9 @@ export default function HeroSection() {
         </div>
       </div>
 
+      {/* Custom Waitlist Modal */}
+      <WaitlistModal open={showWaitlist} onClose={() => setShowWaitlist(false)} />
     </section>
   )
 }
+

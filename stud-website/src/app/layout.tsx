@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { ClerkProvider } from "@clerk/nextjs"
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 
@@ -69,11 +70,61 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
-        {children}
-        <Toaster position="bottom-right" />
-      </body>
-    </html>
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: "#1a1817",
+          colorText: "#1a1817",
+          colorTextSecondary: "#79716b",
+          colorBackground: "#ffffff",
+          colorInputBackground: "#ffffff",
+          colorInputText: "#1a1817",
+          borderRadius: "0.5rem",
+          fontFamily: "'Geist Pixel', 'Geist', system-ui, sans-serif",
+        },
+        elements: {
+          card: {
+            boxShadow: "0 8px 30px rgba(26, 24, 23, 0.12)",
+            border: "1px solid #e7e5e4",
+            borderRadius: "0.75rem",
+          },
+          formButtonPrimary: {
+            background: "linear-gradient(180deg, rgba(70, 65, 60, 0.98) 0%, rgba(43, 40, 37, 0.98) 100%)",
+            border: "1px solid rgba(255, 255, 255, 0.14)",
+            boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 0 rgba(0, 0, 0, 0.35), 0 8px 18px rgba(19, 17, 16, 0.26)",
+            borderRadius: "0.375rem",
+            fontFamily: "'Geist Pixel', 'Geist', system-ui, sans-serif",
+            fontWeight: "500",
+            transition: "filter 140ms ease, transform 140ms ease",
+          },
+          formFieldInput: {
+            borderColor: "#e7e5e4",
+            borderRadius: "0.375rem",
+            fontFamily: "'Geist Pixel', 'Geist', system-ui, sans-serif",
+          },
+          headerTitle: {
+            fontFamily: "'Kalice', Georgia, 'Times New Roman', serif",
+            fontWeight: "600",
+            color: "#1a1817",
+          },
+          headerSubtitle: {
+            color: "#79716b",
+            fontFamily: "'Geist Pixel', 'Geist', system-ui, sans-serif",
+          },
+          footerActionLink: {
+            color: "#1a1817",
+            fontWeight: "500",
+          },
+        },
+      }}
+    >
+      <html lang="en">
+        <body className="antialiased">
+          {children}
+          <Toaster position="bottom-right" />
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
+
