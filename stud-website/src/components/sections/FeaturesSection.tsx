@@ -261,11 +261,14 @@ export default function FeaturesSection() {
               transition={{ layout: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } }}
               className="flex flex-1 flex-col min-h-[420px] lg:min-h-[520px]"
             >
-              {/* Preview area with background image */}
+              {/* Preview area with animated background */}
               <div className="relative flex-1 overflow-hidden">
-                {/* Static background image */}
+                {/* Unicorn Studio animated background */}
                 <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-                  <img src="/assets/cliff.png" alt="" className="h-full w-full object-cover" />
+                  <div
+                    data-us-project="cGcmyYCBaX00HUG4UFac"
+                    style={{ width: "100%", height: "100%", transform: "scale(1.6)", transformOrigin: "center center" }}
+                  />
                 </div>
 
                 {/* Floating light window */}
