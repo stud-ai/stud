@@ -1,7 +1,6 @@
 export const WIDTH = 1920
 export const HEIGHT = 1080
 export const FPS = 60
-export const DURATION = 2220
 
 export const colors = {
   bg: "#f8f8f6",
@@ -69,13 +68,18 @@ export const springs = {
 } as const
 
 export const scenes = {
-  hook: { start: 0, duration: 120 },
-  switch: { start: 120, duration: 150 },
-  features: { start: 270, duration: 340 },
-  interaction: { start: 610, duration: 340 },
-  result: { start: 950, duration: 430 },
-  explorer: { start: 1380, duration: 220 },
-  models: { start: 1600, duration: 220 },
-  trust: { start: 1820, duration: 160 },
-  cta: { start: 1980, duration: 240 },
+  hook: { start: 0, duration: 132 },
+  switch: { start: 132, duration: 176 },
+  features: { start: 308, duration: 392 },
+  interaction: { start: 700, duration: 392 },
+  result: { start: 1092, duration: 500 },
+  explorer: { start: 1592, duration: 260 },
+  models: { start: 1852, duration: 260 },
+  trust: { start: 2112, duration: 200 },
+  cta: { start: 2312, duration: 320 },
 } as const
+
+export const DURATION = (Object.values(scenes) as ReadonlyArray<{ start: number; duration: number }>).reduce(
+  (max, scene) => Math.max(max, scene.start + scene.duration),
+  0,
+)

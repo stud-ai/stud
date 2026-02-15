@@ -1,9 +1,9 @@
-import { AbsoluteFill, spring, useCurrentFrame, useVideoConfig } from "remotion"
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion"
 import { Grid } from "../components/Grid"
 import { ScenePage } from "../components/ScenePage"
 import { colors, fonts, springs } from "../constants"
 
-const commands = ["$ git clone https://github.com/stud-ai/stud", "$ bun install", "$ bun run dev"]
+const commands = ["$ git clone https://github.com/stud-ai/stud", "$ bun install", "$ bun run test", "$ bun run dev"]
 
 const badges = ["MIT Licensed", "Open Source", "★ 1.2k"]
 
@@ -11,7 +11,16 @@ export const Trust = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
 
-  const cardScale = spring({ fps, frame: frame - 10, config: springs.default })
+  const cardScale = spring({ fps, frame: frame - 22, config: springs.default })
+  const zoomTerminal = interpolate(frame, [62, 122], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  })
+  const zoomBadges = interpolate(frame, [132, 178], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  })
+  const zoom = 1 + zoomTerminal * 0.08 - zoomBadges * 0.04
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.bg }}>
@@ -20,13 +29,22 @@ export const Trust = () => {
         line2="No black box. No lock-in."
         size={80}
         bg={colors.bg}
-        hold={74}
-        fade={14}
+        hold={94}
+        fade={18}
       />
       <Grid />
 
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 24,
+            transform: `scale(${zoom})`,
+            transformOrigin: "center 38%",
+          }}
+        >
           {/* Terminal */}
           <div
             style={{
@@ -52,9 +70,9 @@ export const Trust = () => {
             </div>
             <div style={{ padding: 24 }}>
               {commands.map((cmd, i) => {
-                const charDelay = i * 48
-                const chars = Math.max(0, Math.floor((frame - 20 - charDelay) * 2.2))
-                if (frame < 20 + charDelay) return null
+                const charDelay = i * 58
+                const chars = Math.max(0, Math.floor((frame - 24 - charDelay) * 1.9))
+                if (frame < 24 + charDelay) return null
                 return (
                   <div
                     key={i}
@@ -77,7 +95,7 @@ export const Trust = () => {
           {/* Badges */}
           <div style={{ display: "flex", gap: 12 }}>
             {badges.map((badge, i) => {
-              const delay = 130 + i * 14
+              const delay = 172 + i * 18
               const s = spring({ fps, frame: frame - delay, config: springs.light })
               return (
                 <div

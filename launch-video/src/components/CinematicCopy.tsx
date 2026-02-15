@@ -35,7 +35,7 @@ export const CinematicCopy = ({
           extrapolateLeft: "clamp",
         })
 
-  const line2Start = start + words1.length * 4 + 8
+  const line2Start = start + words1.length * 5 + 12
 
   const row = (words: string[], offset: number, color: string) => {
     return (
@@ -49,12 +49,12 @@ export const CinematicCopy = ({
         }}
       >
         {words.map((word, i) => {
-          const delay = offset + i * 4
-          const opacity = interpolate(frame, [delay, delay + 15], [0, 1], {
+          const delay = offset + i * 5
+          const opacity = interpolate(frame, [delay, delay + 18], [0, 1], {
             extrapolateRight: "clamp",
             extrapolateLeft: "clamp",
           })
-          const y = interpolate(frame, [delay, delay + 15], [8, 0], {
+          const y = interpolate(frame, [delay, delay + 18], [8, 0], {
             extrapolateRight: "clamp",
             extrapolateLeft: "clamp",
           })
@@ -88,7 +88,7 @@ export const CinematicCopy = ({
       <div
         style={{
           marginTop: top ?? 0,
-          maxWidth: 1200,
+          maxWidth: 1300,
           textAlign: "center",
           lineHeight: 1.18,
           fontFamily: fonts.display,

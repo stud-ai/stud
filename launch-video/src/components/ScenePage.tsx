@@ -17,7 +17,12 @@ export const ScenePage = ({
   fade?: number
 }) => {
   const frame = useCurrentFrame()
-  const opacity = interpolate(frame, [0, hold, hold + fade], [1, 1, 0], {
+  const words1 = line1.trim().split(/\s+/).filter(Boolean).length
+  const words2 = line2.trim().split(/\s+/).filter(Boolean).length
+  const minHold = words1 * 5 + 12 + Math.max(0, words2 - 1) * 5 + 18 + 10
+  const holdAt = Math.max(hold, minHold)
+
+  const opacity = interpolate(frame, [0, holdAt, holdAt + fade], [1, 1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   })

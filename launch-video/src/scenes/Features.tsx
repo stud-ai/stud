@@ -1,5 +1,5 @@
 import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion"
-import { AppChrome, ActionCard, UserMessage } from "../components/AppChrome"
+import { AppChrome, ActionCard, BasicTool, StepsColumn, UserMessage } from "../components/AppChrome"
 import { ScenePage } from "../components/ScenePage"
 import { fonts, springs, ui } from "../constants"
 
@@ -11,6 +11,13 @@ const assets = [
   { name: "Village Town Center", type: "Model", creator: "MapKit", vote: 91, thumb: "village-town.png" },
   { name: "Fantasy Village Kit", type: "Model", creator: "TreeForge", vote: 88, thumb: "fantasy-village.png" },
   { name: "Village Market Stall", type: "Model", creator: "EnviroLab", vote: 85, thumb: "village-market.png" },
+]
+
+const writes = [
+  { title: "Read", subtitle: "toolbox://medieval-village-pack" },
+  { title: "Insert", subtitle: "Workspace/Map/MedievalVillage" },
+  { title: "Write", subtitle: "game/src/world/VillageSpawn.luau" },
+  { title: "Run", subtitle: "roblox://rebuild-navigation" },
 ]
 
 function CheckIcon() {
@@ -33,26 +40,31 @@ export const Features = () => {
   const frame = useCurrentFrame()
   const video = useVideoConfig()
 
-  const shell = spring({ fps: video.fps, frame: frame - 10, config: springs.default })
-  const typed = Math.max(0, Math.floor((frame - 20) * 1.55))
-  const card = spring({ fps: video.fps, frame: frame - 88, config: springs.default })
-  const selected = frame >= 214
-  const hover = frame < 180 ? -1 : Math.min(4, Math.floor((frame - 180) / 18))
+  const shell = spring({ fps: video.fps, frame: frame - 16, config: springs.default })
+  const typed = Math.max(0, Math.floor((frame - 34) * 1.28))
+  const card = spring({ fps: video.fps, frame: frame - 126, config: springs.default })
+  const sync = spring({ fps: video.fps, frame: frame - 292, config: springs.default })
+  const selected = frame >= 276
+  const hover = frame < 236 ? -1 : Math.min(4, Math.floor((frame - 236) / 22))
 
   // Zoom into the thumbnail grid area when results appear
-  const zoomProgress = interpolate(frame, [104, 154], [0, 1], {
+  const zoomProgress = interpolate(frame, [150, 236], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   })
-  // Cursor click punch around asset click (scene frame ~195)
-  const clickPunch = interpolate(frame, [204, 210, 230], [0, 1, 0], {
+  // Cursor click punch around asset click
+  const clickPunch = interpolate(frame, [270, 282, 322], [0, 1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   })
-  const zoom = 1 + zoomProgress * 0.1 + clickPunch * 0.07
+  const zoomInsert = interpolate(frame, [304, 362], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  })
+  const zoom = 1 + zoomProgress * 0.1 + clickPunch * 0.07 + zoomInsert * 0.05
   // Origin: center of thumbnail grid area (roughly center-right of screen, upper area)
-  const originX = 55 // percent — slightly right of center (sidebar pushes content right)
-  const originY = 35 // percent — upper third where thumbnails are
+  const originX = 55 + zoomInsert * 8
+  const originY = 35 + zoomInsert * 8
 
   return (
     <AbsoluteFill style={{ backgroundColor: ui.background }}>
@@ -61,8 +73,8 @@ export const Features = () => {
         line2="Search it. Click it. Drop it in."
         size={68}
         bg={ui.background}
-        hold={84}
-        fade={18}
+        hold={106}
+        fade={20}
       />
       <div
         style={{
@@ -207,6 +219,40 @@ export const Features = () => {
               </div>
             </ActionCard>
           </div>
+
+          {frame > 284 && (
+            <div
+              style={{
+                width: "100%",
+                opacity: sync,
+                transform: `translateY(${(1 - sync) * 16}px)`,
+              }}
+            >
+              <ActionCard
+                title="Insert"
+                subtitle="Workspace/Map/MedievalVillage"
+                status={frame > 352 ? "success" : "pending"}
+              >
+                <div style={{ padding: "10px 14px" }}>
+                  <StepsColumn style={{ marginLeft: 0, paddingLeft: 12, paddingRight: 0, gap: 8 }}>
+                    {writes.map((step, i) => {
+                      const delay = 300 + i * 16
+                      const done = frame > delay + 20
+                      return (
+                        <BasicTool
+                          key={i}
+                          title={step.title}
+                          subtitle={step.subtitle}
+                          status={done ? "success" : "running"}
+                          compact
+                        />
+                      )
+                    })}
+                  </StepsColumn>
+                </div>
+              </ActionCard>
+            </div>
+          )}
         </AppChrome>
       </div>
     </AbsoluteFill>

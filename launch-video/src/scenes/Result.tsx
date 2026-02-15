@@ -1,5 +1,5 @@
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion"
-import { AppChrome, ActionCard, UserMessage } from "../components/AppChrome"
+import { AppChrome, ActionCard, BasicTool, StepsColumn, UserMessage } from "../components/AppChrome"
 import { ScenePage } from "../components/ScenePage"
 import { colors, fonts, springs, ui } from "../constants"
 
@@ -36,6 +36,13 @@ const codeLines = [
   [{ text: "end", color: kw }],
 ]
 
+const verifySteps = [
+  { title: "Run", subtitle: "bun run test:combat" },
+  { title: "Run", subtitle: "bun run lint:luau" },
+  { title: "Write", subtitle: "game/src/combat/ComboSystem.luau" },
+  { title: "Write", subtitle: "game/src/combat/ParryWindow.luau" },
+]
+
 function WriteIcon() {
   return (
     <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={1.8}>
@@ -49,23 +56,29 @@ export const Result = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
 
-  const shell = spring({ fps, frame: frame - 12, config: springs.default })
-  const card = spring({ fps, frame: frame - 58, config: springs.default })
-  const response = spring({ fps, frame: frame - 290, config: springs.light })
-  const badge = spring({ fps, frame: frame - 340, config: springs.light })
+  const shell = spring({ fps, frame: frame - 18, config: springs.default })
+  const card = spring({ fps, frame: frame - 98, config: springs.default })
+  const verify = spring({ fps, frame: frame - 246, config: springs.default })
+  const response = spring({ fps, frame: frame - 372, config: springs.light })
+  const badge = spring({ fps, frame: frame - 438, config: springs.light })
 
   // Zoom into the code block area as it reveals
-  const zoomCode = interpolate(frame, [72, 142], [0, 1], {
+  const zoomCode = interpolate(frame, [110, 226], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   })
   // Zoom back out slightly as the response appears
-  const zoomOut = interpolate(frame, [286, 340], [0, 1], {
+  const zoomOut = interpolate(frame, [354, 434], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   })
-  const zoom = 1 + zoomCode * 0.14 - zoomOut * 0.08
-  const originY = 35 + zoomOut * 15
+  const zoomBadge = interpolate(frame, [430, 486], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  })
+  const zoom = 1 + zoomCode * 0.15 - zoomOut * 0.06 - zoomBadge * 0.03
+  const originX = 55 + zoomCode * 4 - zoomOut * 2
+  const originY = 35 + zoomOut * 15 + zoomBadge * 10
 
   return (
     <AbsoluteFill style={{ backgroundColor: ui.background }}>
@@ -74,14 +87,14 @@ export const Result = () => {
         line2="Not snippets - real files, real structure."
         size={68}
         bg={ui.background}
-        hold={80}
-        fade={18}
+        hold={112}
+        fade={22}
       />
       <div
         style={{
           opacity: shell,
           transform: `scale(${(0.97 + shell * 0.03) * zoom})`,
-          transformOrigin: `55% ${originY}%`,
+          transformOrigin: `${originX}% ${originY}%`,
         }}
       >
         <AppChrome>
@@ -110,7 +123,7 @@ export const Result = () => {
                 }}
               >
                 {codeLines.map((tokens, i) => {
-                  const reveal = Math.floor((frame - 82) / 4.6)
+                  const reveal = Math.floor((frame - 112) / 5.2)
                   if (i > reveal) return null
                   return (
                     <div key={i} style={{ minHeight: 16 }}>
@@ -129,20 +142,54 @@ export const Result = () => {
           </div>
 
           {/* Second ActionCard: Write DamageHandler */}
-          {frame > 180 && (
+          {frame > 210 && (
             <div
               style={{
                 width: "100%",
-                opacity: spring({ fps, frame: frame - 180, config: springs.default }),
-                transform: `translateY(${(1 - spring({ fps, frame: frame - 180, config: springs.default })) * 20}px)`,
+                opacity: spring({ fps, frame: frame - 210, config: springs.default }),
+                transform: `translateY(${(1 - spring({ fps, frame: frame - 210, config: springs.default })) * 20}px)`,
               }}
             >
               <ActionCard
                 title="Write"
                 subtitle="game/src/combat/DamageHandler.luau"
                 icon={<WriteIcon />}
-                status={frame > 260 ? "success" : "pending"}
+                status={frame > 312 ? "success" : "pending"}
               />
+            </div>
+          )}
+
+          {frame > 246 && (
+            <div
+              style={{
+                width: "100%",
+                opacity: verify,
+                transform: `translateY(${(1 - verify) * 16}px)`,
+              }}
+            >
+              <ActionCard
+                title="Run"
+                subtitle="studio://verification/combat-suite"
+                status={frame > 384 ? "success" : "pending"}
+              >
+                <div style={{ padding: "10px 14px" }}>
+                  <StepsColumn style={{ marginLeft: 0, paddingLeft: 12, paddingRight: 0, gap: 8 }}>
+                    {verifySteps.map((step, i) => {
+                      const delay = 258 + i * 16
+                      const done = frame > delay + 24
+                      return (
+                        <BasicTool
+                          key={i}
+                          title={step.title}
+                          subtitle={step.subtitle}
+                          status={done ? "success" : "running"}
+                          compact
+                        />
+                      )
+                    })}
+                  </StepsColumn>
+                </div>
+              </ActionCard>
             </div>
           )}
 
@@ -159,8 +206,8 @@ export const Result = () => {
                 transform: `translateY(${(1 - response) * 14}px)`,
               }}
             >
-              Your sword combat system is ready! I&apos;ve created the core mechanics with damage calculation, visual
-              effects, and a leaderboard that tracks player kills.
+              Your sword combat system is ready! I generated multiple Luau modules, added combo and parry behavior, then
+              ran a playtest verification pass so you can drop it in immediately.
             </div>
           )}
 
@@ -185,7 +232,7 @@ export const Result = () => {
               <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="#10b981" strokeWidth={2}>
                 <path d="M5 12.5l4.2 4.2L19 7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              2 files written, 186 lines
+              4 files written, 428 lines
             </div>
           )}
 
@@ -210,7 +257,7 @@ export const Result = () => {
                   letterSpacing: 1,
                 }}
               >
-                27+ SPECIALIZED ROBLOX TOOLS
+                27+ ROBLOX TOOLS • 4 FILES READY • PLAYTESTED
               </div>
             </div>
           )}

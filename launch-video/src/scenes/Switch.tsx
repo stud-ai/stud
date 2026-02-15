@@ -6,17 +6,17 @@ import { colors, fonts, springs } from "../constants"
 export const Switch = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
-  const shift = 44
+  const shift = 56
   const scene = Math.max(0, frame - shift)
 
-  const pillSlide = spring({ fps, frame: scene - 20, config: springs.default })
-  const gridOpacity = interpolate(scene, [52, 82], [0, 0.3], {
+  const pillSlide = spring({ fps, frame: scene - 28, config: springs.default })
+  const gridOpacity = interpolate(scene, [70, 112], [0, 0.3], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
   })
 
-  const logoScale = spring({ fps, frame: scene - 58, config: springs.default })
-  const clickPunch = interpolate(scene, [54, 58, 76], [0, 1, 0], {
+  const logoScale = spring({ fps, frame: scene - 96, config: springs.default })
+  const clickPunch = interpolate(scene, [88, 94, 122], [0, 1, 0], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
   })
@@ -29,8 +29,8 @@ export const Switch = () => {
         line2="Let Stud take over the grind."
         size={80}
         bg={colors.bg}
-        hold={66}
-        fade={14}
+        hold={84}
+        fade={18}
       />
       <Grid opacity={gridOpacity} />
 

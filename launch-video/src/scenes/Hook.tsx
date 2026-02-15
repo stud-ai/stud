@@ -10,8 +10,8 @@ export const Hook = () => {
         line2="in 2012."
         size={96}
         start={0}
-        fadeOutStart={88}
-        fadeOutEnd={102}
+        fadeOutStart={106}
+        fadeOutEnd={124}
       />
     </AbsoluteFill>
   )

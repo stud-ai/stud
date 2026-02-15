@@ -5,16 +5,22 @@ import { colors, fonts, springs } from "../constants"
 export const CTA = () => {
   const frame = useCurrentFrame()
   const { fps } = useVideoConfig()
+  const install = "curl -sSL https://trystud.me/install.sh | bash"
 
-  const badgeScale = spring({ fps, frame: frame - 88, config: springs.light })
-  const urlOpacity = interpolate(frame, [82, 112], [0, 1], {
+  const badgeScale = spring({ fps, frame: frame - 116, config: springs.light })
+  const urlOpacity = interpolate(frame, [116, 152], [0, 1], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
   })
-  const logoOpacity = interpolate(frame, [132, 166], [0, 1], {
+  const cmdOpacity = interpolate(frame, [156, 190], [0, 1], {
     extrapolateRight: "clamp",
     extrapolateLeft: "clamp",
   })
+  const logoOpacity = interpolate(frame, [188, 232], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  })
+  const chars = Math.max(0, Math.min(install.length, Math.floor((frame - 168) * 1.45)))
   const pulse = 1 + 0.03 * Math.sin(frame * 0.06)
   const urlScale = interpolate(urlOpacity, [0, 1], [1, pulse], {
     extrapolateRight: "clamp",
@@ -34,8 +40,8 @@ export const CTA = () => {
         line2="Build with Stud at"
         size={86}
         bg={colors.bg}
-        hold={80}
-        fade={18}
+        hold={118}
+        fade={22}
       />
 
       <div
@@ -57,7 +63,7 @@ export const CTA = () => {
             padding: "8px 18px",
             borderRadius: 100,
             border: `1px solid ${colors.fg}`,
-            marginBottom: 260,
+            marginBottom: 218,
           }}
         >
           <span style={{ fontSize: 16 }}>🍈</span>
@@ -89,8 +95,28 @@ export const CTA = () => {
           trystud.me
         </div>
 
+        <div
+          style={{
+            marginTop: 26,
+            padding: "10px 16px",
+            borderRadius: 8,
+            border: `1px solid ${colors.border}`,
+            backgroundColor: colors.card,
+            fontFamily: fonts.plex,
+            fontSize: 18,
+            color: colors.fg,
+            opacity: cmdOpacity,
+            minWidth: 900,
+          }}
+        >
+          <span style={{ color: colors.grey }}>{">_"}</span>
+          <span style={{ color: colors.emerald }}>$ </span>
+          <span>{install.slice(0, chars)}</span>
+          {chars < install.length && frame % 28 < 14 ? <span style={{ color: colors.emerald }}>▌</span> : null}
+        </div>
+
         {/* Logo */}
-        <div style={{ marginTop: 60, opacity: logoOpacity }}>
+        <div style={{ marginTop: 44, opacity: logoOpacity }}>
           <Img src={staticFile("logo.png")} style={{ width: 80, height: 80 }} />
         </div>
       </div>

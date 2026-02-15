@@ -1,4 +1,4 @@
-import { AbsoluteFill, spring, useCurrentFrame, useVideoConfig } from "remotion"
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion"
 import { ScenePage } from "../components/ScenePage"
 import { fonts, springs, ui } from "../constants"
 
@@ -77,6 +77,16 @@ export const Models = () => {
   const { fps } = useVideoConfig()
 
   const card = spring({ fps, frame: frame - 18, config: springs.default })
+  const zoomProviders = interpolate(frame, [78, 156], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  })
+  const zoomOpenai = interpolate(frame, [148, 222], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  })
+  const zoom = 1 + zoomProviders * 0.06 + zoomOpenai * 0.05
+  const originY = 34 + zoomOpenai * 16
 
   return (
     <AbsoluteFill style={{ backgroundColor: ui.background, justifyContent: "center", alignItems: "center" }}>
@@ -85,8 +95,8 @@ export const Models = () => {
         line2="Claude, GPT, Gemini, Copilot - one place."
         size={62}
         bg={ui.background}
-        hold={84}
-        fade={16}
+        hold={108}
+        fade={20}
       />
       <div
         style={{
@@ -96,7 +106,8 @@ export const Models = () => {
           border: `1px solid ${ui.borderWeak}`,
           boxShadow: "0 25px 60px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04)",
           overflow: "hidden",
-          transform: `scale(${0.95 + card * 0.05})`,
+          transform: `scale(${(0.95 + card * 0.05) * zoom})`,
+          transformOrigin: `50% ${originY}%`,
           opacity: card,
         }}
       >
@@ -230,6 +241,22 @@ export const Models = () => {
               </div>
             )
           })}
+        </div>
+
+        <div
+          style={{
+            padding: "10px 16px",
+            borderTop: `1px solid ${ui.borderWeak}`,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            backgroundColor: ui.surfaceInset,
+          }}
+        >
+          <span style={{ fontFamily: fonts.plex, fontSize: 11, color: ui.textWeak }}>4 providers connected</span>
+          <span style={{ fontFamily: fonts.inter, fontSize: 12, fontWeight: 500, color: "#10b981" }}>
+            Free tier active
+          </span>
         </div>
       </div>
     </AbsoluteFill>
