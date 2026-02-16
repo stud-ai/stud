@@ -10,6 +10,9 @@ Marketing website for Stud, built with Next.js and deployed on Vercel.
 | [Tailwind CSS 4](https://tailwindcss.com/) | Styling |
 | [Framer Motion](https://motion.dev/) | Animations |
 | [Radix UI](https://radix-ui.com/) | Accessible primitives |
+| [Clerk](https://clerk.com/) | Waitlist + auth infrastructure |
+| [Supabase](https://supabase.com/) | Waitlist metadata storage |
+| [BotID](https://vercel.com/botid) | Bot protection on waitlist endpoint |
 | [Lucide React](https://lucide.dev/) | Icons |
 | [Geist](https://vercel.com/font) | Typography |
 
@@ -31,6 +34,13 @@ npm run build
 npm start
 ```
 
+## Quality Checks
+
+```bash
+npm run lint
+npm run build
+```
+
 ## Project Structure
 
 ```
@@ -41,11 +51,14 @@ src/
 │   ├── globals.css           # Tokens, fonts, global styles
 │   ├── docs/                 # Documentation pages
 │   └── api/                  # API routes
+├── proxy.ts                  # Clerk proxy/middleware entry
+├── instrumentation-client.ts # BotID client initialization
 ├── components/
-│   ├── sections/             # Page sections (Hero, Features, QA, etc.)
+│   ├── sections/             # Landing page sections
+│   ├── magicui/              # Local Magic UI variants used in hero
 │   ├── ui/                   # Shared UI components
-│   ├── emails/               # Email templates
-│   └── Logo.tsx              # Stud logo component
+│   ├── motion-primitives/    # Animation primitives
+│   └── WaitlistModal.tsx     # Waitlist capture modal
 └── lib/                      # Utilities
 ```
 
@@ -53,15 +66,13 @@ src/
 
 The landing page is composed of these sections (in order):
 
-1. **Announcement Bar** — Top banner
-2. **Navigation Header** — Site navigation
-3. **Hero Intro** — Headline + CTA
-4. **Hero Panel** — Interactive demo with tabs
-5. **Support Section** — AI support engineer showcase
-6. **QA Section** — Autonomous QA features
-7. **Memory Section** — Context awareness
-8. **Security Section** — Safety and security
-9. **Context Section** — Deep context awareness
-10. **Features Section** — Feature highlights
-11. **Highlights Section** — Recent updates
-12. **Footer** — Links and copyright
+1. **Hero Section** — Waitlist-first headline, CTA, video preview
+2. **Features Section** — Product capability transition
+3. **Hero Panel** — Terminal + tabbed use-case panel
+4. **Support Section** — AI support engineer showcase
+5. **QA Section** — Autonomous QA features
+6. **Memory Section** — Context awareness
+7. **Context Section** — Deep codebase context
+8. **Security Section** — Permission and safety model
+9. **Highlights Section** — Waitlist conversion CTA strip
+10. **Footer** — Product/community links
