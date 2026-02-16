@@ -81,7 +81,7 @@ export default function HeroSection() {
         </p>
 
         {/* CTA */}
-        <div className="mt-10 w-full max-w-2xl">
+        <div className="mt-10 flex w-full max-w-2xl items-center gap-5">
           <button
             onClick={() => setShowWaitlist(true)}
             className="btn-metal group inline-flex items-center gap-2.5 rounded-md px-7 py-3.5 text-sm font-medium text-foreground"
@@ -91,6 +91,19 @@ export default function HeroSection() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </button>
+          <a
+            href="https://www.producthunt.com/products/stud?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-stud"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="opacity-70 transition-opacity hover:opacity-100"
+          >
+            <img
+              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1079916&theme=neutral&t=1771197826903"
+              alt="STUD - Cursor for Roblox Studio | Product Hunt"
+              width="200"
+              height="43"
+            />
+          </a>
         </div>
 
         {/* Floating terminal preview */}

@@ -119,7 +119,7 @@ export default function RootLayout({
       }}
     >
       <html lang="en">
-        <body className="antialiased">
+        <body className="antialiased" suppressHydrationWarning>
           {children}
           <Toaster position="bottom-right" />
         </body>
