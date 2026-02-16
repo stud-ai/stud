@@ -7,6 +7,7 @@ import TextHighlight from "@/components/magicui/TextHighlight"
 import WaitlistModal from "@/components/WaitlistModal"
 import { hit } from "@/lib/clarity"
 import { CirclePlay, X } from "lucide-react"
+import Link from "next/link"
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react"
 
 const url = process.env.NEXT_PUBLIC_WAITLIST_VIDEO_URL || "https://www.youtube.com/watch?v=Y7aZDiy0E2c"
@@ -150,14 +151,14 @@ export default function HeroSection() {
       </div>
 
       <nav className="relative z-20 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5">
-        <a href="/" className="inline-flex items-center gap-2">
+        <Link href="/" className="inline-flex items-center gap-2">
           <img src="/assets/logo_transparent_bg.png" alt="Stud" className="h-7 w-7" />
           <span className="font-tech text-sm tracking-[0.18em] text-foreground md:text-base">STUD</span>
-        </a>
+        </Link>
         <div className="hidden items-center gap-7 md:flex">
-          <a href="/docs" className="text-sm font-medium text-foreground/50 transition-colors hover:text-foreground">
+          <Link href="/docs" className="text-sm font-medium text-foreground/50 transition-colors hover:text-foreground">
             Docs
-          </a>
+          </Link>
         </div>
         <button
           onClick={() => open("nav")}

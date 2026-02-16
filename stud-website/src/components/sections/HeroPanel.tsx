@@ -4,6 +4,7 @@ import FileTree from "@/components/magicui/FileTree";
 import {Terminal} from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 const mosaicCellsHtml = `
   <div class="aspect-square border border-white/10 dark:border-white/5" style="background-color:rgba(255, 255, 255, 0.04528848571159285);backdrop-filter:blur(8.18649562328028px);-webkit-backdrop-filter:blur(8.18649562328028px);transition:background-color 0.3s ease"></div>
@@ -353,12 +354,12 @@ export default function HeroPanel() {
                 </p>
               </div>
               <div>
-                <a
+                <Link
                   className="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium tracking-tight transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6"
-                  href="/#waitlist"
+                  href={{ pathname: "/", hash: "waitlist" }}
                 >
                   Join Waitlist
-                </a>
+                </Link>
               </div>
             </aside>
           </div>

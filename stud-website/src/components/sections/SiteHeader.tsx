@@ -1,4 +1,5 @@
 import {ChevronDown} from "lucide-react";
+import Link from "next/link";
 
 import Logo from "../Logo";
 
@@ -7,9 +8,9 @@ export default function SiteHeader() {
     <header className="px-6">
       <nav className="mx-auto flex w-full max-w-7xl flex-row items-center gap-2 py-3">
         <div className="flex flex-row items-center gap-6">
-          <a href="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <Logo className="text-foreground h-5 w-auto" />
-          </a>
+          </Link>
           <nav
             aria-label="Main"
             data-orientation="horizontal"
@@ -28,46 +29,46 @@ export default function SiteHeader() {
                   </button>
                 </li>
                 <li className="relative">
-                  <a
+                  <Link
                     className="text-muted-foreground hover:text-foreground flex cursor-pointer flex-col gap-1 rounded-sm p-2 text-sm transition-[color,box-shadow] focus-visible:ring-4 focus-visible:outline-1 font-medium"
                     href="/enterprise"
                   >
                     Enterprise
-                  </a>
+                  </Link>
                 </li>
                 <li className="relative">
-                  <a
+                  <Link
                     className="text-muted-foreground hover:text-foreground flex cursor-pointer flex-col gap-1 rounded-sm p-2 text-sm transition-[color,box-shadow] focus-visible:ring-4 focus-visible:outline-1 font-medium"
                     href="/resources"
                   >
                     Resources
-                  </a>
+                  </Link>
                 </li>
                 <li className="relative">
-                  <a
+                  <Link
                     className="text-muted-foreground hover:text-foreground flex cursor-pointer flex-col gap-1 rounded-sm p-2 text-sm transition-[color,box-shadow] focus-visible:ring-4 focus-visible:outline-1 font-medium"
                     href="/about-us"
                   >
                     Company
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
           </nav>
         </div>
         <div className="ml-auto flex flex-row items-center gap-4">
-          <a
+          <Link
             className="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium tracking-tight transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-10 rounded-md px-6"
             href="/login"
           >
             Login
-          </a>
-          <a
+          </Link>
+          <Link
             className="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium tracking-tight transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6"
             href="/request-demo"
           >
             Book a Demo
-          </a>
+          </Link>
         </div>
       </nav>
     </header>

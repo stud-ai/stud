@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { Menu, X, ChevronRight } from "lucide-react"
@@ -41,16 +42,16 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
-          <a href="/" className="inline-flex items-center gap-2">
+          <Link href="/" className="inline-flex items-center gap-2">
             <img src="/assets/logo_transparent_bg.png" alt="Stud" className="h-6 w-6" />
             <span className="font-tech text-sm tracking-[0.18em] text-foreground">STUD</span>
-          </a>
+          </Link>
 
           <span className="text-foreground/20">/</span>
 
-          <a href="/docs" className="text-sm font-medium text-foreground/60 transition-colors hover:text-foreground">
+          <Link href="/docs" className="text-sm font-medium text-foreground/60 transition-colors hover:text-foreground">
             Docs
-          </a>
+          </Link>
 
           <div className="ml-auto hidden items-center gap-5 md:flex">
             <a
@@ -61,12 +62,12 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
             >
               GitHub
             </a>
-            <a
+            <Link
               href="/"
               className="inline-flex items-center justify-center rounded-lg border border-foreground/15 bg-secondary px-4 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-tertiary"
             >
               Back to Site
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -90,7 +91,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
                       const isActive = pathname === item.href
                       return (
                         <li key={item.href}>
-                          <a
+                          <Link
                             href={item.href}
                             onClick={() => setSidebarOpen(false)}
                             className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
@@ -101,7 +102,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
                           >
                             {isActive && <ChevronRight className="h-3 w-3 flex-none" />}
                             {item.title}
-                          </a>
+                          </Link>
                         </li>
                       )
                     })}

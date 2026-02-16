@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 export default function HighlightsSection() {
   return (
     <section className="bg-tertiary mt-12 border-y border-border">
@@ -12,24 +14,24 @@ export default function HighlightsSection() {
           </p>
         </div>
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <a
+          <Link
             className="btn-metal inline-flex w-fit items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-foreground"
-            href="/#waitlist"
+            href={{ pathname: "/", hash: "waitlist" }}
           >
             Join Waitlist
-          </a>
-          <a
+          </Link>
+          <Link
             className="btn-metal inline-flex w-fit items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-foreground"
-            href="/#watch-demo"
+            href={{ pathname: "/", hash: "watch-demo" }}
           >
             Watch Demo
-          </a>
-          <a
+          </Link>
+          <Link
             className="btn-metal-dark inline-flex w-fit items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-white transition-colors"
             href="/docs"
           >
             Read Docs
-          </a>
+          </Link>
         </div>
       </div>
     </section>

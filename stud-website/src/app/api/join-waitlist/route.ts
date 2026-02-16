@@ -3,6 +3,26 @@ import { clerkClient } from "@clerk/nextjs/server"
 import { checkBotId } from "botid/server"
 import { getSupabase } from "@/lib/supabase"
 
+type ClerkError = {
+    status?: number
+    errors?: Array<{
+        code?: string
+        longMessage?: string
+    }>
+}
+
+const existingCodes = new Set([
+    "form_identifier_exists",
+    "waitlist_entry_already_exists",
+])
+
+const mail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+
+const message = (v: unknown) => {
+    const e = v as ClerkError
+    return e.errors?.[0]?.longMessage || "Failed to join waitlist"
+}
+
 /**
  * Server-side waitlist endpoint.
  * Creates the entry in Clerk (which triggers the confirmation email)
@@ -27,34 +47,53 @@ export async function POST(request: NextRequest) {
         }
 
         const normalizedEmail = email.trim().toLowerCase()
+        if (!mail(normalizedEmail)) {
+            return NextResponse.json({ error: "Please enter a valid email" }, { status: 400 })
+        }
+        const clerk = await clerkClient()
 
         // 1) Create in Clerk (server-side — no client SDK dependency)
-        let alreadyExists = false
-        try {
-            const clerk = await clerkClient()
-            await clerk.waitlistEntries.create({
-                emailAddress: normalizedEmail,
-                notify: true,
-            })
-        } catch (err: any) {
-            const code = err?.errors?.[0]?.code
-            const status = err?.status
+        const alreadyExists = await (async () => {
+            try {
+                await clerk.waitlistEntries.create({
+                    emailAddress: normalizedEmail,
+                    notify: true,
+                })
+                return false
+            } catch (err: unknown) {
+                const e = err as ClerkError
+                const code = e.errors?.[0]?.code
 
-            // Clerk returns 422 with specific codes when the email already exists
-            if (
-                code === "form_identifier_exists" ||
-                code === "waitlist_entry_already_exists" ||
-                status === 422
-            ) {
-                alreadyExists = true
-            } else {
-                console.error("[join-waitlist] Clerk error:", JSON.stringify(err?.errors || err))
-                return NextResponse.json(
-                    { error: err?.errors?.[0]?.longMessage || "Failed to join waitlist" },
-                    { status: 500 }
-                )
+                if (!code || !existingCodes.has(code)) {
+                    console.error("[join-waitlist] Clerk error:", JSON.stringify(e.errors || e))
+                    throw new Error(message(err))
+                }
+
+                const list = await clerk.waitlistEntries.list({
+                    query: normalizedEmail,
+                    limit: 10,
+                })
+
+                const found = list.data.find((v) => v.emailAddress.toLowerCase() === normalizedEmail)
+                if (!found) {
+                    return true
+                }
+
+                if (found.status !== "rejected") {
+                    return true
+                }
+
+                await clerk.waitlistEntries.delete(found.id)
+                await clerk.waitlistEntries.create({
+                    emailAddress: normalizedEmail,
+                    notify: true,
+                })
+                return false
             }
-        }
+        })().catch((err: unknown) => {
+            const text = err instanceof Error ? err.message : "Failed to join waitlist"
+            throw new Error(text)
+        })
 
         // 2) Upsert to Supabase (name, excitement, status)
         try {
@@ -81,8 +120,9 @@ export async function POST(request: NextRequest) {
             success: true,
             alreadyExists,
         })
-    } catch (err) {
+    } catch (err: unknown) {
         console.error("[join-waitlist] Unexpected error:", err)
-        return NextResponse.json({ error: "Internal error" }, { status: 500 })
+        const text = err instanceof Error ? err.message : "Internal error"
+        return NextResponse.json({ error: text }, { status: 500 })
     }
 }

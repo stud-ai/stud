@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 export default function SiteFooter() {
   return (
     <footer className="bg-background border-border mt-auto w-full border-t">
@@ -6,10 +8,10 @@ export default function SiteFooter() {
         <div className="flex flex-col gap-10 sm:flex-row sm:justify-between">
           {/* Brand */}
           <div className="flex flex-col gap-3">
-            <a href="/" className="inline-flex items-center gap-2.5">
+            <Link href="/" className="inline-flex items-center gap-2.5">
               <img src="/assets/logo_transparent_bg.png" alt="Stud" className="h-8 w-8" />
               <span className="font-tech text-lg leading-none tracking-tight text-foreground">STUD</span>
-            </a>
+            </Link>
             <p className="text-muted-foreground text-sm max-w-[240px] leading-relaxed">
               Open-source AI coding assistant built for Roblox developers.
             </p>
@@ -19,21 +21,21 @@ export default function SiteFooter() {
           <div className="flex gap-16 sm:gap-20">
             <div className="flex flex-col gap-3">
               <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">Product</span>
-              <a
-                href="/#waitlist"
+              <Link
+                href={{ pathname: "/", hash: "waitlist" }}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Join Waitlist
-              </a>
-              <a href="/#watch-demo" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              </Link>
+              <Link href={{ pathname: "/", hash: "watch-demo" }} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Watch Demo
-              </a>
-              <a href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              </Link>
+              <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Documentation
-              </a>
-              <a href="/docs/tools" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              </Link>
+              <Link href="/docs/tools" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Tools
-              </a>
+              </Link>
             </div>
             <div className="flex flex-col gap-3">
               <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">Community</span>
@@ -71,11 +73,11 @@ export default function SiteFooter() {
         {/* Bottom: giant STUD + copyright */}
         <div className="relative mt-8 overflow-hidden rounded-xl">
           <div className="relative z-10 flex flex-col items-start gap-4 py-8 sm:flex-row sm:items-end sm:justify-between">
-            <a aria-label="STUD" className="group" href="/">
+            <Link aria-label="STUD" className="group" href="/">
               <span className="font-tech block text-[clamp(3rem,14vw,8rem)] leading-none tracking-[-0.02em] text-foreground/10 transition-colors duration-300 group-hover:text-foreground/25">
                 STUD
               </span>
-            </a>
+            </Link>
             <p className="text-muted-foreground/50 text-xs pb-1">
               &copy; {new Date().getFullYear()} Stud. All rights reserved.
             </p>
