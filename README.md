@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/stud-ai/stud/blob/dev/LICENSE"><img src="https://img.shields.io/github/license/stud-ai/stud?style=flat-square&color=blue" alt="License" /></a>
+  <a href="https://github.com/stud-ai/stud/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square" alt="License" /></a>
   <a href="https://github.com/stud-ai/stud/stargazers"><img src="https://img.shields.io/github/stars/stud-ai/stud?style=flat-square&color=yellow" alt="Stars" /></a>
   <a href="https://github.com/stud-ai/stud"><img src="https://img.shields.io/badge/bun-%3E%3D1.0-f472b6?style=flat-square" alt="Bun" /></a>
   <a href="https://github.com/stud-ai/stud"><img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-8b5cf6?style=flat-square" alt="Platform" /></a>
