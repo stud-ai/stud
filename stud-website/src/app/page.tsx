@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import HomeScroll from "../components/HomeScroll"
 import ContextSection from "../components/sections/ContextSection"
 import FeaturesSection from "../components/sections/FeaturesSection"
 import HeroSection from "../components/sections/HeroSection"
@@ -22,6 +23,21 @@ export const metadata: Metadata = {
     title: "Stud - AI Coding Assistant for Roblox",
     description:
       "Open-source AI coding assistant with deep Roblox Studio integration. Edit Luau scripts, manipulate instances, query DataStores, and search the Toolbox from your terminal.",
+    images: [
+      {
+        url: "/assets/stud-docs-waitlist-social.png",
+        width: 1200,
+        height: 826,
+        alt: "Stud homepage preview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Stud - AI Coding Assistant for Roblox",
+    description:
+      "Open-source AI coding assistant with deep Roblox Studio integration. Edit Luau scripts, manipulate instances, query DataStores, and search the Toolbox from your terminal.",
+    images: ["/assets/stud-docs-waitlist-social.png"],
   },
 }
 
@@ -74,7 +90,8 @@ const jsonLd = {
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="home-shell flex h-screen flex-col">
+      <HomeScroll />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* Full-screen dark hero with Unicorn Studio */}

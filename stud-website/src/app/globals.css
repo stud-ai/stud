@@ -187,6 +187,38 @@
     overflow-x: hidden;
   }
 
+  html.home-scroll,
+  body.home-scroll {
+    overflow: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html.home-scroll::-webkit-scrollbar,
+  body.home-scroll::-webkit-scrollbar {
+    width: 0;
+    display: none;
+  }
+
+  .home-shell {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .home-shell::-webkit-scrollbar {
+    width: 0;
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-shell {
+      scroll-behavior: auto;
+    }
+  }
+
   ::selection {
     background-color: #facc15;
     color: #1a1817;
