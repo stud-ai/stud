@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="packages/identity/mark.svg" alt="Stud" width="80" height="80" />
+  <img src="packages/desktop/src-tauri/icons/icon.png" alt="Stud" width="80" height="80" />
 </p>
 
 <h1 align="center">Stud</h1>
@@ -185,4 +185,4 @@ See [AGENTS.md](AGENTS.md) for coding style guidelines.
 
 ## License
 
-[MIT](LICENSE)
+[GPL-3.0](LICENSE)
