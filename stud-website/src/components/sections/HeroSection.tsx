@@ -2,10 +2,18 @@
 
 import WaitlistModal from "@/components/WaitlistModal"
 import { useEffect, useRef, useState } from "react"
+import { hit } from "@/lib/clarity"
 
 export default function HeroSection() {
   const unicornRef = useRef<HTMLDivElement>(null)
   const [showWaitlist, setShowWaitlist] = useState(false)
+  const [source, setSource] = useState("hero")
+
+  const open = (v: string) => {
+    setSource(v)
+    hit(`waitlist_cta_${v}`)
+    setShowWaitlist(true)
+  }
 
   useEffect(() => {
     // Initialize Unicorn Studio
@@ -54,7 +62,7 @@ export default function HeroSection() {
           </a>
         </div>
         <button
-          onClick={() => setShowWaitlist(true)}
+          onClick={() => open("nav")}
           className="inline-flex items-center justify-center rounded-lg border border-foreground/15 bg-white/70 px-5 py-2 text-sm font-medium text-foreground backdrop-blur-sm transition-colors hover:bg-white"
         >
           Waitlist
@@ -83,7 +91,7 @@ export default function HeroSection() {
         {/* CTA */}
         <div className="mt-10 flex w-full max-w-2xl items-center gap-5">
           <button
-            onClick={() => setShowWaitlist(true)}
+            onClick={() => open("hero")}
             className="btn-metal group inline-flex items-center gap-2.5 rounded-md px-7 py-3.5 text-sm font-medium text-foreground"
           >
             Join the Waitlist
@@ -95,6 +103,7 @@ export default function HeroSection() {
             href="https://www.producthunt.com/products/stud?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-stud"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => hit("click_producthunt")}
             className="opacity-70 transition-opacity hover:opacity-100"
           >
             <img
@@ -144,8 +153,7 @@ export default function HeroSection() {
       </div>
 
       {/* Custom Waitlist Modal */}
-      <WaitlistModal open={showWaitlist} onClose={() => setShowWaitlist(false)} />
+      <WaitlistModal open={showWaitlist} onClose={() => setShowWaitlist(false)} source={source} />
     </section>
   )
 }
-

@@ -1,13 +1,23 @@
 "use client"
 
-import clarity from "@microsoft/clarity"
+import { usePathname } from "next/navigation"
 import { useEffect } from "react"
+import { boot, hit, tag } from "@/lib/clarity"
 
 export function Clarity() {
+  const path = usePathname()
+
   useEffect(() => {
-    const id = process.env.NEXT_PUBLIC_CLARITY_ID ?? "vi2wib5dun"
-    clarity.init(id)
+    boot()
+    tag("site", "stud")
+    hit("session_start")
   }, [])
+
+  useEffect(() => {
+    if (!path) return
+    tag("path", path)
+    hit(path.startsWith("/docs") ? "view_docs" : "view_page")
+  }, [path])
 
   return null
 }

@@ -7,13 +7,15 @@ import { TransitionPanel } from "@/components/motion-primitives/transition-panel
 import { TextScramble } from "@/components/motion-primitives/text-scramble"
 import { BorderTrail } from "@/components/motion-primitives/border-trail"
 import { AnimatedGroup } from "@/components/motion-primitives/animated-group"
+import { hit, tag } from "@/lib/clarity"
 
 interface WaitlistModalProps {
     open: boolean
     onClose: () => void
+    source: string
 }
 
-export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
+export default function WaitlistModal({ open, onClose, source }: WaitlistModalProps) {
     const [step, setStep] = useState(0)
     const [firstName, setFirstName] = useState("")
     const [email, setEmail] = useState("")
@@ -22,10 +24,16 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
     const [error, setError] = useState("")
     const [showSuccess, setShowSuccess] = useState(false)
     const [alreadyOnList, setAlreadyOnList] = useState(false)
+    const close = useCallback((v: string) => {
+        hit(`waitlist_close_${v}`)
+        onClose()
+    }, [onClose])
 
     // Reset state when modal opens
     useEffect(() => {
         if (open) {
+            tag("waitlist_source", source)
+            hit(`waitlist_open_${source}`)
             setStep(0)
             setFirstName("")
             setEmail("")
@@ -35,13 +43,13 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
             setShowSuccess(false)
             setAlreadyOnList(false)
         }
-    }, [open])
+    }, [open, source])
 
     // Escape to close + body scroll lock
     useEffect(() => {
         if (!open) return
         const handleEsc = (e: KeyboardEvent) => {
-            if (e.key === "Escape") onClose()
+            if (e.key === "Escape") close("escape")
         }
         document.addEventListener("keydown", handleEsc)
         document.body.style.overflow = "hidden"
@@ -49,11 +57,18 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
             document.removeEventListener("keydown", handleEsc)
             document.body.style.overflow = ""
         }
-    }, [open, onClose])
+    }, [open, close])
+
+    useEffect(() => {
+        if (!open) return
+        if (step > 2) return
+        hit(`waitlist_step_${step + 1}`)
+    }, [open, step])
 
     const handleSubmit = useCallback(async () => {
         setIsSubmitting(true)
         setError("")
+        hit("waitlist_submit_start")
         try {
             // Server-side route handles both Clerk + Supabase
             const res = await fetch("/api/join-waitlist", {
@@ -69,18 +84,22 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
             const data = await res.json()
 
             if (!res.ok) {
+                hit("waitlist_submit_error")
                 setError(data.error || "Something went wrong. Please try again.")
                 return
             }
 
             if (data.alreadyExists) {
+                hit("waitlist_submit_existing")
                 setAlreadyOnList(true)
             }
 
+            hit("waitlist_submit_success")
             setShowSuccess(true)
             setStep(3)
         } catch (err) {
             console.error("[waitlist] Error:", err)
+            hit("waitlist_submit_error")
             setError("Something went wrong. Please try again.")
         } finally {
             setIsSubmitting(false)
@@ -97,10 +116,11 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
     const handleNext = () => {
         if (step === 2) {
             handleSubmit()
-        } else {
-            setError("")
-            setStep((s) => s + 1)
+            return
         }
+        hit(`waitlist_next_${step + 1}`)
+        setError("")
+        setStep((s) => s + 1)
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -122,7 +142,7 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
         <div
             className="fixed inset-0 z-50 flex items-center justify-center px-4"
             onClick={(e) => {
-                if (e.target === e.currentTarget) onClose()
+                if (e.target === e.currentTarget) close("overlay")
             }}
         >
             {/* Backdrop */}
@@ -132,7 +152,7 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
             <div className="relative z-10 w-full max-w-md">
                 {/* Close button */}
                 <button
-                    onClick={onClose}
+                    onClick={() => close("icon")}
                     className="absolute -top-3 -right-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-lg border border-foreground/10 text-foreground/50 transition-colors hover:text-foreground hover:bg-foreground/5"
                     aria-label="Close"
                 >
@@ -330,6 +350,7 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                         {step > 0 && step < 3 ? (
                             <button
                                 onClick={() => {
+                                    hit(`waitlist_back_${step + 1}`)
                                     setError("")
                                     setStep((s) => s - 1)
                                 }}
@@ -367,7 +388,7 @@ export default function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                             </button>
                         ) : (
                             <button
-                                onClick={onClose}
+                                onClick={() => close("done")}
                                 className="btn-metal inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-sm font-medium text-foreground"
                             >
                                 Done
