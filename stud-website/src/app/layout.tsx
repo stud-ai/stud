@@ -44,9 +44,9 @@ export const metadata: Metadata = {
       "Open-source AI coding assistant with deep Roblox Studio integration. Edit Luau scripts, manipulate instances, and ship updates faster.",
     images: [
       {
-        url: "/assets/stud-docs-waitlist-social.png",
+        url: "/assets/stud-docs-waitlist-social-v2.png",
         width: 1200,
-        height: 826,
+        height: 630,
         alt: "Stud homepage preview",
       },
     ],
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     title: "Stud - AI Coding Assistant for Roblox",
     description:
       "Open-source AI coding assistant with deep Roblox Studio integration. Edit Luau scripts, manipulate instances, and ship updates faster.",
-    images: ["/assets/stud-docs-waitlist-social.png"],
+    images: ["/assets/stud-docs-waitlist-social-v2.png"],
   },
   icons: {
     icon: [{ url: "/assets/app_icon.png" }],
