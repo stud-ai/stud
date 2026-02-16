@@ -28,6 +28,14 @@
 Stud connects an AI agent directly to Roblox Studio through a local plugin.  
 It can inspect and modify scripts, instances, and properties in real time — so you can **build games with natural language**.
 
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=Y7aZDiy0E2c">
+    <img src="https://img.youtube.com/vi/Y7aZDiy0E2c/maxresdefault.jpg" alt="Stud Launch Video" width="640" />
+  </a>
+  <br />
+  <sub>▶️ Watch the launch video</sub>
+</p>
+
 ## Features
 
 🤖 **AI Agent** — Chat-driven development with tool use, code generation, and multi-step planning  
