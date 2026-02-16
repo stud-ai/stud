@@ -3,34 +3,32 @@ export default function HighlightsSection() {
     <section className="bg-tertiary mt-12 border-y border-border">
       <div className="mx-auto w-full max-w-7xl px-6 py-16 md:py-20">
         <div className="max-w-3xl">
-          <p className="text-foreground/45 text-xs font-medium uppercase tracking-[0.16em]">Start Building</p>
+          <p className="text-foreground/45 text-xs font-medium uppercase tracking-[0.16em]">Waitlist Access</p>
           <h2 className="font-display mt-4 text-4xl leading-[1.05] tracking-tight text-foreground md:text-6xl">
-            Ship your next Roblox update with Stud.
+            Get early access to Stud for Roblox.
           </h2>
           <p className="text-muted-foreground mt-5 max-w-2xl text-base md:text-lg">
-            Luau edits, instance actions, and toolbox workflows from one AI-powered terminal.
+            Join the waitlist to get launch updates, private demos, and first access to new Roblox workflows.
           </p>
         </div>
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <a
             className="btn-metal inline-flex w-fit items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-foreground"
-            href="/docs/getting-started"
+            href="/#waitlist"
           >
-            Get Started
+            Join Waitlist
           </a>
           <a
             className="btn-metal inline-flex w-fit items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-foreground"
-            href="/docs/roblox"
+            href="/#watch-demo"
           >
-            Roblox Guide
+            Watch Demo
           </a>
           <a
             className="btn-metal-dark inline-flex w-fit items-center justify-center rounded-md px-5 py-2.5 text-sm font-medium text-white transition-colors"
-            href="https://github.com/stud-ai/stud"
-            rel="noopener noreferrer"
-            target="_blank"
+            href="/docs"
           >
-            GitHub
+            Read Docs
           </a>
         </div>
       </div>

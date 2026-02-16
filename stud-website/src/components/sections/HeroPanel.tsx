@@ -1,5 +1,6 @@
 "use client";
 
+import FileTree from "@/components/magicui/FileTree";
 import {Terminal} from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -139,6 +140,12 @@ const tabDescriptions = {
   },
 };
 
+const floatRows = [
+  { icon: "◆", text: 'Get Children "game.Workspace"', res: "47 instances" },
+  { icon: "◆", text: 'Edit Script "ServerScriptService.Main"', res: "+18 -4 lines" },
+  { icon: "~", text: "Inserting asset from Toolbox...", res: "running..." },
+];
+
 type TabType = "roblox" | "general" | "scripts";
 
 export default function HeroPanel() {
@@ -175,6 +182,33 @@ export default function HeroPanel() {
               }}
               dangerouslySetInnerHTML={{__html: mosaicCellsHtml}}
             />
+            <div className="pointer-events-none absolute inset-0 hidden lg:block">
+              <motion.div
+                className="pointer-events-auto absolute right-6 top-6 w-[260px] opacity-25 transition-opacity duration-300 hover:opacity-90"
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <FileTree />
+              </motion.div>
+              <motion.div
+                className="pointer-events-auto absolute bottom-6 left-6 w-[320px] opacity-15 transition-opacity duration-300 hover:opacity-80"
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <div className="overflow-hidden rounded-xl border border-foreground/10 bg-white/60 font-mono text-xs shadow-sm backdrop-blur-sm">
+                  <div className="border-foreground/10 flex items-center gap-2 border-b px-3 py-2">
+                    <Terminal className="h-3.5 w-3.5 text-foreground/50" />
+                    <span className="text-foreground/50">hidden-run.stud</span>
+                  </div>
+                  {floatRows.map((row, i) => (
+                    <div key={row.text} className={`flex items-center justify-between px-3 py-2 ${i < floatRows.length - 1 ? "border-foreground/10 border-b" : ""}`}>
+                      <span className="text-foreground/60">{row.icon} {row.text}</span>
+                      <span className="text-[10px] text-foreground/35">{row.res}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
             <div className="pointer-events-none absolute top-1/2 left-1/2 w-[90%] -translate-x-1/2 -translate-y-1/2 sm:w-[92%] md:w-[82%]">
               <div className="w-full">
                 <div className="mx-auto w-[92%] md:w-[86%] lg:w-[78%]">
@@ -313,18 +347,17 @@ export default function HeroPanel() {
             </div>
             <aside className="lg:col-span-3 border-t lg:border-t-0 lg:border-l border-border p-6 md:p-8 flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <h3 className="text-base font-semibold">Get started in minutes</h3>
+                <h3 className="text-base font-semibold">Join the waitlist</h3>
                 <p className="text-muted-foreground text-sm">
-                  Install Stud and start coding with AI assistance.
-                  Connect to your favorite LLM provider and build faster.
+                  Get early access to launches, private demos, and new Roblox workflows as they ship.
                 </p>
               </div>
               <div>
                 <a
                   className="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium tracking-tight transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6"
-                  href="/docs/getting-started"
+                  href="/#waitlist"
                 >
-                  Get Started
+                  Join Waitlist
                 </a>
               </div>
             </aside>

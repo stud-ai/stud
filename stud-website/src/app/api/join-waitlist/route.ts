@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { clerkClient } from "@clerk/nextjs/server"
+import { checkBotId } from "botid/server"
 import { getSupabase } from "@/lib/supabase"
 
 /**
@@ -12,6 +13,13 @@ import { getSupabase } from "@/lib/supabase"
  */
 export async function POST(request: NextRequest) {
     try {
+        const verify = await checkBotId()
+
+        if (verify.isBot) {
+            console.warn("[join-waitlist] BotID blocked request")
+            return NextResponse.json({ error: "Request blocked" }, { status: 403 })
+        }
+
         const { email, firstName, excitement } = await request.json()
 
         if (!email || typeof email !== "string") {

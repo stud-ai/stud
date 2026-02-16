@@ -20,19 +20,19 @@ export default function SiteFooter() {
             <div className="flex flex-col gap-3">
               <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">Product</span>
               <a
-                href="/docs/getting-started"
+                href="/#waitlist"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                Get Started
+                Join Waitlist
+              </a>
+              <a href="/#watch-demo" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Watch Demo
               </a>
               <a href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Documentation
               </a>
               <a href="/docs/tools" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Tools
-              </a>
-              <a href="/docs/roblox" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Roblox Guide
               </a>
             </div>
             <div className="flex flex-col gap-3">
