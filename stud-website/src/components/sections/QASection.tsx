@@ -214,9 +214,8 @@ function ToolboxDemo() {
           return (
             <div
               key={asset.id}
-              className={`flex items-center gap-3 px-2.5 py-2 cursor-pointer rounded-md transition-all duration-150 ${
-                isActive ? "bg-foreground text-white" : "hover:bg-muted/50"
-              }`}
+              className={`flex items-center gap-3 px-2.5 py-2 cursor-pointer rounded-md transition-all duration-150 ${isActive ? "bg-foreground text-white" : "hover:bg-muted/50"
+                }`}
               onClick={() => setSelectedAsset(asset.id)}
               onMouseEnter={() => setHoveredAsset(asset.id)}
               onMouseLeave={() => setHoveredAsset(null)}
@@ -287,16 +286,14 @@ export default function QASection() {
                 <button
                   key={feature.key}
                   onClick={() => handleClick(feature.key)}
-                  className={`relative group flex w-full items-start gap-3.5 rounded-lg p-4 text-left transition-all duration-200 overflow-hidden ${
-                    isActive
+                  className={`relative group flex w-full items-start gap-3.5 rounded-lg p-4 text-left transition-all duration-200 overflow-hidden ${isActive
                       ? "bg-foreground/[0.04] border border-border"
                       : "border border-transparent hover:bg-muted/40"
-                  }`}
+                    }`}
                 >
                   <div
-                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors ${
-                      isActive ? "bg-foreground/[0.06]" : "bg-transparent"
-                    }`}
+                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors ${isActive ? "bg-foreground/[0.06]" : "bg-transparent"
+                      }`}
                   >
                     <Icon
                       className={`h-4 w-4 transition-colors ${isActive ? "text-foreground" : "text-muted-foreground/60 group-hover:text-muted-foreground"}`}
@@ -332,7 +329,7 @@ export default function QASection() {
           <div className="overflow-hidden rounded-xl border border-border shadow-sm">
             <div className="relative aspect-[4/3]">
               <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                <img src="/assets/redwoods-2.png" alt="" className="h-full w-full object-cover" />
+                <img src="/assets/redwoods-2.png" alt="Redwood forest background" className="h-full w-full object-cover" />
               </div>
               <div className="relative flex h-full w-full items-center justify-center">
                 <AnimatePresence mode="wait">

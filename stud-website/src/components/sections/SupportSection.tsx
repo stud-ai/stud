@@ -188,7 +188,7 @@ export default function SupportSection() {
         <div className="overflow-hidden rounded-xl border border-border shadow-sm">
           <div className="relative aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9]">
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              <img src="/assets/cliff.png" alt="" className="h-full w-full object-cover" />
+              <img src="/assets/cliff.png" alt="Cliff landscape background" className="h-full w-full object-cover" />
             </div>
             <div className="relative flex h-full w-full items-center justify-center">
               <AnimatePresence mode="wait">
@@ -215,9 +215,8 @@ export default function SupportSection() {
                       {currentDemo.rows.map((row, i) => (
                         <div
                           key={row.text}
-                          className={`flex items-center justify-between px-3 py-2.5 transition-colors ${
-                            i < currentDemo.rows.length - 1 ? "border-b border-border/60" : ""
-                          }`}
+                          className={`flex items-center justify-between px-3 py-2.5 transition-colors ${i < currentDemo.rows.length - 1 ? "border-b border-border/60" : ""
+                            }`}
                         >
                           <div className="mr-2 flex min-w-0 flex-1 items-center gap-2">
                             {row.status === "pending" ? (

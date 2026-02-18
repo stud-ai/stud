@@ -63,6 +63,9 @@ export const metadata: Metadata = {
     shortcut: [{ url: "/assets/app_icon.png" }],
     apple: [{ url: "/assets/app_icon.png" }],
   },
+  other: {
+    "theme-color": "#1a1817",
+  },
 }
 
 export default function RootLayout({

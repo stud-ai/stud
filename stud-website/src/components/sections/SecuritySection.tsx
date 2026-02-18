@@ -87,11 +87,10 @@ function GranularDemo() {
           return (
             <button
               key={opt}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer ${
-                isActive
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer ${isActive
                   ? "bg-[#d29922] text-white shadow-sm"
                   : "bg-secondary border border-border text-foreground/70 hover:bg-muted"
-              }`}
+                }`}
               onClick={() => setSelected(i)}
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
@@ -273,7 +272,7 @@ export default function SecuritySection() {
           <div className="overflow-hidden rounded-xl border border-border shadow-sm">
             <div className="relative aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9]">
               <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                <img src="/assets/redwoods-dark.png" alt="" className="h-full w-full object-cover" />
+                <img src="/assets/redwoods-dark.png" alt="Redwood forest background" className="h-full w-full object-cover" />
               </div>
               <div className="relative flex h-full w-full items-center justify-center">
                 <AnimatePresence mode="wait">
@@ -303,15 +302,13 @@ export default function SecuritySection() {
               <button
                 key={feature.key}
                 onClick={() => handleClick(feature.key)}
-                className={`relative group rounded-xl p-5 text-left transition-all duration-200 overflow-hidden cursor-pointer ${
-                  isActive
+                className={`relative group rounded-xl p-5 text-left transition-all duration-200 overflow-hidden cursor-pointer ${isActive
                     ? "bg-white border border-border shadow-sm"
                     : "bg-white/50 border border-transparent hover:bg-white/80 hover:border-border/50"
-                }`}
+                  }`}
               >
-                <div className={`flex h-9 w-9 items-center justify-center rounded-lg mb-3 transition-colors ${
-                  isActive ? "bg-foreground/[0.06]" : "bg-foreground/[0.03]"
-                }`}>
+                <div className={`flex h-9 w-9 items-center justify-center rounded-lg mb-3 transition-colors ${isActive ? "bg-foreground/[0.06]" : "bg-foreground/[0.03]"
+                  }`}>
                   <Icon className={`h-4 w-4 transition-colors ${isActive ? "text-foreground" : "text-muted-foreground/60 group-hover:text-muted-foreground"}`} />
                 </div>
                 <div className={`text-sm font-semibold transition-colors ${isActive ? "text-foreground" : "text-foreground/70 group-hover:text-foreground/90"}`}>

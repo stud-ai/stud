@@ -6,37 +6,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: "2026-02-18",
       changeFrequency: "weekly",
       priority: 1,
     },
     {
       url: `${baseUrl}/docs`,
-      lastModified: new Date(),
+      lastModified: "2026-02-18",
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: `${baseUrl}/docs/getting-started`,
-      lastModified: new Date(),
+      lastModified: "2026-02-18",
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${baseUrl}/docs/tools`,
-      lastModified: new Date(),
+      lastModified: "2026-02-18",
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${baseUrl}/docs/permissions`,
-      lastModified: new Date(),
+      lastModified: "2026-02-18",
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
       url: `${baseUrl}/docs/roblox`,
-      lastModified: new Date(),
+      lastModified: "2026-02-18",
       changeFrequency: "monthly",
       priority: 0.8,
     },

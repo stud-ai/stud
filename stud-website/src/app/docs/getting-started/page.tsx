@@ -7,9 +7,20 @@ export const metadata: Metadata = {
   alternates: { canonical: "/docs/getting-started" },
 }
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://trystud.me" },
+    { "@type": "ListItem", position: 2, name: "Documentation", item: "https://trystud.me/docs" },
+    { "@type": "ListItem", position: 3, name: "Installation & Setup", item: "https://trystud.me/docs/getting-started" },
+  ],
+}
+
 export default function GettingStartedPage() {
   return (
     <div className="max-w-3xl">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <p className="text-xs font-medium uppercase tracking-[0.16em] text-foreground/40">Getting Started</p>
       <h1 className="font-display mt-3 text-3xl leading-tight tracking-tight text-foreground md:text-4xl">
         Installation & Setup

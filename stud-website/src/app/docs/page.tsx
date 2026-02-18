@@ -156,9 +156,43 @@ const faqs = [
   },
 ] as const
 
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.a,
+    },
+  })),
+}
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: "https://trystud.me",
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Documentation",
+      item: "https://trystud.me/docs",
+    },
+  ],
+}
+
 export default function DocsPage() {
   return (
     <div className="max-w-5xl">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <section className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-white via-white to-secondary p-8 md:p-10">
         <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-emerald-100/70 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 left-16 h-64 w-64 rounded-full bg-blue-100/70 blur-3xl" />
