@@ -160,17 +160,25 @@ export const RunCommand = cmd({
             const part = event.properties.part
             if (part.sessionID !== sessionID) continue
 
-            if (part.type === "tool" && part.state.status === "completed") {
+            if (part.type === "tool" && (part.state.status === "completed" || part.state.status === "error")) {
               if (outputJsonEvent("tool_use", { part })) continue
-              const [tool, color] = TOOL[part.tool] ?? [part.tool, UI.Style.TEXT_INFO_BOLD]
-              const title =
-                part.state.title ||
-                (Object.keys(part.state.input).length > 0 ? JSON.stringify(part.state.input) : "Unknown")
-              printEvent(color, tool, title)
-              if (part.tool === "bash" && part.state.output?.trim()) {
-                UI.println()
-                UI.println(part.state.output)
+              if (part.state.status === "completed") {
+                const [tool, color] = TOOL[part.tool] ?? [part.tool, UI.Style.TEXT_INFO_BOLD]
+                const input =
+                  part.state.input && typeof part.state.input === "object" && !Array.isArray(part.state.input)
+                    ? part.state.input
+                    : {}
+                const title = part.state.title || (Object.keys(input).length > 0 ? JSON.stringify(input) : "Unknown")
+                printEvent(color, tool, title)
+                if (part.tool === "bash" && part.state.output?.trim()) {
+                  UI.println()
+                  UI.println(part.state.output)
+                }
+                continue
               }
+
+              printEvent(UI.Style.TEXT_DANGER_BOLD, part.tool, "failed")
+              UI.error(typeof part.state.error === "string" ? part.state.error : JSON.stringify(part.state.error))
             }
 
             if (part.type === "step-start") {
