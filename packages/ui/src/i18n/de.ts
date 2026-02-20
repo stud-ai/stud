@@ -125,4 +125,6 @@ export const dict = {
   "ui.question.review.notAnswered": "(nicht beantwortet)",
   "ui.question.multiHint": "(alle zutreffenden auswählen)",
   "ui.question.custom.placeholder": "Geben Sie Ihre Antwort ein...",
+  "ui.sessionTurn.status.runningPlaytest": "Running playtest verification",
+  "ui.tool.roblox.playtest": "Playtest Run",
 } satisfies Partial<Record<Keys, string>>

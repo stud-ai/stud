@@ -58,6 +58,7 @@ import {
   RobloxToolboxSearchTool,
   RobloxAssetDetailsTool,
   RobloxInsertAssetTool,
+  RobloxPlaytestRunTool,
 } from "./roblox"
 
 export namespace ToolRegistry {
@@ -166,6 +167,7 @@ export namespace ToolRegistry {
       RobloxSearchTool,
       RobloxGetSelectionTool,
       RobloxRunCodeTool,
+      RobloxPlaytestRunTool,
       // Roblox Bulk operations
       RobloxBulkCreateTool,
       RobloxBulkDeleteTool,

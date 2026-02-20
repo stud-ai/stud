@@ -102,4 +102,6 @@ export const dict = {
   "ui.question.review.notAnswered": "(未回答)",
   "ui.question.multiHint": "(可多选)",
   "ui.question.custom.placeholder": "输入你的答案...",
+  "ui.sessionTurn.status.runningPlaytest": "Running playtest verification",
+  "ui.tool.roblox.playtest": "Playtest Run",
 } satisfies Partial<Record<Keys, string>>

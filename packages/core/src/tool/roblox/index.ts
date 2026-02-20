@@ -28,3 +28,4 @@ export {
   RobloxOrderedDataStoreIncrementTool,
 } from "./cloud"
 export { RobloxToolboxSearchTool, RobloxAssetDetailsTool, RobloxInsertAssetTool } from "./toolbox"
+export { RobloxPlaytestRunTool } from "./playtest"

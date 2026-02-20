@@ -1097,7 +1097,7 @@ handlers["/selection/set"] = function(data)
 	local selected = {}
 	
 	for _, path in ipairs(paths) do
-		local instance = findInstanceByPath(path)
+		local instance = getInstanceFromPath(path)
 		if instance then
 			table.insert(selected, instance)
 		end
@@ -1142,6 +1142,126 @@ handlers["/code/run"] = function(data)
 	return { output = table.concat(output, "\n") }
 end
 
+handlers["/playtest/run"] = function(data)
+	local suite = data.suite or "playtest"
+	local checks = data.checks or {}
+	local results = {}
+	local passedCount = 0
+	local failedCount = 0
+
+	for _, check in ipairs(checks) do
+		local started = os.clock()
+		local result = {
+			id = check.id or "check",
+			label = check.label or (check.type or "check"),
+			passed = false,
+			detail = "",
+			durationMs = 0,
+		}
+
+		local ok, err = pcall(function()
+			if check.type == "instance_exists" then
+				local instance = getInstanceFromPath(check.path)
+				if instance then
+					result.passed = true
+					result.detail = "Found " .. instance.ClassName .. " at " .. check.path
+				else
+					result.passed = false
+					result.detail = "Missing instance at " .. tostring(check.path)
+				end
+				return
+			end
+
+			if check.type == "property_equals" then
+				local instance = getInstanceFromPath(check.path)
+				if not instance then
+					result.passed = false
+					result.detail = "Missing instance at " .. tostring(check.path)
+					return
+				end
+
+				local success, value = pcall(function()
+					return instance[check.property]
+				end)
+				if not success then
+					result.passed = false
+					result.detail = "Property access failed for " .. tostring(check.property)
+					return
+				end
+
+				local actual = tostring(value)
+				local expected = tostring(check.expected)
+				result.passed = actual == expected
+				if result.passed then
+					result.detail = tostring(check.property) .. " matched expected value " .. expected
+				else
+					result.detail = tostring(check.property) .. " mismatch: expected " .. expected .. ", got " .. actual
+				end
+				return
+			end
+
+			if check.type == "script_compiles" then
+				local instance = getInstanceFromPath(check.path)
+				if not instance then
+					result.passed = false
+					result.detail = "Missing script at " .. tostring(check.path)
+					return
+				end
+
+				if not instance:IsA("LuaSourceContainer") then
+					result.passed = false
+					result.detail = tostring(check.path) .. " is not a script"
+					return
+				end
+
+				local source = ScriptEditorService:GetEditorSource(instance)
+				if not source then
+					source = instance.Source
+				end
+
+				local fn, compileErr = loadstring(source)
+				if fn then
+					result.passed = true
+					result.detail = tostring(check.path) .. " compiled successfully"
+				else
+					result.passed = false
+					result.detail = "Compile error: " .. tostring(compileErr)
+				end
+				return
+			end
+
+			result.passed = false
+			result.detail = "Unknown check type: " .. tostring(check.type)
+		end)
+
+		if not ok then
+			result.passed = false
+			result.detail = tostring(err)
+		end
+
+		result.durationMs = math.floor((os.clock() - started) * 1000 + 0.5)
+
+		if result.passed then
+			passedCount = passedCount + 1
+		else
+			failedCount = failedCount + 1
+		end
+
+		table.insert(results, result)
+	end
+
+	return {
+		suite = suite,
+		passed = failedCount == 0,
+		totals = {
+			total = #results,
+			passed = passedCount,
+			failed = failedCount,
+		},
+		checks = results,
+	}
+end
+
 -- Paths that modify the game and should create undo waypoints
 local modifyingPaths = {
 	["/script/set"] = true,
@@ -1176,6 +1296,7 @@ local actionNames = {
 	["/instance/search"] = "Search",
 	["/selection/get"] = "Get Selection",
 	["/code/run"] = "Run Code",
+	["/playtest/run"] = "Run Playtest",
 }
 
 -- HTTP request handler

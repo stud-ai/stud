@@ -121,4 +121,6 @@ export const dict = {
   "ui.question.review.notAnswered": "(ikke besvaret)",
   "ui.question.multiHint": "(vælg alle der gælder)",
   "ui.question.custom.placeholder": "Skriv dit svar...",
+  "ui.sessionTurn.status.runningPlaytest": "Running playtest verification",
+  "ui.tool.roblox.playtest": "Playtest Run",
 }
