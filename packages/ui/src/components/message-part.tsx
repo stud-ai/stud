@@ -1980,6 +1980,7 @@ ToolRegistry.register({
     const source = () => (typeof props.metadata?.source === "string" ? props.metadata.source : undefined)
 
     const title = createMemo(() => {
+      if (props.status === "pending") return "Preparing playtest"
       if (props.status === "running") return "Running playtest"
       if (props.status === "error") return "Playtest failed"
       if (passed()) return "Playtest passed"
