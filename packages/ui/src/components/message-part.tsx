@@ -357,6 +357,12 @@ export function getToolInfo(tool: string, input: any = {}): ToolInfo {
         title: i18n.t("ui.tool.roblox.runCode", { defaultValue: "Run Code" }),
         subtitle: i18n.t("ui.tool.roblox.studioCommandBar", { defaultValue: "Studio Command Bar" }),
       }
+    case "roblox_playtest_run":
+      return {
+        icon: "checklist",
+        title: i18n.t("ui.tool.roblox.playtest", { defaultValue: "Playtest Run" }),
+        subtitle: input.suite,
+      }
     case "roblox_bulk_create":
       return {
         icon: "plus",
@@ -1925,6 +1931,101 @@ ToolRegistry.register({
             <Markdown text={`\`\`\`lua\n${code()}\n\`\`\``} />
           </div>
         </Show>
+        <Show when={props.output}>
+          {(output) => (
+            <div data-component="tool-output" data-scrollable>
+              <Markdown text={output()} />
+            </div>
+          )}
+        </Show>
+      </ActionCard>
+    )
+  },
+})
+
+ToolRegistry.register({
+  name: "roblox_playtest_run",
+  render(props) {
+    const status = () => getActionStatus(props.status)
+    const label = () => getStatusLabel(props.status)
+    const suite = () => props.metadata?.suite ?? props.input?.suite ?? "playtest"
+    const checks = createMemo(() => (props.metadata?.checks ?? []) as Array<{
+      id: string
+      label: string
+      passed: boolean
+      detail: string
+      durationMs: number
+    }>)
+    const totals = createMemo(() => {
+      const value = props.metadata?.totals as
+        | {
+            total: number
+            passed: number
+            failed: number
+          }
+        | undefined
+      if (value) return value
+      const total = checks().length
+      const passed = checks().filter((check) => check.passed).length
+      return {
+        total,
+        passed,
+        failed: Math.max(0, total - passed),
+      }
+    })
+    const passed = createMemo(() => {
+      if (typeof props.metadata?.passed === "boolean") return props.metadata.passed
+      return totals().failed === 0 && totals().total > 0
+    })
+    const source = () => (typeof props.metadata?.source === "string" ? props.metadata.source : undefined)
+
+    const title = createMemo(() => {
+      if (props.status === "running") return "Running playtest"
+      if (props.status === "error") return "Playtest failed"
+      if (passed()) return "Playtest passed"
+      return "Playtest failed"
+    })
+
+    return (
+      <ActionCard
+        icon="checklist"
+        title={title()}
+        subtitle={suite()}
+        status={status()}
+        meta={
+          <div class="flex items-center gap-2">
+            <span data-slot="action-card-status">
+              {totals().passed}/{totals().total}
+            </span>
+            <Show when={label()}>{(text) => <span data-slot="action-card-status">{text()}</span>}</Show>
+          </div>
+        }
+      >
+        <Show when={checks().length > 0}>
+          <div class="flex flex-col gap-1.5 px-3 py-2">
+            <For each={checks()}>
+              {(check) => (
+                <div class="flex items-center gap-2 rounded-md border border-border-weak-base bg-surface-base px-2 py-1.5">
+                  <Icon
+                    name={check.passed ? "check-small" : "close-small"}
+                    size="small"
+                    class={check.passed ? "text-text-success-base" : "text-text-critical-base"}
+                  />
+                  <div class="flex-1 min-w-0">
+                    <div class="text-12-medium text-text-base truncate">{check.label}</div>
+                    <div class="text-11-regular text-text-weak truncate">{check.detail}</div>
+                  </div>
+                  <div class="text-10-regular text-text-subtle">{check.durationMs}ms</div>
+                </div>
+              )}
+            </For>
+          </div>
+        </Show>
+
+        <Show when={source()}>
+          {(value) => <div class="px-3 pb-2 text-10-regular text-text-subtle">Source: {value()}</div>}
+        </Show>
+
         <Show when={props.output}>
           {(output) => (
             <div data-component="tool-output" data-scrollable>

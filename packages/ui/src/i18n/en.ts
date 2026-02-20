@@ -86,6 +86,7 @@ export const dict = {
   "ui.tool.roblox.search": "Search Instances",
   "ui.tool.roblox.getSelection": "Get Selection",
   "ui.tool.roblox.runCode": "Run Code",
+  "ui.tool.roblox.playtest": "Playtest Run",
   "ui.tool.roblox.studioCommandBar": "Studio Command Bar",
   "ui.tool.roblox.bulkCreate": "Bulk Create",
   "ui.tool.roblox.bulkDelete": "Bulk Delete",
