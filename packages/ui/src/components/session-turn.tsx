@@ -69,14 +69,24 @@ function computeStatusFromPart(part: PartType | undefined, t: Translator): strin
       case "roblox_get_properties":
       case "roblox_get_descendants":
       case "roblox_get_children":
+      case "roblox_search":
+      case "roblox_get_selection":
         return t("ui.sessionTurn.status.readingGame")
       case "roblox_set_property":
-      case "roblox_create_instance":
-      case "roblox_clone_instance":
-      case "roblox_destroy_instance":
+      case "roblox_create":
+      case "roblox_delete":
+      case "roblox_clone":
+      case "roblox_move":
+      case "roblox_bulk_create":
+      case "roblox_bulk_delete":
+      case "roblox_bulk_set_property":
         return t("ui.sessionTurn.status.modifyingGame")
       case "roblox_create_script":
+      case "roblox_set_script":
+      case "roblox_edit_script":
         return t("ui.sessionTurn.status.creatingScript")
+      case "roblox_playtest_run":
+        return t("ui.sessionTurn.status.runningPlaytest")
       default:
         // For MCP tools, show a generic "Running tool" message
         if (part.tool.includes("_") || part.tool.includes(":")) {

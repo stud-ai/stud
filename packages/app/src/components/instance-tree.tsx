@@ -9,12 +9,15 @@ import {
   createSignal,
   For,
   Show,
+  on,
+  onCleanup,
   type ComponentProps,
   type ParentProps,
   splitProps,
 } from "solid-js"
 import { useServer } from "@/context/server"
 import { useInstance } from "@/context/instance"
+import { useSDK } from "@/context/sdk"
 import { studioRequest } from "@/utils/studio"
 import { usePlatform } from "@/context/platform"
 
@@ -31,6 +34,7 @@ interface InstanceTreeProps {
   class?: string
   onFileClick?: (filePath: string) => void
   onInspect?: () => void
+  refreshSignal?: number
 }
 
 async function fetchInstanceTree(
@@ -72,6 +76,7 @@ function filterTree(node: InstanceNode, query: string): InstanceNode | null {
 export function InstanceTree(props: InstanceTreeProps) {
   const server = useServer()
   const platform = usePlatform()
+  const sdk = useSDK()
   const [searchQuery, setSearchQuery] = createSignal("")
 
   // Always try Studio mode - backend will fall back to Rojo if not connected
@@ -79,6 +84,51 @@ export function InstanceTree(props: InstanceTreeProps) {
     () => ({ url: server.url, directory: props.directory }),
     (source) => fetchInstanceTree(source.url, source.directory, platform.fetch ?? fetch, "studio"),
   )
+
+  const mutatingRobloxTools = new Set([
+    "roblox_set_property",
+    "roblox_create",
+    "roblox_delete",
+    "roblox_clone",
+    "roblox_move",
+    "roblox_bulk_create",
+    "roblox_bulk_delete",
+    "roblox_bulk_set_property",
+    "roblox_set_script",
+    "roblox_edit_script",
+    "roblox_insert_asset",
+  ])
+
+  let refreshTimer: ReturnType<typeof setTimeout> | undefined
+  const scheduleRefresh = (delay = 250) => {
+    if (refreshTimer) clearTimeout(refreshTimer)
+    refreshTimer = setTimeout(() => {
+      refreshTimer = undefined
+      refetch()
+    }, delay)
+  }
+
+  createEffect(
+    on(
+      () => props.refreshSignal,
+      () => scheduleRefresh(0),
+      { defer: true },
+    ),
+  )
+
+  const stop = sdk.event.on("message.part.updated", (event) => {
+    const part = event.properties.part
+    if (part.type !== "tool") return
+    if (!part.tool.startsWith("roblox_")) return
+    if (!mutatingRobloxTools.has(part.tool)) return
+    if (part.state.status !== "completed" && part.state.status !== "error") return
+    scheduleRefresh()
+  })
+
+  onCleanup(() => {
+    stop()
+    if (refreshTimer) clearTimeout(refreshTimer)
+  })
 
   const filteredTree = createMemo(() => {
     const tree = data.latest?.tree

@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "@solidjs/router"
 import { useLanguage } from "@/context/language"
 import { useGlobalSync } from "@/context/global-sync"
 import { useDialog } from "@stud/ui/context/dialog"
+import { Button } from "@stud/ui/button"
 import { base64Encode } from "@stud/util/encode"
 import { decode64 } from "@/utils/base64"
 import { Icon } from "@stud/ui/icon"
@@ -12,6 +13,7 @@ import { Tooltip } from "@stud/ui/tooltip"
 import { DialogProjectRules } from "@/components/dialog-project-rules"
 import { DialogSettings } from "@/components/dialog-settings"
 import { InstanceTree } from "@/components/instance-tree"
+import { SessionLiveChanges } from "./session-live-changes"
 import { DialogDeleteSession } from "@/components/dialog-delete-session"
 import type { Session } from "@stud/sdk/v2/client"
 
@@ -30,6 +32,7 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
   const [mounted, setMounted] = createSignal(false)
   const [explorerOpen, setExplorerOpen] = createSignal(true)
   const [explorerHeight, setExplorerHeight] = createSignal(300)
+  const [explorerRefreshSignal, setExplorerRefreshSignal] = createSignal(0)
   const [dragging, setDragging] = createSignal("none")
 
   onMount(() => {
@@ -261,37 +264,56 @@ export function SessionLeftSidebar(props: SessionLeftSidebarProps) {
         class="flex flex-col"
         style={{ height: explorerOpen() ? `${explorerHeight()}px` : "auto", "flex-shrink": "0" }}
       >
-        <button
-          type="button"
-          class="flex items-center justify-between px-3 py-1.5 group cursor-pointer hover:bg-surface-base-hover rounded mx-1"
-          onClick={() => setExplorerOpen(!explorerOpen())}
-        >
-          <div class="flex items-center gap-1.5">
+        <div class="flex items-center justify-between px-2 py-1 gap-2">
+          <button
+            type="button"
+            class="flex-1 min-w-0 flex items-center gap-1.5 px-1.5 py-1 group cursor-pointer hover:bg-surface-base-hover rounded"
+            onClick={() => setExplorerOpen(!explorerOpen())}
+          >
             <Icon
               name="chevron-down"
               size="small"
               class="text-text-subtle transition-transform duration-200"
               classList={{ "-rotate-90": !explorerOpen() }}
             />
-            <span class="text-11-medium text-text-subtle uppercase tracking-wider group-hover:text-text-weak transition-colors">
+            <span class="text-11-medium text-text-subtle uppercase tracking-wider group-hover:text-text-weak transition-colors truncate">
               {language.t("sidebar.instanceTree")}
             </span>
+          </button>
+          <Button
+            variant="ghost"
+            size="small"
+            class="h-6 px-2 text-10-medium uppercase tracking-wider text-text-subtle hover:text-text-base"
+            onClick={() => setExplorerRefreshSignal((value) => value + 1)}
+          >
+            {language.t("sidebar.instanceTree.refresh")}
+          </Button>
+        </div>
+        <div class="flex-1 min-h-0 flex flex-col overflow-hidden" classList={{ hidden: !explorerOpen() }}>
+          <div class="flex-1 min-h-0 overflow-y-auto">
+            <Suspense fallback={<div class="px-4 py-2 text-12-regular text-text-subtle opacity-60">Loading Explorer...</div>}>
+              <InstanceTree
+                directory={directory()}
+                class="px-1"
+                refreshSignal={explorerRefreshSignal()}
+                onFileClick={(filePath) => {
+                  // TODO: Open file in editor
+                  console.log("Open file:", filePath)
+                }}
+                onInspect={() => {
+                  props.onOpenInspector?.()
+                }}
+              />
+            </Suspense>
           </div>
-        </button>
-        <div class="flex-1 min-h-0 overflow-y-auto" classList={{ hidden: !explorerOpen() }}>
-          <Suspense fallback={<div class="px-4 py-2 text-12-regular text-text-subtle opacity-60">Loading Explorer...</div>}>
-            <InstanceTree
-              directory={directory()}
-              class="px-1"
-              onFileClick={(filePath) => {
-                // TODO: Open file in editor
-                console.log("Open file:", filePath)
-              }}
-              onInspect={() => {
-                props.onOpenInspector?.()
-              }}
-            />
-          </Suspense>
+          <Show when={params.id}>
+            {(sessionID) => (
+              <SessionLiveChanges
+                sessionID={sessionID()}
+                class="border-t border-border-weak-base bg-surface-base shrink-0 max-h-52 overflow-y-auto"
+              />
+            )}
+          </Show>
         </div>
       </div>
 

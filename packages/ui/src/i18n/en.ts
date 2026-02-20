@@ -36,6 +36,7 @@ export const dict = {
   "ui.sessionTurn.status.searchingToolbox": "Searching Roblox Toolbox",
   "ui.sessionTurn.status.insertingAsset": "Inserting asset into Studio",
   "ui.sessionTurn.status.runningInStudio": "Running code in Studio",
+  "ui.sessionTurn.status.runningPlaytest": "Running playtest verification",
   "ui.sessionTurn.status.readingGame": "Reading game data",
   "ui.sessionTurn.status.modifyingGame": "Modifying game",
   "ui.sessionTurn.status.creatingScript": "Creating script",
