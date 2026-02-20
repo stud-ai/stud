@@ -97,6 +97,7 @@ export function InstanceTree(props: InstanceTreeProps) {
     "roblox_set_script",
     "roblox_edit_script",
     "roblox_insert_asset",
+    "roblox_run_code",
   ])
 
   let refreshTimer: ReturnType<typeof setTimeout> | undefined
