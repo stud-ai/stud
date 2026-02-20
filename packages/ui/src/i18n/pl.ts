@@ -98,4 +98,6 @@ export const dict = {
   "ui.question.review.notAnswered": "(bez odpowiedzi)",
   "ui.question.multiHint": "(zaznacz wszystkie pasujące)",
   "ui.question.custom.placeholder": "Wpisz swoją odpowiedź...",
+  "ui.sessionTurn.status.runningPlaytest": "Running playtest verification",
+  "ui.tool.roblox.playtest": "Playtest Run",
 }
