@@ -47,6 +47,107 @@ describe("Bridge Server", () => {
     console.log("Workspace children:", result)
     expect(result.success).toBe(true)
   })
+
+  test("can run structured playtest checks", async () => {
+    const connected = await isStudioConnected()
+    if (!connected) {
+      console.log("Skipping - Studio not connected")
+      return
+    }
+
+    await studioRequest<{ output: string }>("/code/run", {
+      code: `
+        local parent = game:GetService("ServerScriptService")
+
+        local passScript = parent:FindFirstChild("StudPlaytestPass")
+        if not passScript then
+          passScript = Instance.new("ModuleScript")
+          passScript.Name = "StudPlaytestPass"
+          passScript.Parent = parent
+        end
+        passScript.Source = "return true"
+
+        local failScript = parent:FindFirstChild("StudPlaytestFail")
+        if not failScript then
+          failScript = Instance.new("ModuleScript")
+          failScript.Name = "StudPlaytestFail"
+          failScript.Parent = parent
+        end
+        failScript.Source = "local x ="
+
+        return "prepared"
+      `,
+    })
+
+    const result = await studioRequest<{
+      suite: string
+      passed: boolean
+      totals: { total: number; passed: number; failed: number }
+      checks: Array<{ id: string; passed: boolean; detail: string }>
+    }>("/playtest/run", {
+      suite: "bridge-playtest",
+      checks: [
+        {
+          id: "instance-pass",
+          label: "Workspace exists",
+          type: "instance_exists",
+          path: "game.Workspace",
+        },
+        {
+          id: "instance-fail",
+          label: "Missing object fails",
+          type: "instance_exists",
+          path: "game.DoesNotExist",
+        },
+        {
+          id: "property-pass",
+          label: "Workspace name check",
+          type: "property_equals",
+          path: "game.Workspace",
+          property: "Name",
+          expected: "Workspace",
+        },
+        {
+          id: "script-pass",
+          label: "Valid script compiles",
+          type: "script_compiles",
+          path: "game.ServerScriptService.StudPlaytestPass",
+        },
+        {
+          id: "script-fail",
+          label: "Invalid script fails",
+          type: "script_compiles",
+          path: "game.ServerScriptService.StudPlaytestFail",
+        },
+      ],
+    })
+
+    console.log("Playtest result:", result)
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.suite).toBe("bridge-playtest")
+      expect(result.data.totals.total).toBe(5)
+      expect(result.data.totals.passed).toBe(3)
+      expect(result.data.totals.failed).toBe(2)
+
+      const byID = new Map(result.data.checks.map((check) => [check.id, check]))
+      expect(byID.get("instance-pass")?.passed).toBe(true)
+      expect(byID.get("instance-fail")?.passed).toBe(false)
+      expect(byID.get("property-pass")?.passed).toBe(true)
+      expect(byID.get("script-pass")?.passed).toBe(true)
+      expect(byID.get("script-fail")?.passed).toBe(false)
+    }
+
+    await studioRequest<{ output: string }>("/code/run", {
+      code: `
+        local parent = game:GetService("ServerScriptService")
+        local passScript = parent:FindFirstChild("StudPlaytestPass")
+        if passScript then passScript:Destroy() end
+        local failScript = parent:FindFirstChild("StudPlaytestFail")
+        if failScript then failScript:Destroy() end
+      `,
+    })
+  })
 })
 
 describe("InsertService", () => {
